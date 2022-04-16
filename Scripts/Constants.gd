@@ -97,7 +97,7 @@ const UNIT_TYPE_CONDITIONS = {
 	UnitType.PLAYER: {
 		UnitCondition.CURRENT_ACTION: UNIT_TYPE_CURRENT_ACTIONS[UnitType.PLAYER][UnitCurrentAction.IDLE],
 		UnitCondition.HAS_ABILITY: false,
-		UnitCondition.IS_ON_GROUND: true,
+		UnitCondition.IS_ON_GROUND: false,
 		UnitCondition.IS_PORTING: false,
 		UnitCondition.MOVING_STATUS: UNIT_TYPE_MOVING_STATUS[UnitType.PLAYER][UnitMovingStatus.IDLE],
 		UnitCondition.IS_INVINCIBLE: false,
@@ -182,3 +182,4 @@ const GRAVITY = 12
 const MAX_FALL_SPEED = -8
 const MIN_BOUNCE_SPEED = -6
 const GRAVITY_LITE = 0.1
+const QUANTUM_DIST = 0.04
