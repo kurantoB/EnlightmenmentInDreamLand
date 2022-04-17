@@ -1,0 +1,188 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Units/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scripts/GameScene.gd" type="Script" id=2]
+[ext_resource path="res://Graphics/Tiles/square/SquareLeftCorner.png" type="Texture" id=3]
+[ext_resource path="res://Scenes/Block.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Graphics/Tiles/ledge/LedgeLeft.png" type="Texture" id=5]
+[ext_resource path="res://Graphics/Tiles/ledge/LedgeRight.png" type="Texture" id=6]
+[ext_resource path="res://Graphics/Player.png" type="Texture" id=7]
+[ext_resource path="res://Graphics/Tiles/ledge/LedgeMiddle.png" type="Texture" id=8]
+[ext_resource path="res://Graphics/Tiles/square/SquareGroundFlat.png" type="Texture" id=9]
+[ext_resource path="res://Graphics/Tiles/square/SquareLeftWall.png" type="Texture" id=10]
+[ext_resource path="res://Graphics/Tiles/square/SquareRightWall.png" type="Texture" id=11]
+[ext_resource path="res://Graphics/Tiles/square/SquareRightCorner.png" type="Texture" id=12]
+[ext_resource path="res://Graphics/Tiles/square/SquareBlock.png" type="Texture" id=13]
+
+[node name="Scene" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Background" type="Node" parent="."]
+
+[node name="Stage" type="Node" parent="."]
+
+[node name="TopLeftBlock" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( -20, 0 )
+texture = ExtResource( 3 )
+
+[node name="TopBlock" parent="Stage" instance=ExtResource( 4 )]
+texture = ExtResource( 9 )
+
+[node name="TopBlock2" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 20, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock3" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 40, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock4" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 60, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock5" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 80, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock6" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 100, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock7" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 120, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock8" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 140, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock9" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 160, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock10" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 180, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock11" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 200, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock12" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 220, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock13" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 240, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock14" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 260, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock15" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 280, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock16" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 300, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock19" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 360, 0 )
+texture = ExtResource( 9 )
+
+[node name="TopBlock20" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 380, 0 )
+texture = ExtResource( 9 )
+
+[node name="LedgeLeft" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 220, -80 )
+texture = ExtResource( 5 )
+map_elem_type = 7
+
+[node name="LedgeMiddle" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 240, -80 )
+texture = ExtResource( 8 )
+map_elem_type = 7
+
+[node name="LedgeRight" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 260, -80 )
+texture = ExtResource( 6 )
+map_elem_type = 7
+
+[node name="LedgeLeft2" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 140, -40 )
+texture = ExtResource( 5 )
+map_elem_type = 7
+
+[node name="LedgeMiddle2" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 160, -40 )
+texture = ExtResource( 8 )
+map_elem_type = 7
+
+[node name="LedgeRight2" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 180, -40 )
+texture = ExtResource( 6 )
+map_elem_type = 7
+
+[node name="SquareBlock9" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 320, 0 )
+texture = ExtResource( 13 )
+
+[node name="SquareBlock10" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 340, 0 )
+texture = ExtResource( 13 )
+
+[node name="LeftWallBlock" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 320, -40 )
+texture = ExtResource( 10 )
+
+[node name="LeftWallBlock4" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 320, -20 )
+texture = ExtResource( 10 )
+
+[node name="LeftWallBlock2" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 320, -60 )
+texture = ExtResource( 10 )
+
+[node name="LeftWallBlock3" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 320, -80 )
+texture = ExtResource( 10 )
+
+[node name="TopLeftBlock3" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 320, -100 )
+texture = ExtResource( 3 )
+
+[node name="TopRightBlock3" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 340, -100 )
+texture = ExtResource( 12 )
+
+[node name="TopRightBlock4" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 400, 0 )
+texture = ExtResource( 12 )
+
+[node name="RightWallBlock2" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 340, -80 )
+texture = ExtResource( 11 )
+
+[node name="RightWallBlock3" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 340, -60 )
+texture = ExtResource( 11 )
+
+[node name="RightWallBlock4" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 340, -40 )
+texture = ExtResource( 11 )
+
+[node name="RightWallBlock5" parent="Stage" instance=ExtResource( 4 )]
+position = Vector2( 340, -20 )
+texture = ExtResource( 11 )
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+position = Vector2( 20, -20 )
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+
+[node name="Sprite" type="Sprite" parent="Player"]
+texture = ExtResource( 7 )
+offset = Vector2( 0, -15 )

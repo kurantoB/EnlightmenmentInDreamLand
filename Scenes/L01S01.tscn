@@ -2306,354 +2306,283 @@ map_elem_type = -1
 [node name="Stage" type="Node" parent="."]
 
 [node name="TopBlock" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 10, -10 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock2" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 30, -10 )
+position = Vector2( 20, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock3" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 50, -10 )
+position = Vector2( 40, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock4" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 70, -10 )
+position = Vector2( 60, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock5" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 90, -10 )
+position = Vector2( 80, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock6" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 110, -10 )
+position = Vector2( 100, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock7" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 130, -10 )
+position = Vector2( 120, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock8" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 150, -10 )
+position = Vector2( 140, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock9" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 170, -10 )
+position = Vector2( 160, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock10" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 190, -10 )
+position = Vector2( 180, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock11" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 210, -10 )
+position = Vector2( 200, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock12" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 230, -10 )
+position = Vector2( 220, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock13" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 250, -10 )
+position = Vector2( 240, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock14" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 270, -10 )
+position = Vector2( 260, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock15" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 290, -10 )
+position = Vector2( 280, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock16" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 310, -10 )
+position = Vector2( 300, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 330, -10 )
+position = Vector2( 320, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock2" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 350, -10 )
+position = Vector2( 340, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="TopLeftBlock" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 330, -30 )
+position = Vector2( 320, -20 )
 texture = ExtResource( 8 )
-offset = Vector2( -10, -10 )
 
 [node name="TopRightBlock" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 350, -30 )
+position = Vector2( 340, -20 )
 texture = ExtResource( 3 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock17" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 370, -10 )
+position = Vector2( 360, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock18" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 390, -10 )
+position = Vector2( 380, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock19" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 410, -10 )
+position = Vector2( 400, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock20" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 430, -10 )
+position = Vector2( 420, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock21" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 450, -10 )
+position = Vector2( 440, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock22" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 470, -10 )
+position = Vector2( 460, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock23" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 490, -10 )
+position = Vector2( 480, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock24" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 510, -10 )
+position = Vector2( 500, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock3" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 530, -10 )
+position = Vector2( 520, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="TopLeftBlock2" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 530, -30 )
+position = Vector2( 520, -20 )
 texture = ExtResource( 8 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock25" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 550, -30 )
+position = Vector2( 540, -20 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock4" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 550, -10 )
+position = Vector2( 540, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock26" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 570, -30 )
+position = Vector2( 560, -20 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock5" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 570, -10 )
+position = Vector2( 560, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock27" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 590, -30 )
+position = Vector2( 580, -20 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock6" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 590, -10 )
+position = Vector2( 580, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock28" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 610, -30 )
+position = Vector2( 600, -20 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock7" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 610, -10 )
+position = Vector2( 600, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock8" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 630, -10 )
+position = Vector2( 620, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="TopRightBlock2" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 630, -30 )
+position = Vector2( 620, -20 )
 texture = ExtResource( 3 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock29" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 650, -10 )
+position = Vector2( 640, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock30" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 670, -10 )
+position = Vector2( 660, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock31" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 690, -10 )
+position = Vector2( 680, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock32" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 710, -10 )
+position = Vector2( 700, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock33" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 730, -10 )
+position = Vector2( 720, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock34" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 750, -10 )
+position = Vector2( 740, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock35" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 770, -10 )
+position = Vector2( 760, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock36" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 790, -10 )
+position = Vector2( 780, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock37" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 810, -10 )
+position = Vector2( 800, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock38" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 830, -10 )
+position = Vector2( 820, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock9" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 850, -10 )
+position = Vector2( 840, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock10" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 870, -10 )
+position = Vector2( 860, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock11" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 890, -10 )
+position = Vector2( 880, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock12" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 910, -10 )
+position = Vector2( 900, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="LeftWallBlock" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 850, -30 )
+position = Vector2( 840, -20 )
 texture = ExtResource( 10 )
-offset = Vector2( -10, -10 )
 
 [node name="LeftWallBlock2" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 850, -50 )
+position = Vector2( 840, -40 )
 texture = ExtResource( 10 )
-offset = Vector2( -10, -10 )
 
 [node name="LeftWallBlock3" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 850, -70 )
+position = Vector2( 840, -60 )
 texture = ExtResource( 10 )
-offset = Vector2( -10, -10 )
 
 [node name="TopLeftBlock3" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 850, -90 )
+position = Vector2( 840, -80 )
 texture = ExtResource( 8 )
-offset = Vector2( -10, -10 )
 
 [node name="TopRightBlock3" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 870, -90 )
+position = Vector2( 860, -80 )
 texture = ExtResource( 3 )
-offset = Vector2( -10, -10 )
 
 [node name="RightWallBlock2" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 870, -70 )
+position = Vector2( 860, -60 )
 texture = ExtResource( 9 )
-offset = Vector2( -10, -10 )
 
 [node name="RightWallBlock3" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 910, -30 )
+position = Vector2( 900, -20 )
 texture = ExtResource( 9 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock13" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 870, -30 )
+position = Vector2( 860, -20 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock14" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 890, -30 )
+position = Vector2( 880, -20 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock15" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 870, -50 )
+position = Vector2( 860, -40 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock39" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 890, -50 )
+position = Vector2( 880, -40 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopRightBlock4" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 910, -50 )
+position = Vector2( 900, -40 )
 texture = ExtResource( 3 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock40" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 930, -10 )
+position = Vector2( 920, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock41" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 950, -10 )
+position = Vector2( 940, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock42" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 970, -10 )
+position = Vector2( 960, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock43" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 990, -10 )
+position = Vector2( 980, 0 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="SmallRampLeft01" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1000, -20 )
@@ -2666,89 +2595,72 @@ texture = ExtResource( 11 )
 map_elem_type = 4
 
 [node name="TopBlock44" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1050, -30 )
+position = Vector2( 1040, -20 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock45" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1070, -30 )
+position = Vector2( 1060, -20 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock46" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1090, -30 )
+position = Vector2( 1080, -20 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock47" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1110, -30 )
+position = Vector2( 1100, -20 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock48" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1130, -30 )
+position = Vector2( 1120, -20 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="TopBlock49" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1150, -30 )
+position = Vector2( 1140, -20 )
 texture = ExtResource( 5 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock16" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1010, -10 )
+position = Vector2( 1000, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock17" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1030, -10 )
+position = Vector2( 1020, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock18" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1050, -10 )
+position = Vector2( 1040, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock19" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1070, -10 )
+position = Vector2( 1060, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock20" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1090, -10 )
+position = Vector2( 1080, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock21" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1110, -10 )
+position = Vector2( 1100, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock22" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1130, -10 )
+position = Vector2( 1120, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="SquareBlock23" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1150, -10 )
+position = Vector2( 1140, 0 )
 texture = ExtResource( 6 )
-offset = Vector2( -10, -10 )
 
 [node name="TopRightBlock5" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1170, -30 )
+position = Vector2( 1160, -20 )
 texture = ExtResource( 3 )
-offset = Vector2( -10, -10 )
 
 [node name="RightWallBlock4" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( 1170, -10 )
+position = Vector2( 1160, 0 )
 texture = ExtResource( 9 )
-offset = Vector2( -10, -10 )
 
 [node name="TopLeftBlock4" parent="Stage" instance=ExtResource( 4 )]
-position = Vector2( -10, -10 )
+position = Vector2( -20, 0 )
 texture = ExtResource( 8 )
-offset = Vector2( -10, -10 )
 
 [node name="Door" type="Node" parent="Stage"]
 
@@ -2838,6 +2750,6 @@ position = Vector2( 20, -20 )
 [node name="Camera2D" type="Camera2D" parent="Player"]
 
 [node name="Sprite" type="Sprite" parent="Player"]
-position = Vector2( -63, -25 )
+position = Vector2( -77, -30 )
 texture = ExtResource( 7 )
 offset = Vector2( 0, -15 )
