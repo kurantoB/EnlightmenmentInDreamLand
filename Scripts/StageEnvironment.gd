@@ -52,11 +52,10 @@ func interact(unit : Unit, delta):
 			scene.conditional_log(unit, "not-on-ground")
 			scene.conditional_log(unit, "change-v-speed: " + str(unit.v_speed) + " -> " + str(max(unit.v_speed - (Constants.GRAVITY * delta), Constants.MAX_FALL_SPEED)))
 			unit.v_speed = max(unit.v_speed - (Constants.GRAVITY * delta), Constants.MAX_FALL_SPEED)
+		
 	
-	if ((not unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]
-	or not unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND])
-	and not (unit.h_speed == 0 and unit.v_speed == 0)):
-		scene.conditional_log(unit, "not-still not-grounded")
+	if not (unit.h_speed == 0 and unit.v_speed == 0):
+		scene.conditional_log(unit, "not-still")
 		# regular collision
 		if unit.h_speed >= 0 and unit.v_speed > 0:
 			for collider in top_right_colliders:

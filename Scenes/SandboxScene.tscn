@@ -2333,10 +2333,6 @@ position = Vector2( 160, -20 )
 texture = ExtResource( 1 )
 map_elem_type = 1
 
-[node name="Square" parent="Stage" instance=ExtResource( 3 )]
-position = Vector2( 120, -20 )
-texture = ExtResource( 2 )
-
 [node name="Player" parent="." instance=ExtResource( 6 )]
 position = Vector2( 30, -60 )
 
