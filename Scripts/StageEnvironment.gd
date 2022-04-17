@@ -27,6 +27,14 @@ func _init(the_scene : GameScene):
 	player.position.y = player.position.y * Constants.SCALE_FACTOR
 	player.scale.x = Constants.SCALE_FACTOR
 	player.scale.y = Constants.SCALE_FACTOR
+	
+	if scene.has_node("Background"):
+		var background = scene.get_node("Background")
+		for stage_elem in background.get_children():
+			stage_elem.position.x = stage_elem.position.x * Constants.SCALE_FACTOR
+			stage_elem.position.y = stage_elem.position.y * Constants.SCALE_FACTOR
+			stage_elem.scale.x = Constants.SCALE_FACTOR
+			stage_elem.scale.y = Constants.SCALE_FACTOR
 
 func init_player(player : Unit):
 	player.pos = Vector2(player.position.x / Constants.GRID_SIZE, -1 * player.position.y / Constants.GRID_SIZE)
