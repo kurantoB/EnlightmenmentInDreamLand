@@ -24,10 +24,6 @@ var h_speed : float = 0
 var v_speed : float = 0
 var ground_speed : float = 0
 
-var debug_elapsed : float = 0
-var next_debug_time : float = 0
-
-
 # Called when the node enters the scene tree for the first time
 func _ready():
 	for action_num in Constants.UNIT_TYPE_ACTIONS[unit_type]:
@@ -53,10 +49,6 @@ func process_unit(delta):
 		advance_timers(delta)
 	current_action_time_elapsed += delta
 	execute_actions(delta)
-	
-	debug_elapsed += delta
-	if debug_elapsed > next_debug_time:
-		print("process_unit pos: " + str(pos) + ", h_speed: " + str(h_speed) + ", v_speed: " + str(v_speed))
 
 func advance_timers(delta):
 	for timer_action_num in timer_actions.keys():
@@ -107,6 +99,7 @@ func execute_actions(delta):
 			Constants.ActionType.SLIDE:
 				slide()
 		actions[action_num] = false
+	handle_moving_status(delta)
 
 func cancel_flying():
 	pass
@@ -134,7 +127,43 @@ func jump():
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 
 func move(delta):
-	h_speed = 2
+	pass
+
+func handle_moving_status(delta):
+	# what we have: facing, current speed, move status, grounded
+	# we want: to set new current speed
+	# if grounded
+	if unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+		var current_magnitude : float = sqrt(pow(v_speed, 2) + pow(h_speed, 2))
+		h_speed = 0
+		# if move status is idle
+		if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
+			v_speed = min(0, -1 * (current_magnitude - Constants.ACCELERATION * delta))
+			print("handle_moving_status v_speed: " + str(v_speed))
+		# if move status is not idle
+		else:
+			# if facing is aligned
+			if h_speed <= 0 and facing == Constants.PlayerInput.LEFT or h_speed >= 0 and facing == Constants.PlayerInput.RIGHT:
+				v_speed = max(-1 * Constants.MOVE_SPEED, -1 * (current_magnitude + Constants.ACCELERATION * delta))
+				print("handle_moving_status v_speed: " + str(v_speed))
+			# if facing is not aligned
+			else:
+				v_speed = min(0, -1 * (current_magnitude - Constants.ACCELERATION * delta))
+				print("handle_moving_status v_speed: " + str(v_speed))
+	# if not grounded
+	else:
+		var current_magnitude : float = h_speed
+		# if move status is idle or facing is not aligned
+		if (unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE
+		or h_speed < 0 and facing == Constants.PlayerInput.RIGHT or h_speed > 0 and facing == Constants.PlayerInput.LEFT):
+			current_magnitude = max(0, current_magnitude - Constants.ACCELERATION * delta)
+		# if move status is not idle and facing is aligned
+		else:
+			current_magnitude = min(Constants.MOVE_SPEED, current_magnitude + Constants.ACCELERATION * delta)
+		if h_speed > 0:
+			h_speed = current_magnitude
+		else:
+			h_speed = -1 * current_magnitude
 
 func recoil():
 	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.RECOILING]:
@@ -153,7 +182,11 @@ func react(delta):
 	pos.y = pos.y + v_speed * delta
 	position.x = pos.x * Constants.GRID_SIZE * Constants.SCALE_FACTOR
 	position.y = -1 * pos.y * Constants.GRID_SIZE * Constants.SCALE_FACTOR
-	
-	if debug_elapsed > next_debug_time:
-		print("=====================")
-		next_debug_time += 2
+
+func log_unit():
+	print("===UNIT DEBUG====")
+	print("pos: " + str(pos))
+	print("speeds: " + str(Vector2(h_speed, v_speed)))
+	print("facing: " + Constants.PlayerInput.keys()[facing])
+	print("conditions: action: " + Constants.UnitCurrentAction.keys()[unit_conditions[Constants.UnitCondition.CURRENT_ACTION]] + ", grounded: " + str(unit_conditions[Constants.UnitCondition.IS_ON_GROUND]) + ", movement: " + Constants.UnitMovingStatus.keys()[unit_conditions[Constants.UnitCondition.MOVING_STATUS]])
+	print("=================")

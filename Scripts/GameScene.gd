@@ -34,9 +34,17 @@ func _process(delta):
 	handle_player_input()	
 	# handle enemy input
 	for unit in units:
+		# print("_process")
+		# unit.log_unit()
 		unit.process_unit(delta)
+		# print("_process after process")
+		# unit.log_unit()
 		stage_env.interact(unit, delta)
+		# print("_process after interact")
+		# unit.log_unit()
 		unit.react(delta)
+		# print("_process after react")
+		# unit.log_unit()
 
 func handle_player_input():
 	for input_num in input_table.keys():
@@ -45,7 +53,8 @@ func handle_player_input():
 		else:
 			input_table[input_num] = false
 	
-	if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.RECOILING:
+	if (player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.RECOILING
+	or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.SLIDING):
 		return
 	
 	if (player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CHANNELING and !input_table[Constants.PlayerInput.GBA_B]
