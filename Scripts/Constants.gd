@@ -182,4 +182,4 @@ const GRAVITY = 12
 const MAX_FALL_SPEED = -8
 const MIN_BOUNCE_SPEED = -6
 const GRAVITY_LITE = 0.1
-const QUANTUM_DIST = 0.04
+const QUANTUM_DIST = 0

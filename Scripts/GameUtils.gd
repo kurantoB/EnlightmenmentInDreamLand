@@ -11,13 +11,20 @@ static func path_intersects_border(path_from : Vector2, path_to : Vector2, borde
 			return [false, Vector2()]
 		# if border is not vertical
 		else:
+			# if path x is not within range
+			if path_from.x < min(border_pt_a.x, border_pt_b.x) or path_from.x > max(border_pt_a.x, border_pt_b.x):
+				return [false, Vector2()]
 			# find m and b and solve for where border intersects with vertical line
 			var m = get_m(border_pt_b, border_pt_a)
 			var b = get_b(border_pt_a, m)
 			var intersect_y = m * path_from.x + b
-			return [intersect_y >= min(path_from.y, path_to.y) and intersect_y <= max(path_from.y, path_to.y), Vector2(path_from.x, intersect_y)]
+			var intersects : bool = intersect_y >= min(path_from.y, path_to.y) and intersect_y <= max(path_from.y, path_to.y)
+			return [intersects, Vector2(path_from.x, intersect_y)]
 	# else if border is vertical
 	elif border_pt_a.x == border_pt_b.x:
+		# if border x is not within range
+		if border_pt_a.x < min(path_from.x, path_to.x) or border_pt_a.x > max(path_from.x, path_to.x):
+				return [false, Vector2()]
 		# find m and b and solve for where border intersects with vertical line
 		var m = get_m(path_to, path_from)
 		var b = get_b(path_from, m)
@@ -25,7 +32,7 @@ static func path_intersects_border(path_from : Vector2, path_to : Vector2, borde
 		return [intersect_y >= min(border_pt_a.y, border_pt_b.y) and intersect_y <= max(border_pt_a.y, border_pt_b.y), Vector2(border_pt_a.x, intersect_y)]
 	# else if path and border are parallel
 	elif get_m(path_to, path_from) == get_m(border_pt_b, border_pt_a):
-		return [false, 0, 0]
+		return [false, Vector2()]
 	else:
 		var path_m = get_m(path_to, path_from)
 		var path_b = get_b(path_from, path_m)

@@ -56,7 +56,7 @@ func process_unit(delta):
 	
 	debug_elapsed += delta
 	if debug_elapsed > next_debug_time:
-		print("process_unit h_speed: " + str(h_speed) + ", v_speed: " + str(v_speed))
+		print("process_unit pos: " + str(pos) + ", h_speed: " + str(h_speed) + ", v_speed: " + str(v_speed))
 
 func advance_timers(delta):
 	for timer_action_num in timer_actions.keys():
@@ -69,7 +69,6 @@ func advance_timers(delta):
 
 func set_current_action(current_action : int):
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] != current_action:
-		print("Setting CURRENT_ACTION to " + Constants.UnitCurrentAction.keys()[current_action])
 		current_action_time_elapsed = 0
 	unit_conditions[Constants.UnitCondition.CURRENT_ACTION] = current_action
 
@@ -78,8 +77,6 @@ func do_with_timeout(action : int, new_current_action : int = -1):
 		actions[action] = true
 		timer_actions[action] = Constants.PLAYER_TIMERS[action]
 		if new_current_action != -1:
-			if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] != new_current_action:
-				print("Setting CURRENT_ACTION to " + Constants.UnitCurrentAction.keys()[new_current_action])
 			unit_conditions[Constants.UnitCondition.CURRENT_ACTION] = new_current_action
 
 func execute_actions(delta):
@@ -137,7 +134,7 @@ func jump():
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 
 func move(delta):
-	v_speed = -10
+	h_speed = 2
 
 func recoil():
 	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.RECOILING]:

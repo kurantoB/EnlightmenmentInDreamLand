@@ -33,12 +33,13 @@ func init_player(player : Unit):
 
 func interact(unit : Unit, delta):
 	if unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]:
-		if unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-			if unit.v_speed < 0:
+		#if unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+		#	if unit.v_speed < 0:
 				# recalibrate move vector and set y position to be on ground
-				ground_movement_interaction(unit, delta)
-		else:
-			unit.v_speed = max(unit.v_speed - Constants.GRAVITY * delta, Constants.MAX_FALL_SPEED)
+		#		ground_movement_interaction(unit, delta)
+		#else:
+		#	unit.v_speed = max(unit.v_speed - (Constants.GRAVITY * delta), Constants.MAX_FALL_SPEED)
+		unit.v_speed = max(unit.v_speed - (Constants.GRAVITY * delta), Constants.MAX_FALL_SPEED)
 	
 	if not (unit.h_speed == 0 and unit.v_speed == 0):
 		# regular collision
@@ -60,7 +61,7 @@ func interact(unit : Unit, delta):
 					break
 
 	if unit.debug_elapsed > unit.next_debug_time:
-		print("interact h_speed: " + str(unit.h_speed) + ", v_speed: " + str(unit.v_speed))
+		print("interact pos: " + str(unit.pos) + ", h_speed: " + str(unit.h_speed) + ", v_speed: " + str(unit.v_speed))
 
 func init_stage_grid(map_elems):
 	for map_elem in map_elems:
@@ -177,12 +178,20 @@ func ground_movement_interaction(unit : Unit, delta):
 	var collider_group = []
 	var angle_helper = []
 	for collider in bottom_left_colliders:
-		if unit_is_colliding_w_env(unit, collider, [Constants.DIRECTION.DOWN], delta)[0]:
+		var env_collision = unit_is_colliding_w_env(unit, collider, [Constants.DIRECTION.DOWN], delta)
+		if env_collision[0]:
 			if unit.facing == Constants.PlayerInput.RIGHT:
 				angle_helper = collider
 			else:
 				angle_helper = [collider[1], collider[0]]
 			has_ground_collision = true
+			var collision_point = env_collision[2]
+			var unit_env_collider = env_collision[3]
+			var collider_set_pos_y = collision_point.y + Constants.QUANTUM_DIST
+			var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
+			unit.pos.y = unit.pos.y + y_dist_to_translate
+			var x_dist_to_translate = collision_point.x - (unit.pos.x + unit_env_collider[0].x)
+			unit.pos.x = unit.pos.x + x_dist_to_translate
 			break	
 	if not has_ground_collision:
 		unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
@@ -190,56 +199,49 @@ func ground_movement_interaction(unit : Unit, delta):
 			angle_helper = [Vector2(0, 0), Vector2(1, 0)]
 		else:
 			angle_helper = [Vector2(1, 0), Vector2(0, 0)]
-		print("But there's no ground collision")
 	GameUtils.reangle_move(unit, angle_helper)
 
 func check_collision(unit : Unit, collider, collision_directions, delta):
 	var env_collision = unit_is_colliding_w_env(unit, collider, collision_directions, delta)
 	if env_collision[0]:
 		var collision_point = env_collision[2]
+		var unit_env_collider = env_collision[3]
 		if env_collision[1] == Constants.DIRECTION.DOWN:
-			check_ground_collision(unit, collider, collision_point)
+			check_ground_collision(unit, collider, collision_point, unit_env_collider)
 		elif env_collision[1] == Constants.DIRECTION.LEFT or env_collision[1] == Constants.DIRECTION.RIGHT:
 			unit.h_speed = 0
-			for unit_env_collider in Constants.ENV_COLLIDERS[unit.unit_type]:
-				if unit_env_collider[1].has(env_collision[1]):
-					var collider_set_pos_x = collision_point.x
-					if env_collision[1] == Constants.DIRECTION.LEFT:
-						collider_set_pos_x = collider_set_pos_x + Constants.QUANTUM_DIST
-					else:
-						collider_set_pos_x = collider_set_pos_x - Constants.QUANTUM_DIST
-					var x_dist_to_translate = collider_set_pos_x - unit_env_collider[0].x
-					unit.pos.x = unit.pos.x + x_dist_to_translate
+			var collider_set_pos_x = collision_point.x
+			if env_collision[1] == Constants.DIRECTION.LEFT:
+				collider_set_pos_x = collider_set_pos_x + Constants.QUANTUM_DIST
+			else:
+				collider_set_pos_x = collider_set_pos_x - Constants.QUANTUM_DIST
+			var x_dist_to_translate = collider_set_pos_x - (unit.pos.x + unit_env_collider[0].x)
+			unit.pos.x = unit.pos.x + x_dist_to_translate
 		elif env_collision[1] == Constants.DIRECTION.UP:
 			unit.v_speed = 0
-			for unit_env_collider in Constants.ENV_COLLIDERS[unit.unit_type]:
-				if unit_env_collider[1].has(Constants.DIRECTION.UP):
-					var collider_set_pos_y = collision_point.y - Constants.QUANTUM_DIST
-					var y_dist_to_translate = collider_set_pos_y - unit_env_collider[0].y
-					unit.pos.y = unit.pos.y + y_dist_to_translate
+			var collider_set_pos_y = collision_point.y - Constants.QUANTUM_DIST
+			var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
+			unit.pos.y = unit.pos.y + y_dist_to_translate
 	return env_collision[0]
 
 # bonce?
-func check_ground_collision(unit : Unit, collider, collision_point : Vector2):
+func check_ground_collision(unit : Unit, collider, collision_point : Vector2, unit_env_collider):
 	if (unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]
 		and not unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]
 		and (collider[0].y == collider[1].y or (collider[0].x != collider[1].x and collider[0].y != collider[1].y))):
 			if unit.v_speed <= Constants.MIN_BOUNCE_SPEED:
-				unit.v_speed = -1 * unit.v_speed * .5
+				unit.v_speed = -1 * unit.v_speed * .33
 			else:
 				unit.v_speed = 0
 				unit.h_speed = 0
-				for unit_env_collider in Constants.ENV_COLLIDERS[unit.unit_type]:
-					if unit_env_collider[1].has(Constants.DIRECTION.DOWN):
-						var collider_set_pos_y = collision_point.y + Constants.QUANTUM_DIST
-						var y_dist_to_translate = collider_set_pos_y - unit_env_collider[0].y
-						unit.pos.y = unit.pos.y + y_dist_to_translate
-						var x_dist_to_translate = collision_point.x - unit_env_collider[0].x
-						unit.pos.x = unit.pos.x + x_dist_to_translate
-						break
+				var collider_set_pos_y = collision_point.y + Constants.QUANTUM_DIST
+				var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
+				unit.pos.y = unit.pos.y + y_dist_to_translate
+				var x_dist_to_translate = collision_point.x - (unit.pos.x + unit_env_collider[0].x)
+				unit.pos.x = unit.pos.x + x_dist_to_translate
 				unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = true
 
-# returns true/false, collision direction, and collision point
+# returns true/false, collision direction, collision point, and unit env collider
 func unit_is_colliding_w_env(unit : Unit, collider, directions, delta):
 	for unit_env_collider in Constants.ENV_COLLIDERS[unit.unit_type]:
 		for direction_to_check in directions:
@@ -254,6 +256,5 @@ func unit_is_colliding_w_env(unit : Unit, collider, directions, delta):
 					collider[0],
 					collider[1])
 				if intersects_results[0]:
-					# print("Found collision on " + Constants.DIRECTION.keys()[direction_to_check] + " collision_check_from: " + str(collision_check) + ", collision_check_to: " + str(collision_check + Vector2(unit.h_speed * delta, unit.v_speed * delta)) + ", collider[0]: " + str(collider[0]) + ", collider[1]: " + str(collider[1]))
-					return [true, direction_to_check, intersects_results[1]]
-	return [false, -1]
+					return [true, direction_to_check, intersects_results[1], unit_env_collider]
+	return [false, -1, Vector2(), {}]

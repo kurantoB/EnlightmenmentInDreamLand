@@ -190,8 +190,6 @@ func handle_player_input():
 	and player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] != Constants.UnitCurrentAction.SLIDING):
 		player.actions[Constants.ActionType.DISCARD] = true
 		player.unit_conditions[Constants.UnitCondition.HAS_ABILITY] = false
-	
-	if player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] != new_player_move_status:
-		print("Setting MOVING_STATUS to " + Constants.UnitMovingStatus.keys()[new_player_move_status] + " facing " + str(player.facing))
+		
 	player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = new_player_move_status
 		
