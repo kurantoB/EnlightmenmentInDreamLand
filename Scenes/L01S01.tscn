@@ -2748,6 +2748,8 @@ position = Vector2( 20, -20 )
 [node name="Camera2D" type="Camera2D" parent="Player"]
 
 [node name="Sprite" type="Sprite" parent="Player"]
-position = Vector2( -68, -30 )
 texture = ExtResource( 7 )
 offset = Vector2( 0, -15 )
+__meta__ = {
+"_edit_group_": true
+}
