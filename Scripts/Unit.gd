@@ -139,20 +139,17 @@ func handle_moving_status(delta):
 		# if move status is idle
 		if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
 			v_speed = min(0, -1 * (current_magnitude - Constants.ACCELERATION * delta))
-			print("handle_moving_status v_speed: " + str(v_speed))
 		# if move status is not idle
 		else:
 			# if facing is aligned
 			if h_speed <= 0 and facing == Constants.PlayerInput.LEFT or h_speed >= 0 and facing == Constants.PlayerInput.RIGHT:
 				v_speed = max(-1 * Constants.MOVE_SPEED, -1 * (current_magnitude + Constants.ACCELERATION * delta))
-				print("handle_moving_status v_speed: " + str(v_speed))
 			# if facing is not aligned
 			else:
 				v_speed = min(0, -1 * (current_magnitude - Constants.ACCELERATION * delta))
-				print("handle_moving_status v_speed: " + str(v_speed))
 	# if not grounded
 	else:
-		var current_magnitude : float = h_speed
+		var current_magnitude : float = abs(h_speed)
 		# if move status is idle or facing is not aligned
 		if (unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE
 		or h_speed < 0 and facing == Constants.PlayerInput.RIGHT or h_speed > 0 and facing == Constants.PlayerInput.LEFT):
