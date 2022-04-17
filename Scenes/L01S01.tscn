@@ -2662,84 +2662,82 @@ texture = ExtResource( 9 )
 position = Vector2( -20, 0 )
 texture = ExtResource( 8 )
 
-[node name="Door" type="Node" parent="Stage"]
-
-[node name="DoorPillar01" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorPillar01" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1080, -40 )
 texture = ExtResource( 25 )
 map_elem_type = -1
 
-[node name="DoorPillar02" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorPillar02" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1080, -60 )
 texture = ExtResource( 24 )
 map_elem_type = -1
 
-[node name="DoorPillar03" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorPillar03" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1080, -80 )
 texture = ExtResource( 23 )
 map_elem_type = -1
 
-[node name="DoorPillar04" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorPillar04" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1080, -100 )
 texture = ExtResource( 22 )
 map_elem_type = -1
 
-[node name="DoorPillar05" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorPillar05" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1140, -40 )
 texture = ExtResource( 25 )
 map_elem_type = -1
 
-[node name="DoorPillar06" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorPillar06" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1140, -60 )
 texture = ExtResource( 24 )
 map_elem_type = -1
 
-[node name="DoorPillar07" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorPillar07" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1140, -80 )
 texture = ExtResource( 23 )
 map_elem_type = -1
 
-[node name="DoorPillar08" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorPillar08" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1140, -100 )
 texture = ExtResource( 22 )
 map_elem_type = -1
 
-[node name="DoorLeft01" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorLeft01" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1100, -40 )
 texture = ExtResource( 32 )
 map_elem_type = -1
 
-[node name="DoorLeft02" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorLeft02" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1100, -60 )
 texture = ExtResource( 28 )
 map_elem_type = -1
 
-[node name="DoorLeft03" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorLeft03" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1100, -100 )
 texture = ExtResource( 27 )
 map_elem_type = -1
 
-[node name="DoorRight01" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorRight01" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1120, -40 )
 texture = ExtResource( 29 )
 map_elem_type = -1
 
-[node name="DoorRight02" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorRight02" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1120, -60 )
 texture = ExtResource( 31 )
 map_elem_type = -1
 
-[node name="DoorRight03" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorRight03" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1120, -100 )
 texture = ExtResource( 26 )
 map_elem_type = -1
 
-[node name="DoorBlack" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorBlack" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1120, -80 )
 texture = ExtResource( 30 )
 map_elem_type = -1
 
-[node name="DoorBlack2" parent="Stage/Door" instance=ExtResource( 4 )]
+[node name="DoorBlack2" parent="Stage" instance=ExtResource( 4 )]
 position = Vector2( 1100, -80 )
 texture = ExtResource( 30 )
 map_elem_type = -1
@@ -2750,6 +2748,6 @@ position = Vector2( 20, -20 )
 [node name="Camera2D" type="Camera2D" parent="Player"]
 
 [node name="Sprite" type="Sprite" parent="Player"]
-position = Vector2( -77, -30 )
+position = Vector2( -68, -30 )
 texture = ExtResource( 7 )
 offset = Vector2( 0, -15 )
