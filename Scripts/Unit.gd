@@ -119,13 +119,10 @@ func dash(delta):
 	and unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE
 	and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
 		if int(floor(current_action_time_elapsed * 8)) % 3 == 0:
-			print("Set sprite 1 at time " + str(current_action_time_elapsed))
 			set_sprite("Walk1")
 		elif int(floor(current_action_time_elapsed * 8)) % 3 == 1:
-			print("Set sprite 2 at time " + str(current_action_time_elapsed))
 			set_sprite("Walk2")
 		elif int(floor(current_action_time_elapsed * 8)) % 3 == 2:
-			print("Set sprite 3 at time " + str(current_action_time_elapsed))
 			set_sprite("Walk3")
 
 func digest():

@@ -29,7 +29,7 @@ func _ready():
 	player = units[0]
 	stage_env = load("res://Scripts/StageEnvironment.gd").new(self)
 	player.get_node("Camera2D").make_current()
-	get_node("AudioStreamPlayer2D").play()
+	get_node("AudioStreamPlayer").play()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
