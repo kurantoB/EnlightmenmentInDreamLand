@@ -44,11 +44,11 @@ func reset_actions():
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.RECOILING:
 		actions[Constants.ActionType.RECOIL] = true
 
-func process_unit(delta):
+func process_unit(delta, debug : bool, scene):
 	if unit_type == Constants.UnitType.PLAYER:
 		advance_timers(delta)
 	current_action_time_elapsed += delta
-	execute_actions(delta)
+	execute_actions(delta, debug, scene)
 
 func advance_timers(delta):
 	for timer_action_num in timer_actions.keys():
@@ -71,7 +71,7 @@ func do_with_timeout(action : int, new_current_action : int = -1):
 		if new_current_action != -1:
 			unit_conditions[Constants.UnitCondition.CURRENT_ACTION] = new_current_action
 
-func execute_actions(delta):
+func execute_actions(delta, debug : bool, scene):
 	for action_num in actions.keys():
 		if !actions[action_num]:
 			continue
@@ -99,7 +99,7 @@ func execute_actions(delta):
 			Constants.ActionType.SLIDE:
 				slide()
 		actions[action_num] = false
-	handle_moving_status(delta)
+	handle_moving_status(delta, debug, scene)
 
 func cancel_flying():
 	pass
@@ -129,38 +129,63 @@ func jump():
 func move(delta):
 	pass
 
-func handle_moving_status(delta):
+func handle_moving_status(delta, debug : bool, scene):
 	# what we have: facing, current speed, move status, grounded
 	# we want: to set new current speed
 	# if grounded
 	if unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 		var current_magnitude : float = sqrt(pow(v_speed, 2) + pow(h_speed, 2))
-		h_speed = 0
 		# if move status is idle
 		if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
+			if debug:
+				scene.conditional_log("grounded idle-ms")
 			v_speed = min(0, -1 * (current_magnitude - Constants.ACCELERATION * delta))
+			if v_speed > -1:
+				v_speed = 0
+			if debug:
+				scene.conditional_log("set v_speed to " + str(v_speed))
 		# if move status is not idle
 		else:
 			# if facing is aligned
 			if h_speed <= 0 and facing == Constants.PlayerInput.LEFT or h_speed >= 0 and facing == Constants.PlayerInput.RIGHT:
+				# if still
+				if h_speed == 0:
+					if debug:
+						scene.conditional_log("grounded not-idle-ms facing-aligned still")
+					current_magnitude = 0
+				else:
+					if debug:
+						scene.conditional_log("grounded inot-dle-ms facing-aligned not-still")
 				v_speed = max(-1 * Constants.MOVE_SPEED, -1 * (current_magnitude + Constants.ACCELERATION * delta))
+				if debug:
+					scene.conditional_log("set v_speed to " + str(v_speed))
 			# if facing is not aligned
 			else:
+				if debug:
+					scene.conditional_log("grounded not-idle-ms not-facing-aligned")
 				v_speed = min(0, -1 * (current_magnitude - Constants.ACCELERATION * delta))
+				if debug:
+					scene.conditional_log("set v_speed to " + str(v_speed))
 	# if not grounded
 	else:
 		var current_magnitude : float = abs(h_speed)
 		# if move status is idle or facing is not aligned
 		if (unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE
 		or h_speed < 0 and facing == Constants.PlayerInput.RIGHT or h_speed > 0 and facing == Constants.PlayerInput.LEFT):
+			if debug:
+					scene.conditional_log("not-grounded not-still idle-ms or not-facing-aligned")
 			current_magnitude = max(0, current_magnitude - Constants.ACCELERATION * delta)
 		# if move status is not idle and facing is aligned
 		else:
+			if debug:
+					scene.conditional_log("not-grounded not-idle-ms and facing-aligned, or still")
 			current_magnitude = min(Constants.MOVE_SPEED, current_magnitude + Constants.ACCELERATION * delta)
 		if h_speed > 0:
 			h_speed = current_magnitude
+			scene.conditional_log("set h_speed to " + str(h_speed))
 		else:
 			h_speed = -1 * current_magnitude
+			scene.conditional_log("set h_speed to " + str(h_speed))
 
 func recoil():
 	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.RECOILING]:

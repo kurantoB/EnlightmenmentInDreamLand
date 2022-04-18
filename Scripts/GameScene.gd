@@ -21,7 +21,7 @@ var stage_env
 
 var time_elapsed : float = 0
 var time_elapsed_to_log : float = -1
-var num_iterations = 4
+var num_iterations = 2
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -38,10 +38,10 @@ func _process(delta):
 	# handle enemy input
 	for unit in units:
 		set_logging_iteration(unit, delta)
-		unit.process_unit(delta)
+		unit.process_unit(delta, is_log_condition(), self)
+		terminate_logging_iteration(unit)
 		stage_env.interact(unit, delta)
 		unit.react(delta)
-		terminate_logging_iteration(unit)
 		time_elapsed = time_elapsed + delta
 
 func handle_player_input():
@@ -201,8 +201,8 @@ func handle_player_input():
 	player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = new_player_move_status
 
 func set_logging_iteration(unit : Unit, delta):
-	if (time_elapsed_to_log != -1
-	or (unit.pos.x >= 1 and unit.pos.x + unit.h_speed * delta < 1)):
+	if (num_iterations != 0
+	and (time_elapsed > 2)):
 		time_elapsed_to_log = time_elapsed
 		print("Iteration identified: " + str(time_elapsed_to_log))
 		unit.log_unit()
@@ -211,13 +211,14 @@ func terminate_logging_iteration(unit : Unit):
 	if time_elapsed == time_elapsed_to_log:
 		print("Iteration ended")
 		num_iterations = num_iterations - 1
-		if num_iterations == 0:
-			time_elapsed_to_log = -1
 		unit.log_unit()
 
-func conditional_log(unit : Unit, message : String):
-	if time_elapsed == time_elapsed_to_log:
-		print(str(time_elapsed) + " " + message)
+func conditional_log(message : String):
+	if is_log_condition():
+		print(get_log_msg(message))
+
+func get_log_msg(message : String):
+	return str(time_elapsed) + " " + message
 
 func is_log_condition():
 	return time_elapsed == time_elapsed_to_log

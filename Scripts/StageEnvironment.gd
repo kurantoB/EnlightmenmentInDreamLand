@@ -41,21 +41,24 @@ func init_player(player : Unit):
 
 func interact(unit : Unit, delta):
 	if unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]:
-		scene.conditional_log(unit, "gravity-affected")
+		scene.conditional_log("gravity-affected")
 		if unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-			scene.conditional_log(unit, "on-ground")
+			scene.conditional_log("on-ground")
 			if unit.v_speed < 0:
-				scene.conditional_log(unit, "v_speed < 0: " + str(unit.v_speed) + ", v-displ: " + str(unit.v_speed * delta))
+				scene.conditional_log("v_speed < 0: " + str(unit.v_speed) + ", v-displ: " + str(unit.v_speed * delta))
 				# recalibrate move vector and set y position to be on ground
 				ground_movement_interaction(unit, delta)
+			else:
+				scene.conditional_log("v_speed >= 0, zero-out h_speed")
+				unit.h_speed = 0
 		else:
-			scene.conditional_log(unit, "not-on-ground")
-			scene.conditional_log(unit, "change-v-speed: " + str(unit.v_speed) + " -> " + str(max(unit.v_speed - (Constants.GRAVITY * delta), Constants.MAX_FALL_SPEED)))
+			scene.conditional_log("not-on-ground")
+			scene.conditional_log("change-v-speed: " + str(unit.v_speed) + " -> " + str(max(unit.v_speed - (Constants.GRAVITY * delta), Constants.MAX_FALL_SPEED)))
 			unit.v_speed = max(unit.v_speed - (Constants.GRAVITY * delta), Constants.MAX_FALL_SPEED)
 		
 	
 	if not (unit.h_speed == 0 and unit.v_speed == 0):
-		scene.conditional_log(unit, "not-still")
+		scene.conditional_log("not-still")
 		# regular collision
 		if unit.h_speed >= 0 and unit.v_speed > 0:
 			for collider in top_right_colliders:
@@ -191,34 +194,36 @@ func ground_movement_interaction(unit : Unit, delta):
 	for collider in bottom_left_colliders:
 		var env_collision = unit_is_colliding_w_env(unit, collider, [Constants.DIRECTION.DOWN], delta, true)
 		if env_collision[0]:
-			scene.conditional_log(unit, "ground-collided: " + str(collider))
-			if unit.facing == Constants.PlayerInput.RIGHT:
+			scene.conditional_log("ground-collided: " + str(collider))
+			if unit.h_speed > 0 or unit.h_speed == 0 and unit.facing == Constants.PlayerInput.RIGHT:
 				angle_helper = collider
 			else:
 				angle_helper = [collider[1], collider[0]]
-			scene.conditional_log(unit, "angle-helper: " + str(angle_helper))
+			scene.conditional_log("zero-out h_speed")
+			unit.h_speed = 0
+			scene.conditional_log("angle-helper: " + str(angle_helper))
 			has_ground_collision = true
 			var collision_point = env_collision[2]
 			var unit_env_collider = env_collision[3]
 			var collider_set_pos_y = collision_point.y + Constants.QUANTUM_DIST
 			var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
-			scene.conditional_log(unit, "change-pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
+			scene.conditional_log("change-pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
 			unit.pos.y = unit.pos.y + y_dist_to_translate
 			var x_dist_to_translate = collision_point.x - (unit.pos.x + unit_env_collider[0].x)
-			scene.conditional_log(unit, "change-pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
+			scene.conditional_log("change-pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
 			unit.pos.x = unit.pos.x + x_dist_to_translate
 			break	
 	if not has_ground_collision:
-		scene.conditional_log(unit, "no-ground-collision")
+		scene.conditional_log("no-ground-collision")
 		unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
-		if unit.facing == Constants.PlayerInput.RIGHT:
+		if unit.h_speed > 0 or unit.h_speed == 0 and unit.facing == Constants.PlayerInput.RIGHT:
 			angle_helper = [Vector2(0, 0), Vector2(1, 0)]
 		else:
 			angle_helper = [Vector2(1, 0), Vector2(0, 0)]
-		scene.conditional_log(unit, "angle-helper: " + str(angle_helper))
-	scene.conditional_log(unit, "reangling: " + str(Vector2(unit.h_speed, unit.v_speed)) + " ->")
+		scene.conditional_log("angle-helper: " + str(angle_helper))
+	scene.conditional_log("reangling: " + str(Vector2(unit.h_speed, unit.v_speed)) + " ->")
 	GameUtils.reangle_move(unit, angle_helper)
-	scene.conditional_log(unit, "reangling:     " + str(Vector2(unit.h_speed, unit.v_speed)))
+	scene.conditional_log("reangling:     " + str(Vector2(unit.h_speed, unit.v_speed)))
 	
 
 func check_collision(unit : Unit, collider, collision_directions, delta):
@@ -226,16 +231,16 @@ func check_collision(unit : Unit, collider, collision_directions, delta):
 	if env_collision[0]:
 		var collision_point = env_collision[2]
 		var unit_env_collider = env_collision[3]
-		scene.conditional_log(unit, "collided: " + str(collider) + " direction: " + Constants.DIRECTION.keys()[env_collision[1]] + ", at " + str(collision_point) + " w/ env-collider: " + str(unit_env_collider[0]))
+		scene.conditional_log("collided: " + str(collider) + " direction: " + Constants.DIRECTION.keys()[env_collision[1]] + ", at " + str(collision_point) + " w/ env-collider: " + str(unit_env_collider[0]))
 		var processed_ground_collision : bool = false
 		if env_collision[1] != Constants.DIRECTION.UP:
 			processed_ground_collision = check_ground_collision(unit, collider, collision_point, unit_env_collider)
 		if (not processed_ground_collision
 		and (env_collision[1] == Constants.DIRECTION.LEFT or env_collision[1] == Constants.DIRECTION.RIGHT)):
-			scene.conditional_log(unit, "l/r collision: " + str(collider) + " direction: " + Constants.DIRECTION.keys()[env_collision[1]] + ", at " + str(collision_point) + " w/ env-collider: " + str(unit_env_collider[0]))
+			scene.conditional_log("l/r collision: " + str(collider) + " direction: " + Constants.DIRECTION.keys()[env_collision[1]] + ", at " + str(collision_point) + " w/ env-collider: " + str(unit_env_collider[0]))
 			if collider[0].x == collider[1].x:
 				# flat surface
-				scene.conditional_log(unit, "zero-out h-speed")
+				scene.conditional_log("zero-out h-speed")
 				unit.h_speed = 0
 			var collider_set_pos_x = collision_point.x
 			if env_collision[1] == Constants.DIRECTION.LEFT:
@@ -243,15 +248,15 @@ func check_collision(unit : Unit, collider, collision_directions, delta):
 			else:
 				collider_set_pos_x = collider_set_pos_x - Constants.QUANTUM_DIST
 			var x_dist_to_translate = collider_set_pos_x - (unit.pos.x + unit_env_collider[0].x)
-			scene.conditional_log(unit, "change pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
+			scene.conditional_log("change pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
 			unit.pos.x = unit.pos.x + x_dist_to_translate
 		if env_collision[1] == Constants.DIRECTION.UP:
-			scene.conditional_log(unit, "ceiling collision: " + str(collider) + " direction: " + Constants.DIRECTION.keys()[env_collision[1]] + ", at " + str(collision_point) + " w/ env-collider: " + str(unit_env_collider[0]))
-			scene.conditional_log(unit, "zero-out h-speed")
+			scene.conditional_log("ceiling collision: " + str(collider) + " direction: " + Constants.DIRECTION.keys()[env_collision[1]] + ", at " + str(collision_point) + " w/ env-collider: " + str(unit_env_collider[0]))
+			scene.conditional_log("zero-out h-speed")
 			unit.v_speed = 0
 			var collider_set_pos_y = collision_point.y - Constants.QUANTUM_DIST
 			var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
-			scene.conditional_log(unit, "change pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
+			scene.conditional_log("change pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
 			unit.pos.y = unit.pos.y + y_dist_to_translate
 	return env_collision[0]
 
@@ -260,18 +265,18 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 	if (unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]
 		and not unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]
 		and (collider[0].y == collider[1].y or (collider[0].x != collider[1].x and collider[0].y != collider[1].y))):
-		scene.conditional_log(unit, "airborne ground-collided: " + str(collider))
-		scene.conditional_log(unit, "zero-out speed")
+		scene.conditional_log("airborne ground-collided: " + str(collider))
+		scene.conditional_log("zero-out speed")
 		unit.v_speed = 0
 		unit.h_speed = 0
 		var collider_set_pos_y = collision_point.y + Constants.QUANTUM_DIST
 		var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
-		scene.conditional_log(unit, "change pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
+		scene.conditional_log("change pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
 		unit.pos.y = unit.pos.y + y_dist_to_translate
 		var x_dist_to_translate = collision_point.x - (unit.pos.x + unit_env_collider[0].x)
-		scene.conditional_log(unit, "change pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
+		scene.conditional_log("change pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
 		unit.pos.x = unit.pos.x + x_dist_to_translate
-		scene.conditional_log(unit, "set grounded")
+		scene.conditional_log("set grounded")
 		unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = true
 		return true
 	return false

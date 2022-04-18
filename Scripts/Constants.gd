@@ -184,4 +184,4 @@ const ACCELERATION = 20
 const MOVE_SPEED = 5
 const DASH_SPEED = 9
 const GRAVITY_LITE = 0.1
-const QUANTUM_DIST = 0.005
+const QUANTUM_DIST = 0.001
