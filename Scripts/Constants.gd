@@ -97,7 +97,7 @@ const UNIT_TYPE_CONDITIONS = {
 	UnitType.PLAYER: {
 		UnitCondition.CURRENT_ACTION: UNIT_TYPE_CURRENT_ACTIONS[UnitType.PLAYER][UnitCurrentAction.IDLE],
 		UnitCondition.HAS_ABILITY: false,
-		UnitCondition.IS_ON_GROUND: false,
+		UnitCondition.IS_ON_GROUND: true,
 		UnitCondition.IS_PORTING: false,
 		UnitCondition.MOVING_STATUS: UNIT_TYPE_MOVING_STATUS[UnitType.PLAYER][UnitMovingStatus.IDLE],
 		UnitCondition.IS_INVINCIBLE: false,
@@ -115,7 +115,7 @@ const CURRENT_ACTION_TIMERS = {
 	UnitType.PLAYER: {
 		UnitCurrentAction.SLIDING: 1.5,
 		UnitCurrentAction.RECOILING: 1.5,
-		UnitCurrentAction.JUMPING: 0.5,
+		UnitCurrentAction.JUMPING: 0.75,
 	}
 }
 
@@ -139,9 +139,9 @@ const ENV_COLLIDERS = {
 		[Vector2(0, 0), [DIRECTION.LEFT, DIRECTION.DOWN, DIRECTION.RIGHT]],
 	],
 	UnitType.TEST_ENEMY: [
-		[0, 20, [DIRECTION.LEFT, DIRECTION.UP, DIRECTION.RIGHT]],
-		[0, 10, [DIRECTION.LEFT, DIRECTION.RIGHT]],
-		[0, 0, [DIRECTION.LEFT, DIRECTION.DOWN, DIRECTION.RIGHT]],
+		[Vector2(0, 1), [DIRECTION.LEFT, DIRECTION.UP, DIRECTION.RIGHT]],
+		[Vector2(0, .5), [DIRECTION.LEFT, DIRECTION.RIGHT]],
+		[Vector2(0, 0), [DIRECTION.LEFT, DIRECTION.DOWN, DIRECTION.RIGHT]],
 	],
 }
 const CROUCH_FACTOR = 0.67 # of total height
@@ -162,7 +162,7 @@ const UNIT_TYPE_MOVE_SPEEDS = {
 }
 
 const UNIT_TYPE_JUMP_SPEEDS = {
-	UnitType.PLAYER: 3
+	UnitType.PLAYER: 5
 }
 
 enum MAP_ELEM_TYPES {
@@ -176,12 +176,16 @@ enum MAP_ELEM_TYPES {
 	LEDGE,
 }
 
+const MOVE_SPEEDS = {
+	UnitType.PLAYER: 5
+}
+
 const SCALE_FACTOR = 3
 const GRID_SIZE = 20
-const GRAVITY = 12
+const GRAVITY = 16
 const MAX_FALL_SPEED = -8
+const MAX_FALL_LITE = -2
 const ACCELERATION = 20
-const MOVE_SPEED = 5
 const DASH_SPEED = 9
-const GRAVITY_LITE = 0.1
-const QUANTUM_DIST = 0.001
+const GRAVITY_LITE = 4
+const QUANTUM_DIST = 0.005

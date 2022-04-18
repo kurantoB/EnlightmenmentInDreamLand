@@ -55,6 +55,10 @@ static func reangle_move(unit, angle_helper):
 	# pythagoras
 	var unit_magnitude = sqrt(pow(unit.h_speed, 2) +  pow(unit.v_speed, 2))
 	var helper_magnitude = sqrt(pow(angle_helper[1].x - angle_helper[0].x, 2) +  pow(angle_helper[1].y - angle_helper[0].y, 2))
+	if helper_magnitude == 0:
+		unit.h_speed = 0
+		unit.v_speed = 0
+		return
 	var factor = unit_magnitude / helper_magnitude
 	unit.h_speed = (angle_helper[1].x - angle_helper[0].x) * factor
 	unit.v_speed = (angle_helper[1].y - angle_helper[0].y) * factor

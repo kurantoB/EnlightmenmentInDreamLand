@@ -2308,6 +2308,14 @@ texture = ExtResource( 2 )
 position = Vector2( 100, 0 )
 texture = ExtResource( 2 )
 
+[node name="Square12" parent="Stage" instance=ExtResource( 3 )]
+position = Vector2( 20, -20 )
+texture = ExtResource( 2 )
+
+[node name="Square13" parent="Stage" instance=ExtResource( 3 )]
+position = Vector2( 20, -40 )
+texture = ExtResource( 2 )
+
 [node name="Square7" parent="Stage" instance=ExtResource( 3 )]
 position = Vector2( 120, 0 )
 texture = ExtResource( 2 )

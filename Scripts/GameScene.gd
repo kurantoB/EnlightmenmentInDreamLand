@@ -21,7 +21,7 @@ var stage_env
 
 var time_elapsed : float = 0
 var time_elapsed_to_log : float = -1
-var num_iterations = 2
+var num_iterations = 4
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -29,6 +29,7 @@ func _ready():
 	player = units[0]
 	stage_env = load("res://Scripts/StageEnvironment.gd").new(self)
 	player.get_node("Camera2D").make_current()
+	get_node("AudioStreamPlayer2D").play()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -37,10 +38,10 @@ func _process(delta):
 	handle_player_input()	
 	# handle enemy input
 	for unit in units:
+		unit.process_unit(delta, self)
 		set_logging_iteration(unit, delta)
-		unit.process_unit(delta, is_log_condition(), self)
-		terminate_logging_iteration(unit)
 		stage_env.interact(unit, delta)
+		terminate_logging_iteration(unit)
 		unit.react(delta)
 		time_elapsed = time_elapsed + delta
 
@@ -91,16 +92,16 @@ func handle_player_input():
 			dir_input = Constants.PlayerInput.RIGHT
 		# if action-idle
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
-			# if move-idle
+			# if action-idle + move-idle
 			if player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
-				# if on ground
+				# if action-idle + move-idle + grounded
 				if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-					# if timer alive and dash-facing match
+					# if action-idle + move-idle + grounded + dash-timer-active + input-dash-facing-match
 					if player.timer_actions[Constants.ActionType.DASH] > 0 and player.dash_facing == dir_input:
 						# set dash
 						player.actions[Constants.ActionType.DASH] = true
 						new_player_move_status = Constants.UnitMovingStatus.DASHING
-					# else
+					# if action-idle + move-idle + grounded + (not-dash-timer-active or not-input-dash-facing-match)
 					else:
 						# set move
 						player.actions[Constants.ActionType.MOVE] = true
@@ -108,41 +109,50 @@ func handle_player_input():
 					# start timer, set dash-facing
 					player.timer_actions[Constants.ActionType.DASH] = Constants.PLAYER_TIMERS[Constants.ActionType.DASH]
 					player.dash_facing = dir_input
-				# else (action-idle, move-idle, and not on ground)
+				# if action-idle + move-idle + not-grounded
 				else:
-					# set move
+					# set move, kill timer
 					player.actions[Constants.ActionType.MOVE] = true
 					new_player_move_status = Constants.UnitMovingStatus.MOVING
-			# else if move-moving
+					player.timer_actions[Constants.ActionType.DASH] = 0
+			# if action-idle + move-moving
 			elif player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.MOVING:
 				# set move
 				player.actions[Constants.ActionType.MOVE] = true
-				# if on ground and facing-change
-				if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] and player.facing != dir_input:
-					# start timer, set dash-facing
-					player.timer_actions[Constants.ActionType.DASH] = Constants.PLAYER_TIMERS[Constants.ActionType.DASH]
-					player.dash_facing = dir_input
-			# else (move-dashing)
+				# if action-idle + move-moving + grounded
+				if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+					# if action-idle + move-moving + grounded + facing-change
+					if player.facing != dir_input:
+						# start timer, set dash-facing
+						player.timer_actions[Constants.ActionType.DASH] = Constants.PLAYER_TIMERS[Constants.ActionType.DASH]
+						player.dash_facing = dir_input
+				# if action-idle + move-moving + not-grounded
+				else:
+					# kill timer
+					player.timer_actions[Constants.ActionType.DASH] = 0
+			# if action-idle + move-dashing
 			else:
-				# if facing-change
+				# if action-idle + move-dashing + facing-change
 				if player.facing != dir_input:
-					# set move, start timer, set dash-facing
+					# set move
 					player.actions[Constants.ActionType.MOVE] = true
 					new_player_move_status = Constants.UnitMovingStatus.MOVING
-					player.timer_actions[Constants.ActionType.DASH] = Constants.PLAYER_TIMERS[Constants.ActionType.DASH]
-					player.dash_facing = dir_input
-				# else (not facing-change)
+				# if action-idle + move-dashing + not-facing-change
 				else:
 					# set dash
 					player.actions[Constants.ActionType.DASH] = true
-			# set facing
-			player.facing = dir_input
+					new_player_move_status = Constants.UnitMovingStatus.DASHING
+				# start timer, set dash-facing
+				player.timer_actions[Constants.ActionType.DASH] = Constants.PLAYER_TIMERS[Constants.ActionType.DASH]
+				player.dash_facing = dir_input
 		# if action-jumping or action-flying
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
-			# set move, set facing
+			# set move, kill timer
 			player.actions[Constants.ActionType.MOVE] = true
 			new_player_move_status = Constants.UnitMovingStatus.MOVING
-			player.facing = dir_input
+			player.timer_actions[Constants.ActionType.DASH] = 0
+		# set facing
+		player.facing = dir_input
 	
 	if not input_table[Constants.PlayerInput.LEFT] and not input_table[Constants.PlayerInput.RIGHT]:
 		new_player_move_status = Constants.UnitMovingStatus.IDLE
@@ -153,10 +163,11 @@ func handle_player_input():
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING:
 			player.actions[Constants.ActionType.JUMP] = true
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
-			if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+			if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] and !player.just_jumped:
 				player.actions[Constants.ActionType.JUMP] = true
 				player.set_current_action(Constants.UnitCurrentAction.JUMPING)
 				player.just_jumped = true
+				player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
 			elif not player.unit_conditions[Constants.UnitCondition.IS_PORTING] and !player.just_jumped:
 				player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
@@ -202,7 +213,7 @@ func handle_player_input():
 
 func set_logging_iteration(unit : Unit, delta):
 	if (num_iterations != 0
-	and (time_elapsed > 2)):
+	and false):
 		time_elapsed_to_log = time_elapsed
 		print("Iteration identified: " + str(time_elapsed_to_log))
 		unit.log_unit()
