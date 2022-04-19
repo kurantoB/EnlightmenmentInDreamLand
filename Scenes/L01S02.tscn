@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=2]
+[gd_scene load_steps=38 format=2]
 
 [ext_resource path="res://Units/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scripts/GameScene.gd" type="Script" id=2]
@@ -37,7 +37,6 @@
 [ext_resource path="res://Graphics/Satori_Jump1.png" type="Texture" id=35]
 [ext_resource path="res://Graphics/Satori_Idle.png" type="Texture" id=36]
 [ext_resource path="res://Graphics/Satori_Walk3.png" type="Texture" id=37]
-[ext_resource path="res://Satori_stage.mp3" type="AudioStream" id=38]
 
 [node name="Scene" type="Node2D"]
 script = ExtResource( 2 )
@@ -746,4 +745,3 @@ __meta__ = {
 }
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 38 )

@@ -46,13 +46,14 @@ func interact(unit : Unit, delta):
 		if unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 			# gravity-affected, grounded, -v
 			if unit.v_speed < 0:
-				scene.conditional_log("gravity-affected, grounded, -v")
-				# recalibrate move vector and set y position to be on ground
+				scene.conditional_log("gravity-affected, grounded, neg v-speed: reorient speed, reposition")
 				ground_movement_interaction(unit, delta)
+			# gravity-affected, grounded, v-speed-zero
 			else:
-				scene.conditional_log("gravity-affected, grounded, v_speed-zero: zero-out speed")
+				scene.conditional_log("gravity-affected, grounded, v-speed-zero: zero-out speed, reposition")
 				unit.h_speed = 0
 				unit.v_speed = 0
+				ground_still_placement(unit)
 		else:
 			scene.conditional_log("not-on-ground")
 			var gravity_factor = Constants.GRAVITY
@@ -198,6 +199,7 @@ func ground_movement_interaction(unit : Unit, delta):
 	var collider_group = []
 	var angle_helper
 	for collider in bottom_left_colliders:
+		# true/false, collision direction, collision point, and unit env collider
 		var env_collision = unit_is_colliding_w_env(unit, collider, [Constants.DIRECTION.DOWN], delta, true)
 		if env_collision[0]:
 			# collided with ground
@@ -235,9 +237,31 @@ func ground_movement_interaction(unit : Unit, delta):
 	scene.conditional_log("reangling: " + str(Vector2(unit.h_speed, unit.v_speed)) + " ->")
 	GameUtils.reangle_move(unit, angle_helper)
 	scene.conditional_log("reangling:     " + str(Vector2(unit.h_speed, unit.v_speed)))
-	
 
+func ground_still_placement(unit : Unit):
+	for unit_env_collider in Constants.ENV_COLLIDERS[unit.unit_type]:
+		if unit_env_collider[1].has(Constants.DIRECTION.DOWN):
+			for collider in bottom_left_colliders:
+				if collider[0].x == collider[1].x:
+					continue
+				var collision_check : Vector2 = unit.pos + unit_env_collider[0]
+				var altered_collision_check: Vector2 = collision_check
+				altered_collision_check.y = altered_collision_check.y + .3
+				var intersects_results = GameUtils.path_intersects_border(
+					altered_collision_check,
+					collision_check + Vector2(0, -.3),
+					collider[0],
+					collider[1])
+				if intersects_results[0]:
+					var collision_point = intersects_results[1]
+					var collider_set_pos_y = collision_point.y + Constants.QUANTUM_DIST
+					var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
+					scene.conditional_log("change pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
+					unit.pos.y = unit.pos.y + y_dist_to_translate
+					return
+	
 func check_collision(unit : Unit, collider, collision_directions, delta):
+	# true/false, collision direction, collision point, and unit env collider
 	var env_collision = unit_is_colliding_w_env(unit, collider, collision_directions, delta)
 	if env_collision[0]:
 		var collision_dir = env_collision[1]
@@ -290,9 +314,16 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 # returns true/false, collision direction, collision point, and unit env collider
 func unit_is_colliding_w_env(unit : Unit, collider, directions, delta, is_ground_check = false):
 	for unit_env_collider in Constants.ENV_COLLIDERS[unit.unit_type]:
+		# env-collider
 		for direction_to_check in directions:
+			# env-collider check-dir
 			if not unit_env_collider[1].has(direction_to_check):
+				# env_collider irrelevant to check-dir
 				continue
+			# env_collider relevant to check-dir
+			is_ground_check = (is_ground_check
+			or (directions.has(Constants.DIRECTION.DOWN) and collider[0].y == collider[1].x)
+			or (collider[0].x != collider[1].x and collider[0].y != collider[1].y))
 			var unit_env_collider_vector = unit_env_collider[0]
 			if unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING or unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.SLIDING:
 				unit_env_collider_vector.y = unit_env_collider_vector.y * Constants.CROUCH_FACTOR
@@ -307,19 +338,15 @@ func unit_is_colliding_w_env(unit : Unit, collider, directions, delta, is_ground
 				collider[1])
 			if intersects_results[0]:
 				var true_dir_to_check : int = direction_to_check
-				if collider[0].y == collider[1].y:
-					if unit_env_collider[1].has(Constants.DIRECTION.UP) and directions.has(Constants.DIRECTION.UP):
-						true_dir_to_check = Constants.DIRECTION.UP
-					elif unit_env_collider[1].has(Constants.DIRECTION.DOWN) and directions.has(Constants.DIRECTION.DOWN):
-						true_dir_to_check = Constants.DIRECTION.DOWN
-					else:
-						return [false, -1, Vector2(), {}]
-				if collider[0].x == collider[1].x:
-					if unit_env_collider[1].has(Constants.DIRECTION.LEFT) and directions.has(Constants.DIRECTION.LEFT):
-						true_dir_to_check = Constants.DIRECTION.LEFT
-					elif unit_env_collider[1].has(Constants.DIRECTION.RIGHT) and directions.has(Constants.DIRECTION.RIGHT):
-						true_dir_to_check = Constants.DIRECTION.RIGHT
-					else:
-						return [false, -1, Vector2(), {}]
+				if is_ground_check:
+					true_dir_to_check = Constants.DIRECTION.DOWN
+				else:
+					if collider[0].y == collider[1].y:
+							true_dir_to_check = Constants.DIRECTION.UP
+					if collider[0].x == collider[1].x:
+						if directions.has(Constants.DIRECTION.LEFT):
+							true_dir_to_check = Constants.DIRECTION.LEFT
+						else:
+							true_dir_to_check = Constants.DIRECTION.RIGHT
 				return [true, true_dir_to_check, intersects_results[1], unit_env_collider]
 	return [false, -1, Vector2(), {}]
