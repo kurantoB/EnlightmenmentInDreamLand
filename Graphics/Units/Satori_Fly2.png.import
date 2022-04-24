@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Satori_Fly1.png-862b2f549be3cf1a8ca846bde2ea62ff.stex"
+path="res://.import/Satori_Fly2.png-38ebd6399487f33daeb931f798589fd6.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Graphics/Satori_Fly1.png"
-dest_files=[ "res://.import/Satori_Fly1.png-862b2f549be3cf1a8ca846bde2ea62ff.stex" ]
+source_file="res://Graphics/Units/Satori_Fly2.png"
+dest_files=[ "res://.import/Satori_Fly2.png-38ebd6399487f33daeb931f798589fd6.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2
@@ -28,8 +28,7 @@ process/fix_alpha_border=true
 process/premult_alpha=false
 process/HDR_as_SRGB=false
 process/invert_color=false
-process/normal_map_invert_y=false
 stream=false
 size_limit=0
-detect_3d=true
+detect_3d=false
 svg/scale=1.0

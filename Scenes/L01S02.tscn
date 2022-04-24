@@ -29,6 +29,7 @@
 [ext_resource path="res://Graphics/Tiles/door/DoorPillar04.png" type="Texture" id=27]
 [ext_resource path="res://Graphics/Tiles/door/DoorPillar03.png" type="Texture" id=28]
 [ext_resource path="res://Graphics/Tiles/spike/SpikeUp.png" type="Texture" id=29]
+<<<<<<< HEAD
 [ext_resource path="res://Graphics/Satori_Walk1.png" type="Texture" id=30]
 [ext_resource path="res://Graphics/Satori_Jump.png" type="Texture" id=31]
 [ext_resource path="res://Graphics/Satori_Fly1.png" type="Texture" id=32]
@@ -36,6 +37,8 @@
 [ext_resource path="res://Graphics/Satori_Jump1.png" type="Texture" id=35]
 [ext_resource path="res://Graphics/Satori_Idle.png" type="Texture" id=36]
 [ext_resource path="res://Graphics/Satori_Walk3.png" type="Texture" id=37]
+=======
+>>>>>>> 59ca694f091c30e0ad5e4802e43c655c06d1d7a3
 
 [node name="Scene" type="Node2D"]
 script = ExtResource( 2 )
@@ -667,6 +670,7 @@ texture = ExtResource( 18 )
 map_elem_type = -1
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
+<<<<<<< HEAD
 position = Vector2( 20, -20 )
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
@@ -741,5 +745,8 @@ offset = Vector2( 0, -10 )
 __meta__ = {
 "_edit_group_": true
 }
+=======
+position = Vector2( 10, -20 )
+>>>>>>> 59ca694f091c30e0ad5e4802e43c655c06d1d7a3
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
