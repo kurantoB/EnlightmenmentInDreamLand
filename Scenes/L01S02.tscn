@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=2]
+[gd_scene load_steps=29 format=2]
 
 [ext_resource path="res://Units/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scripts/GameScene.gd" type="Script" id=2]
@@ -6,7 +6,6 @@
 [ext_resource path="res://Scenes/Block.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Graphics/Tiles/ledge/LedgeLeft.png" type="Texture" id=5]
 [ext_resource path="res://Graphics/Tiles/ledge/LedgeRight.png" type="Texture" id=6]
-[ext_resource path="res://Graphics/Satori_Fly.png" type="Texture" id=7]
 [ext_resource path="res://Graphics/Tiles/ledge/LedgeMiddle.png" type="Texture" id=8]
 [ext_resource path="res://Graphics/Tiles/square/SquareGroundFlat.png" type="Texture" id=9]
 [ext_resource path="res://Graphics/Tiles/square/SquareLeftWall.png" type="Texture" id=10]
@@ -29,14 +28,6 @@
 [ext_resource path="res://Graphics/Tiles/door/DoorPillar04.png" type="Texture" id=27]
 [ext_resource path="res://Graphics/Tiles/door/DoorPillar03.png" type="Texture" id=28]
 [ext_resource path="res://Graphics/Tiles/spike/SpikeUp.png" type="Texture" id=29]
-[ext_resource path="res://Graphics/Satori_Walk1.png" type="Texture" id=30]
-[ext_resource path="res://Graphics/Satori_Jump.png" type="Texture" id=31]
-[ext_resource path="res://Graphics/Satori_Fly1.png" type="Texture" id=32]
-[ext_resource path="res://Graphics/Satori_Walk2.png" type="Texture" id=33]
-[ext_resource path="res://Graphics/Satori_Idle1.png" type="Texture" id=34]
-[ext_resource path="res://Graphics/Satori_Jump1.png" type="Texture" id=35]
-[ext_resource path="res://Graphics/Satori_Idle.png" type="Texture" id=36]
-[ext_resource path="res://Graphics/Satori_Walk3.png" type="Texture" id=37]
 
 [node name="Scene" type="Node2D"]
 script = ExtResource( 2 )
@@ -668,80 +659,6 @@ texture = ExtResource( 18 )
 map_elem_type = -1
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
-position = Vector2( 20, -20 )
-
-[node name="Camera2D" type="Camera2D" parent="Player"]
-
-[node name="Idle1" type="Sprite" parent="Player"]
-texture = ExtResource( 36 )
-offset = Vector2( 6, -23 )
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="Idle2" type="Sprite" parent="Player"]
-visible = false
-texture = ExtResource( 34 )
-offset = Vector2( 6, -20 )
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="Walk1" type="Sprite" parent="Player"]
-visible = false
-texture = ExtResource( 30 )
-offset = Vector2( 4, -15 )
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="Walk2" type="Sprite" parent="Player"]
-visible = false
-texture = ExtResource( 33 )
-offset = Vector2( 4, -16 )
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="Walk3" type="Sprite" parent="Player"]
-visible = false
-texture = ExtResource( 37 )
-offset = Vector2( 4, -15 )
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="Jump1" type="Sprite" parent="Player"]
-visible = false
-texture = ExtResource( 31 )
-offset = Vector2( 6, -20 )
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="Jump2" type="Sprite" parent="Player"]
-visible = false
-position = Vector2( 6, -7 )
-texture = ExtResource( 35 )
-offset = Vector2( 0, -13 )
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="Fly1" type="Sprite" parent="Player"]
-visible = false
-texture = ExtResource( 7 )
-offset = Vector2( 0, -9 )
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="Fly2" type="Sprite" parent="Player"]
-visible = false
-texture = ExtResource( 32 )
-offset = Vector2( 0, -10 )
-__meta__ = {
-"_edit_group_": true
-}
+position = Vector2( 10, -20 )
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]

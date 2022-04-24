@@ -24,7 +24,7 @@ var h_speed : float = 0
 var v_speed : float = 0
 var ground_speed : float = 0
 
-var current_sprite : Sprite
+var current_sprite : AnimatedSprite
 
 # Called when the node enters the scene tree for the first time
 func _ready():
@@ -37,8 +37,8 @@ func _ready():
 	if unit_type == Constants.UnitType.PLAYER:
 		for timer_action_num in Constants.PLAYER_TIMERS.keys():
 			timer_actions[timer_action_num] = 0
-	if has_node("Idle1"):
-		current_sprite = get_node("Idle1")
+	if has_node("Idle"):
+		current_sprite = get_node("Idle")
 
 func reset_actions():
 	for action_num in actions.keys():
@@ -231,10 +231,7 @@ func handle_idle(delta):
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
 		if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 			if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
-				if int(floor(current_action_time_elapsed)) % 3 == 0:
-					set_sprite("Idle2")
-				else:
-					set_sprite("Idle1")
+				set_sprite("Idle")
 		elif v_speed < 0:
 			set_sprite("Jump2")
 	elif unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
@@ -260,11 +257,12 @@ func slide():
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 
 func set_sprite(sprite_node : String):
-	if current_sprite != null:
+	if current_sprite != null and current_sprite != get_node(sprite_node):
 		current_sprite.visible = false
 	if has_node(sprite_node):
 		current_sprite = get_node(sprite_node)
 		current_sprite.visible = true
+		current_sprite.play()
 	if facing == Constants.PlayerInput.LEFT:
 		current_sprite.scale.x = -1
 	else:
