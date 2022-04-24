@@ -24,7 +24,7 @@ var h_speed : float = 0
 var v_speed : float = 0
 var ground_speed : float = 0
 
-var current_sprite : AnimatedSprite
+var current_sprite : Node2D
 
 # Called when the node enters the scene tree for the first time
 func _ready():
@@ -37,8 +37,6 @@ func _ready():
 	if unit_type == Constants.UnitType.PLAYER:
 		for timer_action_num in Constants.PLAYER_TIMERS.keys():
 			timer_actions[timer_action_num] = 0
-	if has_node("Idle"):
-		current_sprite = get_node("Idle")
 
 func reset_actions():
 	for action_num in actions.keys():
@@ -118,12 +116,7 @@ func dash(delta):
 	if (unit_conditions[Constants.UnitCondition.MOVING_STATUS] != Constants.UnitMovingStatus.IDLE
 	and unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE
 	and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
-		if int(floor(current_action_time_elapsed * 8)) % 3 == 0:
-			set_sprite("Walk1")
-		elif int(floor(current_action_time_elapsed * 8)) % 3 == 1:
-			set_sprite("Walk2")
-		elif int(floor(current_action_time_elapsed * 8)) % 3 == 2:
-			set_sprite("Walk3")
+		set_sprite("Dash")
 
 func digest():
 	pass
@@ -139,8 +132,10 @@ func flot():
 
 func jump():
 	v_speed = Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type]
-	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING and v_speed > 0:
-		set_sprite("Jump1")
+	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING:
+		if unit_type == Constants.UnitType.PLAYER:
+			if v_speed > 0:
+				set_sprite("Jump", 0)
 	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.JUMPING]:
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 		
@@ -150,11 +145,7 @@ func move(delta):
 	and unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE
 	and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
 		if int(floor(current_action_time_elapsed * 4)) % 3 == 0:
-			set_sprite("Walk1")
-		elif int(floor(current_action_time_elapsed * 4)) % 3 == 1:
-			set_sprite("Walk2")
-		elif int(floor(current_action_time_elapsed * 4)) % 3 == 2:
-			set_sprite("Walk3")
+			set_sprite("Walk")
 
 func handle_moving_status(delta, scene):
 	# what we have: facing, current speed, move status, grounded
@@ -232,13 +223,16 @@ func handle_idle(delta):
 		if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 			if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
 				set_sprite("Idle")
-		elif v_speed < 0:
-			set_sprite("Jump2")
-	elif unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
-		if v_speed > 0:
-			set_sprite("Fly2")
 		else:
-			set_sprite("Fly1")
+			if unit_type == Constants.UnitType.PLAYER:
+				if v_speed < 0:
+					set_sprite("Jump", 1)
+	elif unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
+		if unit_type == Constants.UnitType.PLAYER:
+			if v_speed > 0:
+				set_sprite("Fly", 0)
+			else:
+				set_sprite("Fly", 1)
 
 func recoil():
 	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.RECOILING]:
@@ -256,13 +250,17 @@ func slide():
 	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.SLIDING]:
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 
-func set_sprite(sprite_node : String):
-	if current_sprite != null and current_sprite != get_node(sprite_node):
-		current_sprite.visible = false
-	if has_node(sprite_node):
-		current_sprite = get_node(sprite_node)
+func set_sprite(sprite_class : String, index : int = 0):
+	if not unit_type in Constants.UnitSprites or not sprite_class in Constants.UnitSprites[unit_type]:
+		return
+	var new_sprite : Node2D = get_node(Constants.UnitSprites[unit_type][sprite_class][1][index])
+	if current_sprite == null or current_sprite != new_sprite:
+		if current_sprite != null:
+			current_sprite.visible = false
+		current_sprite = new_sprite
 		current_sprite.visible = true
-		current_sprite.play()
+		if (Constants.UnitSprites[unit_type][sprite_class][0]):
+			current_sprite.play()
 	if facing == Constants.PlayerInput.LEFT:
 		current_sprite.scale.x = -1
 	else:

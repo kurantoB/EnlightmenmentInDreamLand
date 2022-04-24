@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Satori_Walk3.png-1033aef77e9ff0a9f07914450e26f8ac.stex"
+path="res://.import/Satori_Fly2.png-38ebd6399487f33daeb931f798589fd6.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Graphics/Satori_Walk3.png"
-dest_files=[ "res://.import/Satori_Walk3.png-1033aef77e9ff0a9f07914450e26f8ac.stex" ]
+source_file="res://Graphics/Units/Satori_Fly2.png"
+dest_files=[ "res://.import/Satori_Fly2.png-38ebd6399487f33daeb931f798589fd6.stex" ]
 
 [params]
 

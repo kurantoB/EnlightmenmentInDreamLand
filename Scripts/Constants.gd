@@ -157,14 +157,6 @@ const INPUT_MAP = {
 	PlayerInput.GBA_SELECT: "gba_select",
 }
 
-const UNIT_TYPE_MOVE_SPEEDS = {
-	UnitType.PLAYER: 1
-}
-
-const UNIT_TYPE_JUMP_SPEEDS = {
-	UnitType.PLAYER: 5
-}
-
 enum MAP_ELEM_TYPES {
 	SQUARE,
 	SLOPE_LEFT,
@@ -176,16 +168,31 @@ enum MAP_ELEM_TYPES {
 	LEDGE,
 }
 
+const UnitSprites = {
+	UnitType.PLAYER: {
+		# "Sprite class": [is animation?, [Node list]]
+		"Idle": [true, ["Idle"]],
+		"Walk": [true, ["Walk"]],
+		"Dash": [true, ["Dash"]],
+		"Jump": [false, ["Jump1", "Jump2"]],
+		"Fly": [false, ["Fly1", "Fly2"]]
+	}
+}
+
 const MOVE_SPEEDS = {
-	UnitType.PLAYER: 5
+	UnitType.PLAYER: 6
+}
+
+const UNIT_TYPE_JUMP_SPEEDS = {
+	UnitType.PLAYER: 7
 }
 
 const SCALE_FACTOR = 3
 const GRID_SIZE = 20
-const GRAVITY = 16
-const MAX_FALL_SPEED = -8
-const MAX_FALL_LITE = -2
-const ACCELERATION = 20
-const DASH_SPEED = 9
-const GRAVITY_LITE = 4
+const GRAVITY = 20
+const MAX_FALL_SPEED = -10
+const MAX_FALL_LITE = -4
+const ACCELERATION = 35
+const DASH_SPEED = 10
+const GRAVITY_LITE = 8
 const QUANTUM_DIST = 0.005
