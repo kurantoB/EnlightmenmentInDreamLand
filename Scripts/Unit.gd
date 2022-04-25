@@ -224,15 +224,13 @@ func handle_idle(delta):
 			if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
 				set_sprite("Idle")
 		else:
-			if unit_type == Constants.UnitType.PLAYER:
-				if v_speed < 0:
-					set_sprite("Jump", 1)
+			if v_speed < 0:
+				set_sprite("Jump", 1)
 	elif unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
-		if unit_type == Constants.UnitType.PLAYER:
-			if v_speed > 0:
-				set_sprite("Fly", 0)
-			else:
-				set_sprite("Fly", 1)
+		if v_speed > 0:
+			set_sprite("Fly", 0)
+		else:
+			set_sprite("Fly", 1)
 
 func recoil():
 	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.RECOILING]:
@@ -253,7 +251,11 @@ func slide():
 func set_sprite(sprite_class : String, index : int = 0):
 	if not unit_type in Constants.UnitSprites or not sprite_class in Constants.UnitSprites[unit_type]:
 		return
-	var new_sprite : Node2D = get_node(Constants.UnitSprites[unit_type][sprite_class][1][index])
+	var node_list = Constants.UnitSprites[unit_type][sprite_class][1]
+	var true_index : int = index
+	if true_index > len(node_list) - 1:
+		true_index = 0
+	var new_sprite : Node2D = get_node(node_list[true_index])
 	if current_sprite == null or current_sprite != new_sprite:
 		if current_sprite != null:
 			current_sprite.visible = false

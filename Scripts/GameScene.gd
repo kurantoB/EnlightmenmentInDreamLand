@@ -21,7 +21,8 @@ var stage_env
 
 var time_elapsed : float = 0
 var time_elapsed_to_log : float = -1
-var num_iterations = 4
+var num_iterations = 24
+var log_triggered : bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -41,6 +42,10 @@ func _process(delta):
 		unit.process_unit(delta, self)
 		set_logging_iteration(unit, delta)
 		stage_env.interact(unit, delta)
+			# ground_movement_interaction
+			# ground_still_placement
+			# check_collision
+			#	check_ground_collision
 		terminate_logging_iteration(unit)
 		unit.react(delta)
 		time_elapsed = time_elapsed + delta
@@ -212,9 +217,11 @@ func handle_player_input():
 	player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = new_player_move_status
 
 func set_logging_iteration(unit : Unit, delta):
-	if (num_iterations != 0
-	and false):
+	if (log_triggered or
+	(num_iterations != 0
+	and player.pos.x < -1 and player.pos.y < .45)):
 		time_elapsed_to_log = time_elapsed
+		log_triggered = true
 		print("Iteration identified: " + str(time_elapsed_to_log))
 		unit.log_unit()
 
@@ -223,6 +230,8 @@ func terminate_logging_iteration(unit : Unit):
 		print("Iteration ended")
 		num_iterations = num_iterations - 1
 		unit.log_unit()
+		if num_iterations == 0:
+			log_triggered = false
 
 func conditional_log(message : String):
 	if is_log_condition():
