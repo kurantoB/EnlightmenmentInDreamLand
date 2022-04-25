@@ -91,6 +91,8 @@ func init_stage_grid(map_elems):
 		var stage_y = floor(-1 * map_elem.position.y / Constants.GRID_SIZE)
 		match map_elem.map_elem_type:
 			Constants.MAP_ELEM_TYPES.SQUARE:
+				if stage_x == 39 and stage_y == 2:
+					print("Found stage_x == 39 and stage_y == 2 square")
 				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.UP, 1)
 				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.DOWN, 1)
 				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.LEFT, 1)
@@ -156,6 +158,11 @@ func init_stage_grid(map_elems):
 
 
 func insert_grid_collider(stage_x, stage_y, direction : int, fractional_height : float):
+	if stage_x == 39:
+		if stage_y == 2 and direction == Constants.DIRECTION.UP:
+			print("insert_grid_collider for x=39, y=2, dir=up")
+		elif stage_y == 3 and direction == Constants.DIRECTION.DOWN:
+			print("insert_grid_collider for x=39, y=3, dir=down")
 	var check_colliders = []
 	var insert_colliders = []
 	var point_a : Vector2
@@ -166,11 +173,15 @@ func insert_grid_collider(stage_x, stage_y, direction : int, fractional_height :
 			insert_colliders = [bottom_right_colliders, bottom_left_colliders]
 			point_a = Vector2(stage_x, stage_y + 1)
 			point_b = Vector2(stage_x + 1, stage_y + 1)
+			if point_a.x == 40 and point_a.y == 3:
+				print("check_colliders: top_right, top_left, insert_colliders: bottom_right, bottom_left")
 		Constants.DIRECTION.DOWN:
 			check_colliders = [bottom_right_colliders, bottom_left_colliders]
 			insert_colliders = [top_right_colliders, top_left_colliders]
 			point_a = Vector2(stage_x, stage_y)
 			point_b = Vector2(stage_x + 1, stage_y)
+			if point_a.x == 40 and point_a.y == 3:
+				print("check_colliders: bottom_right, bottom_left, insert_colliders: top_right, top_left")
 		Constants.DIRECTION.LEFT:
 			check_colliders = [bottom_left_colliders, top_left_colliders]
 			insert_colliders = [top_right_colliders, bottom_right_colliders]
@@ -188,11 +199,15 @@ func try_insert_collider(check_colliders, insert_colliders, point_a : Vector2, p
 	for i in range(len(check_colliders)):
 		for j in range(len(check_colliders[i])):
 			if check_colliders[i][j][0] == point_a and check_colliders[i][j][1] == point_b:
+				if check_colliders[i][j][0].x == 39 and check_colliders[i][j][0].y == 3 and check_colliders[i][j][1].x == 40 and check_colliders[i][j][1].y == 3:
+					print("Removing collider at (39-40, 3)")
 				found_existing = true
 				check_colliders[i].remove(j)
 				break
 	if not found_existing:
 		for i in range(len(insert_colliders)):
+			if point_a.x == 39 and point_a.y == 3 and point_b.x == 40 and point_b.y == 3:
+				print("Inserting collider at (39-40, 3)")
 			insert_colliders[i].append([point_a, point_b])
 
 func ground_movement_interaction(unit : Unit, delta):
