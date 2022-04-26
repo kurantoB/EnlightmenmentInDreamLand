@@ -151,24 +151,18 @@ func handle_moving_status(delta, scene):
 	# what we have: facing, current speed, move status, grounded
 	# we want: to set the new intended speed
 	var magnitude : float
-	if unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-		magnitude = sqrt(pow(v_speed, 2) + pow(h_speed, 2))
-	else:
-		magnitude = abs(h_speed)
+#	if unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+#		magnitude = sqrt(pow(v_speed, 2) + pow(h_speed, 2))
+#	else:
+#		magnitude = abs(h_speed)
+	magnitude = abs(h_speed)
 	scene.conditional_log("set magnitude: " + str(magnitude))
 	
 	# if move status is idle
 	if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
-		# if is near still
-		if magnitude < .5:
-			scene.conditional_log("move-idle, near-still: zero-out speed")
-			# zero out speed
-			magnitude = 0
-		# if is not near still
-		else:
-			# slow down
-			magnitude = max(0, magnitude - Constants.ACCELERATION * delta)
-			scene.conditional_log("move-idle, not-near-still: slow-down: magnitude: " + str(magnitude))
+		# slow down
+		magnitude = max(0, magnitude - Constants.ACCELERATION * delta)
+		scene.conditional_log("move-idle, not-near-still: slow-down: magnitude: " + str(magnitude))
 	# if move status is not idle
 	else:
 		# if is facing-aligned
@@ -200,22 +194,29 @@ func handle_moving_status(delta, scene):
 				h_speed = -1 * Constants.QUANTUM_DIST
 			else:
 				if facing == Constants.PlayerInput.RIGHT:
-					h_speed = delta
+					h_speed = Constants.QUANTUM_DIST
 				else:
-					h_speed = -1 * delta
+					h_speed = -1 * Constants.QUANTUM_DIST
 			scene.conditional_log("grounded, non-zero-magnitude: preserve-h-dir: " + str(h_speed))
 		else:
-			scene.conditional_log("grounded, zero-magnitude: zero-out-h-dir")
 			h_speed = 0
 		v_speed = -1 * magnitude
-		scene.conditional_log("grounded: point-down: " + str(v_speed))
+		scene.conditional_log("grounded: point-down: " + str(v_speed) + ", set-h-speed: " + str(h_speed))
 	# if is not grounded
 	else:
-		# set h_speed according to facing direction
-		var dir_factor = 1
-		if facing == Constants.PlayerInput.LEFT:
-			dir_factor = -1
-		h_speed = dir_factor * magnitude
+		# set h_speed
+		if magnitude > 0:
+			if h_speed > 0:
+				h_speed = magnitude
+			elif h_speed < 0:
+				h_speed = -1 * magnitude
+			else:
+				if facing == Constants.PlayerInput.RIGHT:
+					h_speed = magnitude
+				else:
+					h_speed = -1 * magnitude
+		else:
+			h_speed = 0
 		scene.conditional_log("not-grounded: set-h-speed: " + str(h_speed))
 
 func handle_idle(delta):

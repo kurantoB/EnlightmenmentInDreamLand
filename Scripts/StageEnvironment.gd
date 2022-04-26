@@ -70,23 +70,17 @@ func interact(unit : Unit, delta):
 		# regular collision
 		if unit.h_speed >= 0 and unit.v_speed > 0:
 			for collider in top_right_colliders:
-				# if check_collision(unit, collider, [Constants.DIRECTION.UP, Constants.DIRECTION.RIGHT], delta):
-					# break
 				check_collision(unit, collider, [Constants.DIRECTION.UP, Constants.DIRECTION.RIGHT], delta)
 		elif unit.h_speed > 0 and unit.v_speed <= 0:
 			for collider in bottom_right_colliders:
-				# if check_collision(unit, collider, [Constants.DIRECTION.RIGHT, Constants.DIRECTION.DOWN], delta):
-					# break
-				check_collision(unit, collider, [Constants.DIRECTION.RIGHT, Constants.DIRECTION.DOWN], delta)
+				check_collision(unit, collider, [Constants.DIRECTION.RIGHT], delta)
+				check_collision(unit, collider, [Constants.DIRECTION.DOWN], delta)
 		elif unit.h_speed <= 0 and unit.v_speed < 0:
 			for collider in bottom_left_colliders:
-				# if check_collision(unit, collider, [Constants.DIRECTION.DOWN, Constants.DIRECTION.LEFT], delta):
-					# break
-				check_collision(unit, collider, [Constants.DIRECTION.DOWN, Constants.DIRECTION.LEFT], delta)
+				check_collision(unit, collider, [Constants.DIRECTION.LEFT], delta)
+				check_collision(unit, collider, [Constants.DIRECTION.DOWN], delta)
 		elif unit.h_speed < 0 and unit.v_speed >= 0:
 			for collider in top_left_colliders:
-				# check_collision(unit, collider, [Constants.DIRECTION.LEFT, Constants.DIRECTION.UP], delta):
-					# break
 				check_collision(unit, collider, [Constants.DIRECTION.LEFT, Constants.DIRECTION.UP], delta)
 
 func init_stage_grid(map_elems):
@@ -162,11 +156,6 @@ func init_stage_grid(map_elems):
 
 
 func insert_grid_collider(stage_x, stage_y, direction : int, fractional_height : float):
-	if stage_x == 39:
-		if stage_y == 2 and direction == Constants.DIRECTION.UP:
-			print("insert_grid_collider for x=39, y=2, dir=up")
-		elif stage_y == 3 and direction == Constants.DIRECTION.DOWN:
-			print("insert_grid_collider for x=39, y=3, dir=down")
 	var check_colliders = []
 	var insert_colliders = []
 	var point_a : Vector2
@@ -177,15 +166,11 @@ func insert_grid_collider(stage_x, stage_y, direction : int, fractional_height :
 			insert_colliders = [bottom_right_colliders, bottom_left_colliders]
 			point_a = Vector2(stage_x, stage_y + 1)
 			point_b = Vector2(stage_x + 1, stage_y + 1)
-			if point_a.x == 40 and point_a.y == 3:
-				print("check_colliders: top_right, top_left, insert_colliders: bottom_right, bottom_left")
 		Constants.DIRECTION.DOWN:
 			check_colliders = [bottom_right_colliders, bottom_left_colliders]
 			insert_colliders = [top_right_colliders, top_left_colliders]
 			point_a = Vector2(stage_x, stage_y)
 			point_b = Vector2(stage_x + 1, stage_y)
-			if point_a.x == 40 and point_a.y == 3:
-				print("check_colliders: bottom_right, bottom_left, insert_colliders: top_right, top_left")
 		Constants.DIRECTION.LEFT:
 			check_colliders = [bottom_left_colliders, top_left_colliders]
 			insert_colliders = [top_right_colliders, bottom_right_colliders]
@@ -203,15 +188,11 @@ func try_insert_collider(check_colliders, insert_colliders, point_a : Vector2, p
 	for i in range(len(check_colliders)):
 		for j in range(len(check_colliders[i])):
 			if check_colliders[i][j][0] == point_a and check_colliders[i][j][1] == point_b:
-				if check_colliders[i][j][0].x == 39 and check_colliders[i][j][0].y == 3 and check_colliders[i][j][1].x == 40 and check_colliders[i][j][1].y == 3:
-					print("Removing collider at (39-40, 3)")
 				found_existing = true
 				check_colliders[i].remove(j)
 				break
 	if not found_existing:
 		for i in range(len(insert_colliders)):
-			if point_a.x == 39 and point_a.y == 3 and point_b.x == 40 and point_b.y == 3:
-				print("Inserting collider at (39-40, 3)")
 			insert_colliders[i].append([point_a, point_b])
 
 func ground_movement_interaction(unit : Unit, delta):
@@ -243,7 +224,7 @@ func ground_movement_interaction(unit : Unit, delta):
 			unit.pos.x = unit.pos.x + x_dist_to_translate
 			break
 	if not has_ground_collision:
-		scene.conditional_log("ground_movement_interaction not-ground-collided")
+		scene.conditional_log("ground_movement_interaction not-ground-collided - is-on-ground-false")
 		unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
 		if unit.h_speed > 0:
 			angle_helper = [Vector2(0, 0), Vector2(1, 0)]
@@ -311,7 +292,6 @@ func check_collision(unit : Unit, collider, collision_directions, delta):
 			var x_dist_to_translate = collider_set_pos_x - (unit.pos.x + unit_env_collider[0].x)
 			scene.conditional_log("check_collision change-pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
 			unit.pos.x = unit.pos.x + x_dist_to_translate
-	return env_collision[0]
 
 # returns if collision is with ground
 func check_ground_collision(unit : Unit, collider, collision_point : Vector2, unit_env_collider):
