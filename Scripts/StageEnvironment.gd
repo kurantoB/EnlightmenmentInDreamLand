@@ -74,10 +74,12 @@ func interact(unit : Unit, delta):
 		elif unit.h_speed > 0 and unit.v_speed <= 0:
 			for collider in bottom_right_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.RIGHT], delta)
+			for collider in bottom_right_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.DOWN], delta)
 		elif unit.h_speed <= 0 and unit.v_speed < 0:
 			for collider in bottom_left_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.LEFT], delta)
+			for collider in bottom_left_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.DOWN], delta)
 		elif unit.h_speed < 0 and unit.v_speed >= 0:
 			for collider in top_left_colliders:
@@ -332,14 +334,14 @@ func unit_is_colliding_w_env(unit : Unit, collider, directions, delta, is_ground
 		and collider[0].x == collider[1].x)):
 			continue
 		for unit_env_collider in Constants.ENV_COLLIDERS[unit.unit_type]:
-			if (collider[0] == Vector2(15, 1)
-			and collider[1] == Vector2(16, 1)
-			and unit_env_collider[0] == Vector2(0, 0)
-			and direction_to_check == Constants.DIRECTION.DOWN
-			and unit.v_speed < 0
-			and unit.pos.y <= 1.05):
-				scene.conditional_log("unit_is_colliding_w_env found condition collider: " + str(collider) + ", check-directions: " + str(directions) + ", test-check-direction: " + Constants.DIRECTION.keys()[direction_to_check] + ", unit_env_collider: " + str(unit_env_collider) + " while unit at " + str(unit.pos))
-				found_condition = true
+#			if (collider[0] == Vector2(15, 1)
+#			and collider[1] == Vector2(16, 1)
+#			and unit_env_collider[0] == Vector2(0, 0)
+#			and direction_to_check == Constants.DIRECTION.DOWN
+#			and unit.v_speed < 0
+#			and unit.pos.y <= 1.05):
+#				scene.conditional_log("unit_is_colliding_w_env found condition collider: " + str(collider) + ", check-directions: " + str(directions) + ", test-check-direction: " + Constants.DIRECTION.keys()[direction_to_check] + ", unit_env_collider: " + str(unit_env_collider) + " while unit at " + str(unit.pos))
+#				found_condition = true
 			if unit_env_collider[1].has(direction_to_check):
 				found_env_collider = true
 				if found_condition:

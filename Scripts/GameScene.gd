@@ -219,7 +219,7 @@ func handle_player_input():
 func set_logging_iteration(unit : Unit, delta):
 	if (log_triggered or
 	(num_iterations != 0
-	and unit.pos.x > 15.9 and unit.pos.y < 1.03)):
+	and unit.pos.x > 15.9 and unit.pos.y < 1.06)):
 		time_elapsed_to_log = time_elapsed
 		log_triggered = true
 		print("Iteration identified: " + str(time_elapsed_to_log))
