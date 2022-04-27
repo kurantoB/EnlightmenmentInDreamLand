@@ -151,11 +151,10 @@ func handle_moving_status(delta, scene):
 	# what we have: facing, current speed, move status, grounded
 	# we want: to set the new intended speed
 	var magnitude : float
-#	if unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-#		magnitude = sqrt(pow(v_speed, 2) + pow(h_speed, 2))
-#	else:
-#		magnitude = abs(h_speed)
-	magnitude = abs(h_speed)
+	if unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+		magnitude = sqrt(pow(v_speed, 2) + pow(h_speed, 2))
+	else:
+		magnitude = abs(h_speed)
 	scene.conditional_log("set magnitude: " + str(magnitude))
 	
 	# if move status is idle

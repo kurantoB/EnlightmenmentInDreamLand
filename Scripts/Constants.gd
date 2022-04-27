@@ -108,7 +108,7 @@ const UNIT_TYPE_CONDITIONS = {
 const PLAYER_TIMERS = {
 	ActionType.SLIDE: 0.5,
 	ActionType.FLOAT: 0.25,
-	ActionType.DASH: 0.2
+	ActionType.DASH: 0.3
 }
 
 const CURRENT_ACTION_TIMERS = {
@@ -195,4 +195,4 @@ const MAX_FALL_LITE = -4
 const ACCELERATION = 35
 const DASH_SPEED = 10
 const GRAVITY_LITE = 8
-const QUANTUM_DIST = 0.005
+const QUANTUM_DIST = 0.001
