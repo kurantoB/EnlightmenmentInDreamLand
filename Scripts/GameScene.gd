@@ -2,6 +2,9 @@ extends Node
 
 class_name GameScene
 
+export var tile_set_name: String
+export(Array, String) var tilemaps_to_scale
+
 const Constants = preload("res://Scripts/Constants.gd")
 const Unit = preload("res://Scripts/Unit.gd")
 
@@ -42,10 +45,6 @@ func _process(delta):
 		unit.process_unit(delta, self)
 		set_logging_iteration(unit, delta)
 		stage_env.interact(unit, delta)
-			# ground_movement_interaction
-			# ground_still_placement
-			# check_collision
-			#	check_ground_collision
 		terminate_logging_iteration(unit)
 		unit.react(delta)
 		time_elapsed = time_elapsed + delta
@@ -168,7 +167,9 @@ func handle_player_input():
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING:
 			player.actions[Constants.ActionType.JUMP] = true
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
-			if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] and !player.just_jumped:
+			if (player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]
+			and player.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]
+			and !player.just_jumped):
 				player.actions[Constants.ActionType.JUMP] = true
 				player.set_current_action(Constants.UnitCurrentAction.JUMPING)
 				player.just_jumped = true
@@ -219,7 +220,7 @@ func handle_player_input():
 func set_logging_iteration(unit : Unit, delta):
 	if (log_triggered or
 	(num_iterations != 0
-	and unit.pos.x <= 8.1 and unit.pos.y <= 3.55 and unit.h_speed < 0)):
+	and false)):
 		time_elapsed_to_log = time_elapsed
 		log_triggered = true
 		print("Iteration identified: " + str(time_elapsed_to_log))

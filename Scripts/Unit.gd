@@ -71,7 +71,7 @@ func do_with_timeout(action : int, new_current_action : int = -1):
 		actions[action] = true
 		timer_actions[action] = Constants.PLAYER_TIMERS[action]
 		if new_current_action != -1:
-			unit_conditions[Constants.UnitCondition.CURRENT_ACTION] = new_current_action
+			set_current_action(new_current_action)
 		if action == Constants.ActionType.FLOAT:
 			unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
 
@@ -244,7 +244,7 @@ func slide():
 	var dir_factor = 1
 	if facing == Constants.PlayerInput.LEFT:
 		dir_factor = -1
-	h_speed = 10 * dir_factor
+	h_speed = Constants.DASH_SPEED * dir_factor
 	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.SLIDING]:
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 

@@ -56,6 +56,13 @@ enum PlayerInput {
 	GBA_SELECT,
 }
 
+enum DIRECTION {
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT,
+}
+
 const UNIT_TYPE_ACTIONS = {
 	UnitType.PLAYER: [
 		ActionType.CANCEL_FLYING,
@@ -125,13 +132,6 @@ const UNIT_CONDITION_TIMERS = {
 	}
 }
 
-enum DIRECTION {
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT,
-}
-
 const ENV_COLLIDERS = {
 	UnitType.PLAYER: [
 		[Vector2(0, 1.5), [DIRECTION.LEFT, DIRECTION.UP, DIRECTION.RIGHT]],
@@ -179,21 +179,33 @@ const UnitSprites = {
 	}
 }
 
+const TilesetMapElems = {
+	"PalaceOfEarthSpirits_Stage": {
+		MAP_ELEM_TYPES.SQUARE: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		MAP_ELEM_TYPES.SLOPE_LEFT: [19, 20],
+		MAP_ELEM_TYPES.SLOPE_RIGHT: [21, 22],
+		MAP_ELEM_TYPES.SMALL_SLOPE_LEFT_1: [9],
+		MAP_ELEM_TYPES.SMALL_SLOPE_LEFT_2: [10, 11],
+		MAP_ELEM_TYPES.SMALL_SLOPE_RIGHT_1: [12],
+		MAP_ELEM_TYPES.SMALL_SLOPE_RIGHT_2: [13, 14],
+		MAP_ELEM_TYPES.LEDGE: [15, 16, 17, 18],
+	}
+}
+
 const MOVE_SPEEDS = {
 	UnitType.PLAYER: 6
 }
 
 const UNIT_TYPE_JUMP_SPEEDS = {
-	UnitType.PLAYER: 7
+	UnitType.PLAYER: 8
 }
 
 const SCALE_FACTOR = 3
 const GRID_SIZE = 20
-const GRAVITY = 20
-const MAX_FALL_SPEED = -10
-#const MAX_FALL_LITE = -4
-const MAX_FALL_LITE = -1
+const GRAVITY = 35
+const MAX_FALL_SPEED = -14
+const MAX_FALL_LITE = -4
 const ACCELERATION = 35
-const DASH_SPEED = 10
+const DASH_SPEED = 12
 const GRAVITY_LITE = 8
 const QUANTUM_DIST = 0.001

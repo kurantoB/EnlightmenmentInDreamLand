@@ -14,13 +14,10 @@ var top_left_colliders = []
 
 func _init(the_scene : GameScene):
 	scene = the_scene
-	var stage = scene.get_node("Stage")
-	init_stage_grid(stage.get_children())
-	for stage_elem in stage.get_children():
-		stage_elem.position.x = stage_elem.position.x * Constants.SCALE_FACTOR
-		stage_elem.position.y = stage_elem.position.y * Constants.SCALE_FACTOR
-		stage_elem.scale.x = Constants.SCALE_FACTOR
-		stage_elem.scale.y = Constants.SCALE_FACTOR
+	var stage : TileMap = scene.get_node("Stage")
+	init_stage_grid(stage)
+	stage.scale.x = Constants.SCALE_FACTOR
+	stage.scale.y = Constants.SCALE_FACTOR
 	var player = scene.get_node("Player")
 	init_player(player)
 	player.position.x = player.position.x * Constants.SCALE_FACTOR
@@ -28,13 +25,11 @@ func _init(the_scene : GameScene):
 	player.scale.x = Constants.SCALE_FACTOR
 	player.scale.y = Constants.SCALE_FACTOR
 	
-	if scene.has_node("Background"):
-		var background = scene.get_node("Background")
-		for stage_elem in background.get_children():
-			stage_elem.position.x = stage_elem.position.x * Constants.SCALE_FACTOR
-			stage_elem.position.y = stage_elem.position.y * Constants.SCALE_FACTOR
-			stage_elem.scale.x = Constants.SCALE_FACTOR
-			stage_elem.scale.y = Constants.SCALE_FACTOR
+	for tilemap_to_scale in scene.tilemaps_to_scale:
+		if scene.has_node(tilemap_to_scale):
+			var this_tilemap_to_scale = scene.get_node(tilemap_to_scale)
+			this_tilemap_to_scale.scale.x = Constants.SCALE_FACTOR
+			this_tilemap_to_scale.scale.y = Constants.SCALE_FACTOR
 
 func init_player(player : Unit):
 	player.pos = Vector2(player.position.x / Constants.GRID_SIZE, -1 * player.position.y / Constants.GRID_SIZE)
@@ -85,11 +80,30 @@ func interact(unit : Unit, delta):
 			for collider in top_left_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.LEFT, Constants.DIRECTION.UP], delta)
 
-func init_stage_grid(map_elems):
-	for map_elem in map_elems:
-		var stage_x = floor(map_elem.position.x / Constants.GRID_SIZE)
-		var stage_y = floor(-1 * map_elem.position.y / Constants.GRID_SIZE)
-		match map_elem.map_elem_type:
+func init_stage_grid(tilemap : TileMap):
+	for map_elem in tilemap.get_used_cells():
+		var stage_x = floor(tilemap.map_to_world(map_elem).x / Constants.GRID_SIZE)
+		var stage_y = floor(-1 * tilemap.map_to_world(map_elem).y / Constants.GRID_SIZE) - 1
+		var map_elem_type : int
+		var cellv = tilemap.get_cellv(map_elem)
+		var found_map_elem_type : bool = false
+		for test_map_elem_type in [
+			Constants.MAP_ELEM_TYPES.SQUARE,
+			Constants.MAP_ELEM_TYPES.SLOPE_LEFT,
+			Constants.MAP_ELEM_TYPES.SLOPE_RIGHT,
+			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_LEFT_1,
+			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_LEFT_2,
+			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_RIGHT_1,
+			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_RIGHT_2,
+			Constants.MAP_ELEM_TYPES.LEDGE]:
+			for test_cell_v in Constants.TilesetMapElems[scene.tile_set_name][test_map_elem_type]:
+				if test_cell_v == cellv:
+					map_elem_type = test_map_elem_type
+					found_map_elem_type = true
+					break
+			if found_map_elem_type:
+				break
+		match map_elem_type:
 			Constants.MAP_ELEM_TYPES.SQUARE:
 				if stage_x == 39 and stage_y == 2:
 					print("Found stage_x == 39 and stage_y == 2 square")
@@ -281,6 +295,8 @@ func check_collision(unit : Unit, collider, collision_directions, delta):
 			var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
 			scene.conditional_log("check_collision up collision change-pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
 			unit.pos.y = unit.pos.y + y_dist_to_translate
+			if unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING:
+				unit.set_current_action(Constants.UnitCurrentAction.IDLE)
 		elif collision_dir == Constants.DIRECTION.LEFT or collision_dir == Constants.DIRECTION.RIGHT:
 			if (collider[0].x == collider[1].x
 			or (not unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] or not unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND])):
@@ -302,35 +318,36 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 	if not unit_env_collider[1].has(Constants.DIRECTION.DOWN):
 		scene.conditional_log("check_ground_collision " + str(unit_env_collider[0]) + " not ground collider")
 		return
-	if (unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]
-		and not unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]
-		and (collider[0].y == collider[1].y or (collider[0].x != collider[1].x and collider[0].y != collider[1].y))):
-		scene.conditional_log("check_ground_collision airborne ground collision on: " + str(collider) + " with " + str(unit_env_collider[0]))
-		scene.conditional_log("check_ground_collision make v-speed's h-component the h-speed")
-#		unit.v_speed = 0
-#		unit.h_speed = 0
-		if collider[0].y == collider[1].y:
-			unit.v_speed = 0
-		else:
-			var angle_helper
-			if unit.h_speed > 0:
-				angle_helper = collider
+	if ((unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]
+	and not unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]
+	or not unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED])
+	and (collider[0].y == collider[1].y or (collider[0].x != collider[1].x and collider[0].y != collider[1].y))):
+			scene.conditional_log("check_ground_collision airborne ground collision on: " + str(collider) + " with " + str(unit_env_collider[0]))
+			scene.conditional_log("check_ground_collision make v-speed's h-component the h-speed")
+			if collider[0].y == collider[1].y:
+				unit.v_speed = 0
 			else:
-				angle_helper = [collider[1], collider[0]]
-				unit.v_speed = abs(unit.h_speed)
-				GameUtils.reangle_move(unit, angle_helper)
-		var collider_set_pos_y = collision_point.y + Constants.QUANTUM_DIST
-		var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
-		scene.conditional_log("check_ground_collision change pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
-		unit.pos.y = unit.pos.y + y_dist_to_translate
-		var x_dist_to_translate = collision_point.x - (unit.pos.x + unit_env_collider[0].x)
-		scene.conditional_log("check_ground_collision change pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
-		unit.pos.x = unit.pos.x + x_dist_to_translate
-		scene.conditional_log("check_ground_collision set grounded")
-		unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = true
-		if unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
-			scene.conditional_log("check_ground_collision set current action flying -> idle")
-			unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] = Constants.UnitCurrentAction.IDLE
+				var angle_helper
+				if unit.h_speed > 0:
+					angle_helper = collider
+				else:
+					angle_helper = [collider[1], collider[0]]
+					unit.v_speed = abs(unit.h_speed)
+					GameUtils.reangle_move(unit, angle_helper)
+			var collider_set_pos_y = collision_point.y + Constants.QUANTUM_DIST
+			var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
+			scene.conditional_log("check_ground_collision change pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
+			unit.pos.y = unit.pos.y + y_dist_to_translate
+			var x_dist_to_translate = collision_point.x - (unit.pos.x + unit_env_collider[0].x)
+			scene.conditional_log("check_ground_collision change pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
+			unit.pos.x = unit.pos.x + x_dist_to_translate
+			scene.conditional_log("check_ground_collision set grounded")
+			if unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]:
+				unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = true
+				if unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
+					scene.conditional_log("check_ground_collision set current action flying -> idle")
+					unit.set_current_action(Constants.UnitCurrentAction.IDLE)
+		
 	
 
 # returns true/false, collision direction, collision point, and unit env collider

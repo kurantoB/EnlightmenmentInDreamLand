@@ -26,12 +26,12 @@ offset = Vector2( 0, -23 )
 
 [node name="Fly1" type="Sprite" parent="."]
 visible = false
-texture = ExtResource( 10 )
+texture = ExtResource( 2 )
 offset = Vector2( 0, -10 )
 
 [node name="Fly2" type="Sprite" parent="."]
 visible = false
-texture = ExtResource( 2 )
+texture = ExtResource( 10 )
 offset = Vector2( 0, -10 )
 
 [node name="Idle" type="AnimatedSprite" parent="."]
