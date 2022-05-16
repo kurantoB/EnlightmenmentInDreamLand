@@ -5,7 +5,7 @@
 [ext_resource path="res://Tile Sets/PalaceOfEarthSpirits_Stage.tres" type="TileSet" id=3]
 [ext_resource path="res://Tile Sets/PalaceOfEarthSpirits_BG.tres" type="TileSet" id=4]
 
-[node name="Scene" type="Node2D"]
+[node name="Scene" type="Node"]
 script = ExtResource( 1 )
 tile_set_name = "PalaceOfEarthSpirits_Stage"
 tilemaps_to_scale = [ "Background", "Background2" ]
