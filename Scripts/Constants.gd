@@ -181,7 +181,7 @@ const UnitSprites = {
 	}
 }
 
-const TilesetMapElems = {
+const TileSetMapElems = {
 	"PalaceOfEarthSpirits_Stage": {
 		MAP_ELEM_TYPES.SQUARE: [0, 1, 2, 3, 4, 5, 6, 7, 8],
 		MAP_ELEM_TYPES.SLOPE_LEFT: [19, 20],

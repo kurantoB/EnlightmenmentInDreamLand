@@ -2,8 +2,8 @@
 
 [ext_resource path="res://Scripts/GameScene.gd" type="Script" id=1]
 [ext_resource path="res://Units/Player.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Tilesets/PalaceOfEarthSpirits_Stage.tres" type="TileSet" id=3]
-[ext_resource path="res://Tilesets/PalaceOfEarthSpirits_BG.tres" type="TileSet" id=4]
+[ext_resource path="res://Tile Sets/PalaceOfEarthSpirits_Stage.tres" type="TileSet" id=3]
+[ext_resource path="res://Tile Sets/PalaceOfEarthSpirits_BG.tres" type="TileSet" id=4]
 
 [node name="Scene" type="Node2D"]
 script = ExtResource( 1 )
