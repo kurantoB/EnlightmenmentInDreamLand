@@ -12,7 +12,7 @@ export var unit_type : int
 var actions = {}
 var unit_conditions = {}
 var timer_actions = {}
-var facing : int = Constants.PlayerInput.RIGHT
+var facing : int = Constants.DIRECTION.RIGHT
 var dash_facing : int
 var current_action_time_elapsed : float = 0
 var just_absorbed : bool = false
@@ -104,7 +104,7 @@ func handle_moving_status(delta, scene):
 	# if move status is not idle
 	else:
 		# if is facing-aligned
-		if (h_speed <= 0 and facing == Constants.PlayerInput.LEFT) or (h_speed >= 0 and facing == Constants.PlayerInput.RIGHT):
+		if (h_speed <= 0 and facing == Constants.DIRECTION.LEFT) or (h_speed >= 0 and facing == Constants.DIRECTION.RIGHT):
 			# speed up
 			if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.DASHING:
 				magnitude = min(Constants.DASH_SPEED, magnitude + Constants.ACCELERATION * delta)
@@ -131,7 +131,7 @@ func handle_moving_status(delta, scene):
 			elif h_speed < 0:
 				h_speed = -1 * Constants.QUANTUM_DIST
 			else:
-				if facing == Constants.PlayerInput.RIGHT:
+				if facing == Constants.DIRECTION.RIGHT:
 					h_speed = Constants.QUANTUM_DIST
 				else:
 					h_speed = -1 * Constants.QUANTUM_DIST
@@ -149,7 +149,7 @@ func handle_moving_status(delta, scene):
 			elif h_speed < 0:
 				h_speed = -1 * magnitude
 			else:
-				if facing == Constants.PlayerInput.RIGHT:
+				if facing == Constants.DIRECTION.RIGHT:
 					h_speed = magnitude
 				else:
 					h_speed = -1 * magnitude
@@ -188,7 +188,7 @@ func set_sprite(sprite_class : String, index : int = 0):
 		current_sprite.visible = true
 		if (Constants.UnitSprites[unit_type][sprite_class][0]):
 			current_sprite.play()
-	if facing == Constants.PlayerInput.LEFT:
+	if facing == Constants.DIRECTION.LEFT:
 		current_sprite.scale.x = -1
 	else:
 		current_sprite.scale.x = 1
@@ -203,6 +203,6 @@ func log_unit():
 	print("===UNIT DEBUG====")
 	print("pos: " + str(pos))
 	print("speeds: " + str(Vector2(h_speed, v_speed)))
-	print("facing: " + Constants.PlayerInput.keys()[facing])
+	print("facing: " + Constants.DIRECTION.keys()[facing])
 	print("conditions: action: " + Constants.UnitCurrentAction.keys()[unit_conditions[Constants.UnitCondition.CURRENT_ACTION]] + ", grounded: " + str(unit_conditions[Constants.UnitCondition.IS_ON_GROUND]) + ", movement: " + Constants.UnitMovingStatus.keys()[unit_conditions[Constants.UnitCondition.MOVING_STATUS]])
 	print("=================")

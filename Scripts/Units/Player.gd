@@ -87,7 +87,7 @@ func recoil():
 
 func slide():
 	var dir_factor = 1
-	if facing == Constants.PlayerInput.LEFT:
+	if facing == Constants.DIRECTION.LEFT:
 		dir_factor = -1
 	h_speed = Constants.DASH_SPEED * dir_factor
 	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.SLIDING]:

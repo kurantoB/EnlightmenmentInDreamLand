@@ -101,7 +101,9 @@ func handle_player_input():
 				# if action-idle + move-idle + grounded
 				if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 					# if action-idle + move-idle + grounded + dash-timer-active + input-dash-facing-match
-					if player.timer_actions[Constants.ActionType.DASH] > 0 and player.dash_facing == dir_input:
+					if (player.timer_actions[Constants.ActionType.DASH] > 0 and (
+						player.dash_facing == Constants.DIRECTION.LEFT and dir_input == Constants.PlayerInput.LEFT
+						or player.dash_facing == Constants.DIRECTION.RIGHT and dir_input == Constants.PlayerInput.RIGHT)):
 						# set dash
 						player.actions[Constants.ActionType.DASH] = true
 						new_player_move_status = Constants.UnitMovingStatus.DASHING
@@ -112,7 +114,10 @@ func handle_player_input():
 						new_player_move_status = Constants.UnitMovingStatus.MOVING
 					# start timer, set dash-facing
 					player.timer_actions[Constants.ActionType.DASH] = Constants.UNIT_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.DASH]
-					player.dash_facing = dir_input
+					if dir_input == Constants.PlayerInput.LEFT:
+						player.dash_facing = Constants.DIRECTION.LEFT
+					elif dir_input == Constants.PlayerInput.RIGHT:
+						player.dash_facing = Constants.DIRECTION.RIGHT
 				# if action-idle + move-idle + not-grounded
 				else:
 					# set move, kill timer
@@ -126,10 +131,14 @@ func handle_player_input():
 				# if action-idle + move-moving + grounded
 				if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 					# if action-idle + move-moving + grounded + facing-change
-					if player.facing != dir_input:
+					if (player.facing == Constants.DIRECTION.LEFT and dir_input == Constants.PlayerInput.RIGHT
+						or player.facing == Constants.DIRECTION.RIGHT and dir_input == Constants.PlayerInput.LEFT):
 						# start timer, set dash-facing
 						player.timer_actions[Constants.ActionType.DASH] = Constants.UNIT_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.DASH]
-						player.dash_facing = dir_input
+						if dir_input == Constants.PlayerInput.LEFT:
+							player.dash_facing = Constants.DIRECTION.LEFT
+						elif dir_input == Constants.PlayerInput.RIGHT:
+							player.dash_facing = Constants.DIRECTION.RIGHT
 				# if action-idle + move-moving + not-grounded
 				else:
 					# kill timer
@@ -137,7 +146,8 @@ func handle_player_input():
 			# if action-idle + move-dashing
 			else:
 				# if action-idle + move-dashing + facing-change
-				if player.facing != dir_input:
+				if (player.facing == Constants.DIRECTION.LEFT and dir_input == Constants.PlayerInput.RIGHT
+					or player.facing == Constants.DIRECTION.RIGHT and dir_input == Constants.PlayerInput.LEFT):
 					# set move
 					player.actions[Constants.ActionType.MOVE] = true
 					new_player_move_status = Constants.UnitMovingStatus.MOVING
@@ -148,7 +158,10 @@ func handle_player_input():
 					new_player_move_status = Constants.UnitMovingStatus.DASHING
 				# start timer, set dash-facing
 				player.timer_actions[Constants.ActionType.DASH] = Constants.UNIT_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.DASH]
-				player.dash_facing = dir_input
+				if dir_input == Constants.PlayerInput.LEFT:
+					player.dash_facing = Constants.DIRECTION.LEFT
+				elif dir_input == Constants.PlayerInput.RIGHT:
+					player.dash_facing = Constants.DIRECTION.RIGHT
 		# if action-jumping or action-flying
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 			# set move, kill timer
@@ -156,7 +169,10 @@ func handle_player_input():
 			new_player_move_status = Constants.UnitMovingStatus.MOVING
 			player.timer_actions[Constants.ActionType.DASH] = 0
 		# set facing
-		player.facing = dir_input
+		if dir_input == Constants.PlayerInput.LEFT:
+			player.facing = Constants.DIRECTION.LEFT
+		elif dir_input == Constants.PlayerInput.RIGHT:
+			player.facing = Constants.DIRECTION.RIGHT
 	
 	if not input_table[Constants.PlayerInput.LEFT] and not input_table[Constants.PlayerInput.RIGHT]:
 		new_player_move_status = Constants.UnitMovingStatus.IDLE
