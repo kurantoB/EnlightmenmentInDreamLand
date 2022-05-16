@@ -112,17 +112,19 @@ const UNIT_TYPE_CONDITIONS = {
 	},
 }
 
-const PLAYER_TIMERS = {
-	ActionType.SLIDE: 0.5,
-	ActionType.FLOAT: 0.25,
-	ActionType.DASH: 0.3
+const UNIT_TIMERS = {
+	UnitType.PLAYER: {
+		ActionType.SLIDE: 0.5,
+		ActionType.FLOAT: 0.25,
+		ActionType.DASH: 0.3
+	}
 }
 
 const CURRENT_ACTION_TIMERS = {
 	UnitType.PLAYER: {
 		UnitCurrentAction.SLIDING: 1.5,
 		UnitCurrentAction.RECOILING: 1.5,
-		UnitCurrentAction.JUMPING: 0.75,
+		UnitCurrentAction.JUMPING: 0.7,
 	}
 }
 

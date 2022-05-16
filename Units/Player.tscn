@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://Scripts/Unit.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/Units/Player.gd" type="Script" id=1]
 [ext_resource path="res://Graphics/Units/Satori_Fly2.png" type="Texture" id=2]
 [ext_resource path="res://Graphics/Units/Satori_Jump2.png" type="Texture" id=3]
 [ext_resource path="res://Graphics/Animations/PlayerWalk.tres" type="SpriteFrames" id=4]

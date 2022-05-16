@@ -111,7 +111,7 @@ func handle_player_input():
 						player.actions[Constants.ActionType.MOVE] = true
 						new_player_move_status = Constants.UnitMovingStatus.MOVING
 					# start timer, set dash-facing
-					player.timer_actions[Constants.ActionType.DASH] = Constants.PLAYER_TIMERS[Constants.ActionType.DASH]
+					player.timer_actions[Constants.ActionType.DASH] = Constants.UNIT_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.DASH]
 					player.dash_facing = dir_input
 				# if action-idle + move-idle + not-grounded
 				else:
@@ -128,7 +128,7 @@ func handle_player_input():
 					# if action-idle + move-moving + grounded + facing-change
 					if player.facing != dir_input:
 						# start timer, set dash-facing
-						player.timer_actions[Constants.ActionType.DASH] = Constants.PLAYER_TIMERS[Constants.ActionType.DASH]
+						player.timer_actions[Constants.ActionType.DASH] = Constants.UNIT_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.DASH]
 						player.dash_facing = dir_input
 				# if action-idle + move-moving + not-grounded
 				else:
@@ -147,7 +147,7 @@ func handle_player_input():
 					player.actions[Constants.ActionType.DASH] = true
 					new_player_move_status = Constants.UnitMovingStatus.DASHING
 				# start timer, set dash-facing
-				player.timer_actions[Constants.ActionType.DASH] = Constants.PLAYER_TIMERS[Constants.ActionType.DASH]
+				player.timer_actions[Constants.ActionType.DASH] = Constants.UNIT_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.DASH]
 				player.dash_facing = dir_input
 		# if action-jumping or action-flying
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:

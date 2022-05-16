@@ -34,21 +34,13 @@ func _ready():
 		unit_conditions[condition_num] = Constants.UNIT_TYPE_CONDITIONS[unit_type][condition_num]
 	for condition_num in Constants.UNIT_CONDITION_TIMERS[unit_type].keys():
 		unit_condition_timers[condition_num] = 0
-	if unit_type == Constants.UnitType.PLAYER:
-		for timer_action_num in Constants.PLAYER_TIMERS.keys():
-			timer_actions[timer_action_num] = 0
 
 func reset_actions():
 	for action_num in actions.keys():
 		actions[action_num] = false
-	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.SLIDING:
-		actions[Constants.ActionType.SLIDE] = true
-	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.RECOILING:
-		actions[Constants.ActionType.RECOIL] = true
 
 func process_unit(delta, scene):
-	if unit_type == Constants.UnitType.PLAYER:
-		advance_timers(delta)
+	advance_timers(delta)
 	current_action_time_elapsed += delta
 	execute_actions(delta, scene)
 
@@ -66,78 +58,25 @@ func set_current_action(current_action : int):
 		current_action_time_elapsed = 0
 	unit_conditions[Constants.UnitCondition.CURRENT_ACTION] = current_action
 
-func do_with_timeout(action : int, new_current_action : int = -1):
-	if timer_actions[action] == 0:
-		actions[action] = true
-		timer_actions[action] = Constants.PLAYER_TIMERS[action]
-		if new_current_action != -1:
-			set_current_action(new_current_action)
-		if action == Constants.ActionType.FLOAT:
-			unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
-
 func execute_actions(delta, scene):
 	for action_num in actions.keys():
 		if !actions[action_num]:
 			continue
 		match action_num:
-			Constants.ActionType.CANCEL_FLYING:
-				cancel_flying()
-			Constants.ActionType.CROUCH:
-				crouch()
-			Constants.ActionType.DASH:
-				dash(delta)
-			Constants.ActionType.DIGEST:
-				digest()
-			Constants.ActionType.DISCARD:
-				discard()
-			Constants.ActionType.DROP_PORTING:
-				drop_porting()
-			Constants.ActionType.FLOAT:
-				flot()
 			Constants.ActionType.JUMP:
 				jump()
 			Constants.ActionType.MOVE:
 				move(delta)
-			Constants.ActionType.RECOIL:
-				recoil()
-			Constants.ActionType.SLIDE:
-				slide()
 		actions[action_num] = false
 	handle_moving_status(delta, scene)
 	handle_idle(delta)
 
-func cancel_flying():
-	pass
-
-func crouch():
-	pass
-
-func dash(delta):
-	if (unit_conditions[Constants.UnitCondition.MOVING_STATUS] != Constants.UnitMovingStatus.IDLE
-	and unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE
-	and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
-		set_sprite("Dash")
-
-func digest():
-	pass
-
-func discard():
-	pass
-
-func drop_porting():
-	pass
-	
-func flot():
-	v_speed = Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type] * .67
-
 func jump():
 	v_speed = Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type]
-	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING:
-		if unit_type == Constants.UnitType.PLAYER:
-			if v_speed > 0:
-				set_sprite("Jump", 0)
 	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.JUMPING]:
 		set_current_action(Constants.UnitCurrentAction.IDLE)
+	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING and v_speed > 0:
+		set_sprite("Jump", 0)
 		
 
 func move(delta):
@@ -220,33 +159,19 @@ func handle_moving_status(delta, scene):
 
 func handle_idle(delta):
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
-		if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-			if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
-				set_sprite("Idle")
-		else:
-			if v_speed < 0:
+		if unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]:
+			if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+				if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
+					set_sprite("Idle")
+			elif v_speed < 0:
 				set_sprite("Jump", 1)
+		else:
+			set_sprite("Idle")
 	elif unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 		if v_speed > 0:
 			set_sprite("Fly", 0)
 		else:
 			set_sprite("Fly", 1)
-
-func recoil():
-	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.RECOILING]:
-		set_current_action(Constants.UnitCurrentAction.IDLE)
-	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] != Constants.UnitCurrentAction.RECOILING:
-		unit_conditions[Constants.UnitCondition.IS_INVINCIBLE] = true
-		unit_condition_timers[Constants.UnitCondition.IS_INVINCIBLE] = Constants.UNIT_CONDITION_TIMERS[unit_type][Constants.UnitCondition.IS_INVINCIBLE]
-		set_current_action(Constants.UnitCurrentAction.RECOILING)
-
-func slide():
-	var dir_factor = 1
-	if facing == Constants.PlayerInput.LEFT:
-		dir_factor = -1
-	h_speed = Constants.DASH_SPEED * dir_factor
-	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.SLIDING]:
-		set_current_action(Constants.UnitCurrentAction.IDLE)
 
 func set_sprite(sprite_class : String, index : int = 0):
 	if not unit_type in Constants.UnitSprites or not sprite_class in Constants.UnitSprites[unit_type]:
