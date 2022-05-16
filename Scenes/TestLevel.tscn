@@ -32,4 +32,7 @@ tile_data = PoolIntArray( -1310704, 0, 0, -1310703, 1, 0, -1310702, 1, 0, -13107
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 10, -20 )
 
+[node name="Camera2D" type="Camera2D" parent="Player"]
+offset = Vector2( 0, -21 )
+
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
