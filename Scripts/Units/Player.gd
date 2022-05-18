@@ -2,6 +2,10 @@ extends Unit
 
 class_name Player
 
+var dash_facing : int
+var just_absorbed : bool = false
+var just_jumped : bool = false
+
 # Called when the node enters the scene tree for the first time
 func _ready():
 	for timer_action_num in Constants.UNIT_TIMERS[Constants.UnitType.PLAYER].keys():

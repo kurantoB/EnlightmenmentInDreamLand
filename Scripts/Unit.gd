@@ -13,10 +13,7 @@ var actions = {}
 var unit_conditions = {}
 var timer_actions = {}
 var facing : int = Constants.DIRECTION.RIGHT
-var dash_facing : int
 var current_action_time_elapsed : float = 0
-var just_absorbed : bool = false
-var just_jumped : bool = false
 var unit_condition_timers = {}
 
 var pos : Vector2
