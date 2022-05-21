@@ -2,9 +2,10 @@ extends Unit
 
 class_name Player
 
+var jump_available : bool = true
+var float_available : bool = true
 var dash_facing : int
 var just_absorbed : bool = false
-var just_jumped : bool = false
 
 # Called when the node enters the scene tree for the first time
 func _ready():

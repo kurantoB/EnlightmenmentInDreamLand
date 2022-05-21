@@ -122,7 +122,7 @@ const UNIT_TIMERS = {
 
 const CURRENT_ACTION_TIMERS = {
 	UnitType.PLAYER: {
-		UnitCurrentAction.SLIDING: 1.5,
+		UnitCurrentAction.SLIDING: 0.7,
 		UnitCurrentAction.RECOILING: 1.5,
 		UnitCurrentAction.JUMPING: 0.7,
 	}
