@@ -67,15 +67,21 @@ func interact(unit : Unit, delta):
 			for collider in top_right_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.UP, Constants.DIRECTION.RIGHT], delta)
 		elif unit.h_speed > 0 and unit.v_speed <= 0:
+			# We have to make sure every horizontal-direction check is preceded by a down check, and vice versa...
 			for collider in bottom_right_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.RIGHT], delta)
 			for collider in bottom_right_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.DOWN], delta)
+			for collider in bottom_right_colliders:
+				check_collision(unit, collider, [Constants.DIRECTION.RIGHT], delta)
 		elif unit.h_speed <= 0 and unit.v_speed < 0:
+			# We have to make sure every horizontal-direction check is preceded by a down check, and vice versa...
 			for collider in bottom_left_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.LEFT], delta)
 			for collider in bottom_left_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.DOWN], delta)
+			for collider in bottom_left_colliders:
+				check_collision(unit, collider, [Constants.DIRECTION.LEFT], delta)
 		elif unit.h_speed < 0 and unit.v_speed >= 0:
 			for collider in top_left_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.LEFT, Constants.DIRECTION.UP], delta)
@@ -332,8 +338,8 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 					angle_helper = collider
 				else:
 					angle_helper = [collider[1], collider[0]]
-					unit.v_speed = abs(unit.h_speed)
-					GameUtils.reangle_move(unit, angle_helper)
+				unit.v_speed = abs(unit.h_speed)
+				GameUtils.reangle_move(unit, angle_helper)
 			var collider_set_pos_y = collision_point.y + Constants.QUANTUM_DIST
 			var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
 			scene.conditional_log("check_ground_collision change pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))

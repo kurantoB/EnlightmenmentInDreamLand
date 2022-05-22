@@ -19,7 +19,6 @@ var unit_condition_timers = {}
 var pos : Vector2
 var h_speed : float = 0
 var v_speed : float = 0
-var ground_speed : float = 0
 
 var current_sprite : Node2D
 

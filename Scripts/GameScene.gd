@@ -24,7 +24,7 @@ var stage_env
 
 var time_elapsed : float = 0
 var time_elapsed_to_log : float = -1
-var num_iterations = 24
+var num_iterations = 5
 var log_triggered : bool = false
 
 # Called when the node enters the scene tree for the first time.
