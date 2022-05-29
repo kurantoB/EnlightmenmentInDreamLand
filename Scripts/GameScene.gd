@@ -189,10 +189,10 @@ func handle_player_input():
 					player.actions[Constants.ActionType.JUMP] = true
 					player.set_current_action(Constants.UnitCurrentAction.JUMPING)
 					player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
-					player.jump_available = false
 					player.float_available = false
 			elif player.float_available and not player.unit_conditions[Constants.UnitCondition.IS_PORTING]:
 				player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
+			player.jump_available = false
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 			player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
 	
