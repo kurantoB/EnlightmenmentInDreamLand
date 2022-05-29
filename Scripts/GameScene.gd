@@ -192,9 +192,9 @@ func handle_player_input():
 					player.float_available = false
 			elif player.float_available and not player.unit_conditions[Constants.UnitCondition.IS_PORTING]:
 				player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
-			player.jump_available = false
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 			player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
+		player.jump_available = false
 	
 	if not input_table[Constants.PlayerInput.GBA_A]:
 		if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
