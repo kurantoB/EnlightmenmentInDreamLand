@@ -40,15 +40,7 @@ func interact(unit : Unit, delta):
 		# gravity-affected, grounded
 		if unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 			# gravity-affected, grounded, -v
-			if unit.v_speed < 0:
-				scene.conditional_log("interact gravity-affected, grounded, neg v-speed: reorient speed, reposition")
-				ground_movement_interaction(unit, delta)
-			# gravity-affected, grounded, v-speed-zero
-			else:
-				scene.conditional_log("interact gravity-affected, grounded, v-speed-zero: zero-out speed, reposition")
-				unit.h_speed = 0
-				unit.v_speed = 0
-				ground_still_placement(unit)
+			interact_grounded(unit, delta)
 		else:
 			scene.conditional_log("interact gravity-affected, not-grounded")
 			var gravity_factor = Constants.GRAVITY
@@ -85,6 +77,17 @@ func interact(unit : Unit, delta):
 		elif unit.h_speed < 0 and unit.v_speed >= 0:
 			for collider in top_left_colliders:
 				check_collision(unit, collider, [Constants.DIRECTION.LEFT, Constants.DIRECTION.UP], delta)
+
+func interact_grounded(unit : Unit, delta):
+	if unit.v_speed < 0:
+		scene.conditional_log("interact_grounded neg v-speed: reorient speed, reposition")
+		ground_movement_interaction(unit, delta)
+	# gravity-affected, grounded, v-speed-zero
+	else:
+		scene.conditional_log("interact_grounded v-speed-zero: zero-out speed, reposition")
+		unit.h_speed = 0
+		unit.v_speed = 0
+		ground_still_placement(unit)
 
 func init_stage_grid(tilemap : TileMap):
 	for map_elem in tilemap.get_used_cells():
@@ -293,7 +296,7 @@ func check_collision(unit : Unit, collider, collision_directions, delta):
 		var collision_point = env_collision[2]
 		var unit_env_collider = env_collision[3]
 		scene.conditional_log("check_collision collided: " + str(collider) + " check-directions: " + str(collision_directions) + " direction: " + Constants.DIRECTION.keys()[env_collision[1]] + ", at " + str(collision_point) + " w/ env-collider: " + str(unit_env_collider[0]))
-		check_ground_collision(unit, collider, collision_point, unit_env_collider)
+		check_ground_collision(unit, collider, collision_point, unit_env_collider, delta)
 		if collision_dir == Constants.DIRECTION.UP:
 			scene.conditional_log("check_collision up collision zero-out v-speed")
 			unit.v_speed = 0
@@ -320,7 +323,7 @@ func check_collision(unit : Unit, collider, collision_directions, delta):
 			unit.pos.x = unit.pos.x + x_dist_to_translate
 
 # handle collision with ground if any
-func check_ground_collision(unit : Unit, collider, collision_point : Vector2, unit_env_collider):
+func check_ground_collision(unit : Unit, collider, collision_point : Vector2, unit_env_collider, delta):
 	if not unit_env_collider[1].has(Constants.DIRECTION.DOWN):
 		scene.conditional_log("check_ground_collision " + str(unit_env_collider[0]) + " not ground collider")
 		return
@@ -329,17 +332,12 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 	or not unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED])
 	and (collider[0].y == collider[1].y or (collider[0].x != collider[1].x and collider[0].y != collider[1].y))):
 			scene.conditional_log("check_ground_collision airborne ground collision on: " + str(collider) + " with " + str(unit_env_collider[0]))
-			scene.conditional_log("check_ground_collision make v-speed's h-component the h-speed")
-			if collider[0].y == collider[1].y:
-				unit.v_speed = 0
+			unit.v_speed = -1 * abs(unit.h_speed)
+			if unit.h_speed > 0:
+				unit.h_speed = Constants.QUANTUM_DIST
 			else:
-				var angle_helper
-				if unit.h_speed > 0:
-					angle_helper = collider
-				else:
-					angle_helper = [collider[1], collider[0]]
-				unit.v_speed = abs(unit.h_speed)
-				GameUtils.reangle_move(unit, angle_helper)
+				unit.h_speed = -1 * Constants.QUANTUM_DIST
+			scene.conditional_log("check_ground_collision change move speed's to ground movement: (" + str(unit.h_speed) + ", " + str(unit.v_speed) + ")")
 			var collider_set_pos_y = collision_point.y + Constants.QUANTUM_DIST
 			var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
 			scene.conditional_log("check_ground_collision change pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
@@ -353,6 +351,7 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 				if unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 					scene.conditional_log("check_ground_collision set current action flying -> idle")
 					unit.set_current_action(Constants.UnitCurrentAction.IDLE)
+				interact_grounded(unit, delta)
 		
 	
 
