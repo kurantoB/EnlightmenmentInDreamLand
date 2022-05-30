@@ -92,27 +92,19 @@ const UNIT_TYPE_CURRENT_ACTIONS = {
 	],
 }
 
-const UNIT_TYPE_MOVING_STATUS = {
-	UnitType.PLAYER: [
-		UnitMovingStatus.IDLE,
-		UnitMovingStatus.MOVING,
-		UnitMovingStatus.DASHING
-	],
-}
-
 const UNIT_TYPE_CONDITIONS = {
 	UnitType.PLAYER: {
-		UnitCondition.CURRENT_ACTION: UNIT_TYPE_CURRENT_ACTIONS[UnitType.PLAYER][UnitCurrentAction.IDLE],
+		UnitCondition.CURRENT_ACTION: UnitCurrentAction.IDLE,
 		UnitCondition.HAS_ABILITY: false,
 		UnitCondition.IS_ON_GROUND: true,
 		UnitCondition.IS_PORTING: false,
-		UnitCondition.MOVING_STATUS: UNIT_TYPE_MOVING_STATUS[UnitType.PLAYER][UnitMovingStatus.IDLE],
+		UnitCondition.MOVING_STATUS: UnitMovingStatus.IDLE,
 		UnitCondition.IS_INVINCIBLE: false,
 		UnitCondition.IS_GRAVITY_AFFECTED: true,
 	},
 }
 
-const UNIT_TIMERS = {
+const ACTION_TIMERS = {
 	UnitType.PLAYER: {
 		ActionType.SLIDE: 0.5,
 		ActionType.FLOAT: 0.25,
@@ -129,8 +121,9 @@ const CURRENT_ACTION_TIMERS = {
 }
 
 const UNIT_CONDITION_TIMERS = {
+	# condition type: [duration, on value, off value]
 	UnitType.PLAYER: {
-		UnitCondition.IS_INVINCIBLE: 3.0
+		UnitCondition.IS_INVINCIBLE: [3.0, true, false]
 	}
 }
 
@@ -171,8 +164,8 @@ enum MAP_ELEM_TYPES {
 }
 
 const UnitSprites = {
+	# "Sprite class": [is animation?, [Node list]]
 	UnitType.PLAYER: {
-		# "Sprite class": [is animation?, [Node list]]
 		"Idle": [true, ["Idle"]],
 		"Walk": [true, ["Walk"]],
 		"Dash": [true, ["Dash"]],

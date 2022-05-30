@@ -250,7 +250,7 @@ func ground_movement_interaction(unit : Unit, delta):
 			break
 	if not has_ground_collision:
 		scene.conditional_log("ground_movement_interaction not-ground-collided - is-on-ground-false")
-		unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
+		unit.set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, false)
 		if unit.h_speed > 0:
 			angle_helper = [Vector2(0, 0), Vector2(1, 0)]
 		else:
@@ -347,7 +347,7 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 			unit.pos.x = unit.pos.x + x_dist_to_translate
 			scene.conditional_log("check_ground_collision set grounded")
 			if unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]:
-				unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = true
+				unit.set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, true)
 				if unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 					scene.conditional_log("check_ground_collision set current action flying -> idle")
 					unit.set_current_action(Constants.UnitCurrentAction.IDLE)

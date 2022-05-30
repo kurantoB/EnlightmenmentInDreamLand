@@ -9,7 +9,7 @@ var just_absorbed : bool = false
 
 func handle_input_dash():
 	set_action(Constants.ActionType.DASH)
-	unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.DASHING
+	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.DASHING)
 	target_move_speed = Constants.DASH_SPEED
 
 func reset_actions():
@@ -71,11 +71,10 @@ func flot():
 	v_speed = Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type] * .67
 
 func recoil():
-	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.RECOILING]:
+	if is_current_action_timer_done(Constants.UnitCurrentAction.RECOILING):
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] != Constants.UnitCurrentAction.RECOILING:
-		unit_conditions[Constants.UnitCondition.IS_INVINCIBLE] = true
-		unit_condition_timers[Constants.UnitCondition.IS_INVINCIBLE] = Constants.UNIT_CONDITION_TIMERS[unit_type][Constants.UnitCondition.IS_INVINCIBLE]
+		set_unit_condition_with_timer(Constants.UnitCondition.IS_INVINCIBLE)
 		set_current_action(Constants.UnitCurrentAction.RECOILING)
 
 func slide():
@@ -83,5 +82,5 @@ func slide():
 	if facing == Constants.DIRECTION.LEFT:
 		dir_factor = -1
 	h_speed = Constants.DASH_SPEED * dir_factor
-	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.SLIDING]:
+	if is_current_action_timer_done(Constants.UnitCurrentAction.SLIDING):
 		set_current_action(Constants.UnitCurrentAction.IDLE)

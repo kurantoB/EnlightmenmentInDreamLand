@@ -31,7 +31,7 @@ func _ready():
 		unit_conditions[condition_num] = Constants.UNIT_TYPE_CONDITIONS[unit_type][condition_num]
 	for condition_num in Constants.UNIT_CONDITION_TIMERS[unit_type].keys():
 		unit_condition_timers[condition_num] = 0
-	for timer_action_num in Constants.UNIT_TIMERS[unit_type].keys():
+	for timer_action_num in Constants.ACTION_TIMERS[unit_type].keys():
 		timer_actions[timer_action_num] = 0
 	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
 
@@ -41,13 +41,26 @@ func set_action(action : int):
 
 func set_timer_action(action : int):
 	assert(action in Constants.UNIT_TYPE_ACTIONS[unit_type])
-	assert(action in Constants.UNIT_TIMERS[unit_type].keys())
-	timer_actions[action] = Constants.UNIT_TIMERS[unit_type][action]
+	assert(action in Constants.ACTION_TIMERS[unit_type].keys())
+	timer_actions[action] = Constants.ACTION_TIMERS[unit_type][action]
 
 func reset_timer_action(action : int):
 	assert(action in Constants.UNIT_TYPE_ACTIONS[unit_type])
-	assert(action in Constants.UNIT_TIMERS[unit_type].keys())
+	assert(action in Constants.ACTION_TIMERS[unit_type].keys())
 	timer_actions[action] = 0
+
+func set_unit_condition(condition_type : int, condition):
+	assert(condition_type in Constants.UNIT_TYPE_CONDITIONS[unit_type].keys())
+	unit_conditions[condition_type] = condition
+
+func set_unit_condition_with_timer(condition_type : int):
+	assert(condition_type in Constants.UNIT_CONDITION_TIMERS[unit_type].keys())
+	set_unit_condition(condition_type, Constants.UNIT_CONDITION_TIMERS[unit_type][condition_type][1])
+	unit_condition_timers[condition_type] = Constants.UNIT_CONDITION_TIMERS[unit_type][condition_type][0]
+
+func is_current_action_timer_done(current_action : int):
+	assert(current_action in Constants.CURRENT_ACTION_TIMERS[unit_type].keys())
+	return current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][current_action]
 
 func reset_actions():
 	for action_num in Constants.UNIT_TYPE_ACTIONS[unit_type]:
@@ -55,7 +68,7 @@ func reset_actions():
 
 func handle_input_move():
 	set_action(Constants.ActionType.MOVE)
-	unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.MOVING
+	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.MOVING)
 	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
 
 func do_with_timeout(action : int, new_current_action : int = -1):
@@ -71,18 +84,19 @@ func process_unit(delta, scene):
 	execute_actions(delta, scene)
 
 func advance_timers(delta):
-	for timer_action_num in Constants.UNIT_TIMERS[unit_type].keys():
+	for timer_action_num in Constants.ACTION_TIMERS[unit_type].keys():
 		timer_actions[timer_action_num] = move_toward(timer_actions[timer_action_num], 0, delta)
 	current_action_time_elapsed += delta
-	for condition_num in unit_condition_timers.keys():
+	for condition_num in Constants.UNIT_CONDITION_TIMERS[unit_type].keys():
 		unit_condition_timers[condition_num] = move_toward(unit_condition_timers[condition_num], 0, delta)
 		if unit_condition_timers[condition_num] == 0:
-			unit_conditions[condition_num] = false
+			unit_conditions[condition_num] = Constants.UNIT_CONDITION_TIMERS[unit_type][condition_num][2]
 
 func set_current_action(current_action : int):
+	assert(current_action in Constants.UNIT_TYPE_CURRENT_ACTIONS[unit_type])
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] != current_action:
 		current_action_time_elapsed = 0
-	unit_conditions[Constants.UnitCondition.CURRENT_ACTION] = current_action
+	set_unit_condition(Constants.UnitCondition.CURRENT_ACTION, current_action)
 
 func execute_actions(delta, scene):
 	for action_num in Constants.UNIT_TYPE_ACTIONS[unit_type]:
@@ -99,7 +113,7 @@ func execute_actions(delta, scene):
 
 func jump():
 	v_speed = Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type]
-	if current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][Constants.UnitCurrentAction.JUMPING]:
+	if is_current_action_timer_done(Constants.UnitCurrentAction.JUMPING):
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING and v_speed > 0:
 		set_sprite("Jump", 0)

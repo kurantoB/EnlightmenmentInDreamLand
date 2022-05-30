@@ -69,7 +69,7 @@ func handle_player_input():
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
 			if not player.unit_conditions[Constants.UnitCondition.IS_PORTING]:
 				player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
-				player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
+				player.set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, false)
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 			player.do_with_timeout(Constants.ActionType.FLOAT, -1)
 	
@@ -77,12 +77,12 @@ func handle_player_input():
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE and player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 			if player.unit_conditions[Constants.UnitCondition.IS_PORTING]:
 				player.set_action(Constants.ActionType.DIGEST)
-				player.unit_conditions[Constants.UnitCondition.IS_PORTING] = false
-				player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.IDLE
+				player.set_unit_condition(Constants.UnitCondition.IS_PORTING, false)
+				player.set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 			else:
 				player.set_action(Constants.ActionType.CROUCH)
 				player.set_current_action(Constants.UnitCurrentAction.CROUCHING)
-				player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.IDLE
+				player.set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING:
 			player.set_action(Constants.ActionType.CROUCH)
 	
@@ -169,7 +169,7 @@ func handle_player_input():
 			player.facing = Constants.DIRECTION.RIGHT
 	
 	if not input_table[Constants.PlayerInput.LEFT] and not input_table[Constants.PlayerInput.RIGHT]:
-		player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.IDLE
+		player.set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 	
 	if input_table[Constants.PlayerInput.GBA_A]:
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING:
@@ -181,7 +181,7 @@ func handle_player_input():
 				if player.jump_available:
 					player.set_action(Constants.ActionType.JUMP)
 					player.set_current_action(Constants.UnitCurrentAction.JUMPING)
-					player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
+					player.set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, false)
 					player.float_available = false
 			elif player.float_available and not player.unit_conditions[Constants.UnitCondition.IS_PORTING]:
 				player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
@@ -207,12 +207,12 @@ func handle_player_input():
 				if not player.just_absorbed:
 					# drop porting
 					player.set_action(Constants.ActionType.DROP_PORTING)
-					player.unit_conditions[Constants.UnitCondition.IS_PORTING] = false
+					player.set_unit_condition(Constants.UnitCondition.IS_PORTING, false)
 			else:
 				# channel
 				player.set_action(Constants.ActionType.CHANNEL)
 				player.set_current_action(Constants.UnitCurrentAction.CHANNELING)
-				player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.IDLE
+				player.set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 		# else if flying
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 			player.set_action(Constants.ActionType.CANCEL_FLYING)
@@ -226,7 +226,7 @@ func handle_player_input():
 	and player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] != Constants.UnitCurrentAction.CHANNELING
 	and player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] != Constants.UnitCurrentAction.SLIDING):
 		player.set_action(Constants.ActionType.DISCARD)
-		player.unit_conditions[Constants.UnitCondition.HAS_ABILITY] = false
+		player.set_unit_condition(Constants.UnitCondition.HAS_ABILITY, false)
 
 func set_logging_iteration(unit : Unit, delta):
 	if (log_triggered or
