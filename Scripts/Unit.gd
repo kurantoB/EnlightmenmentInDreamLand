@@ -36,7 +36,7 @@ func _ready():
 	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
 
 func reset_actions():
-	for action_num in actions.keys():
+	for action_num in Constants.UNIT_TYPE_ACTIONS[unit_type]:
 		actions[action_num] = false
 
 func handle_input_move():
