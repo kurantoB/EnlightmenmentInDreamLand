@@ -42,10 +42,10 @@ func process_unit(delta, scene):
 
 func advance_timers(delta):
 	for timer_action_num in timer_actions.keys():
-		timer_actions[timer_action_num] = max(0, timer_actions[timer_action_num] - delta)
+		timer_actions[timer_action_num] = move_toward(timer_actions[timer_action_num], 0, delta)
 	current_action_time_elapsed += delta
 	for condition_num in unit_condition_timers.keys():
-		unit_condition_timers[condition_num] = max(0, unit_condition_timers[condition_num] - delta)
+		unit_condition_timers[condition_num] = move_toward(unit_condition_timers[condition_num], 0, delta)
 		if unit_condition_timers[condition_num] == 0:
 			unit_conditions[condition_num] = false
 
@@ -94,7 +94,7 @@ func handle_moving_status(delta, scene):
 	# if move status is idle
 	if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
 		# slow down
-		magnitude = max(0, magnitude - Constants.ACCELERATION * delta)
+		magnitude = move_toward(magnitude, 0, Constants.ACCELERATION * delta)
 		scene.conditional_log("move-idle, not-near-still: slow-down: magnitude: " + str(magnitude))
 	# if move status is not idle
 	else:
@@ -102,14 +102,14 @@ func handle_moving_status(delta, scene):
 		if (h_speed <= 0 and facing == Constants.DIRECTION.LEFT) or (h_speed >= 0 and facing == Constants.DIRECTION.RIGHT):
 			# speed up
 			if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.DASHING:
-				magnitude = min(Constants.DASH_SPEED, magnitude + Constants.ACCELERATION * delta)
+				magnitude = move_toward(magnitude, Constants.DASH_SPEED, Constants.ACCELERATION * delta)
 			else:
-				magnitude = min(Constants.MOVE_SPEEDS[unit_type], magnitude + Constants.ACCELERATION * delta)
+				magnitude = move_toward(magnitude, Constants.MOVE_SPEEDS[unit_type], Constants.ACCELERATION * delta)
 			scene.conditional_log("not-move-idle, facing-aligned: speed-up: magnitude: " + str(magnitude))
 		# if is not facing-aligned
 		else:
 			# slow down
-			magnitude = max(0, magnitude - Constants.ACCELERATION * delta)
+			magnitude = move_toward(magnitude, 0, Constants.ACCELERATION * delta)
 			scene.conditional_log("not-move-idle, not-facing-aligned: slow-down: magnitude: " + str(magnitude))
 	
 	# if is grounded
