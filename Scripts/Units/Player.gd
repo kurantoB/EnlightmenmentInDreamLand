@@ -7,11 +7,6 @@ var float_available : bool = true
 var dash_facing : int
 var just_absorbed : bool = false
 
-# Called when the node enters the scene tree for the first time
-func _ready():
-	for timer_action_num in Constants.UNIT_TIMERS[Constants.UnitType.PLAYER].keys():
-		timer_actions[timer_action_num] = 0
-
 func handle_input_move():
 	actions[Constants.ActionType.MOVE] = true
 	unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.MOVING
