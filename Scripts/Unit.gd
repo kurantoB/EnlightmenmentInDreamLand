@@ -103,10 +103,6 @@ func handle_moving_status(delta, scene):
 		# if is facing-aligned
 		if (h_speed <= 0 and facing == Constants.DIRECTION.LEFT) or (h_speed >= 0 and facing == Constants.DIRECTION.RIGHT):
 			# speed up
-			#if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.DASHING:
-			#	magnitude = move_toward(magnitude, Constants.DASH_SPEED, Constants.ACCELERATION * delta)
-			#else:
-			#	magnitude = move_toward(magnitude, Constants.MOVE_SPEEDS[unit_type], Constants.ACCELERATION * delta)
 			magnitude = move_toward(magnitude, target_move_speed, Constants.ACCELERATION * delta)
 			scene.conditional_log("not-move-idle, facing-aligned: speed-up: magnitude: " + str(magnitude))
 		# if is not facing-aligned
