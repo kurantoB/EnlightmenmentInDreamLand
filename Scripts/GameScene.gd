@@ -69,8 +69,9 @@ func handle_player_input():
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
 			if not player.unit_conditions[Constants.UnitCondition.IS_PORTING]:
 				player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
+				player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
-			player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
+			player.do_with_timeout(Constants.ActionType.FLOAT, -1)
 	
 	if input_table[Constants.PlayerInput.DOWN]:
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE and player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
@@ -176,8 +177,7 @@ func handle_player_input():
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING:
 			player.actions[Constants.ActionType.JUMP] = true
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
-			if (player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]
-			and player.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]):
+			if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 				if player.jump_available:
 					player.actions[Constants.ActionType.JUMP] = true
 					player.set_current_action(Constants.UnitCurrentAction.JUMPING)
@@ -186,7 +186,7 @@ func handle_player_input():
 			elif player.float_available and not player.unit_conditions[Constants.UnitCondition.IS_PORTING]:
 				player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
-			player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
+			player.do_with_timeout(Constants.ActionType.FLOAT, -1)
 		player.jump_available = false
 	
 	if not input_table[Constants.PlayerInput.GBA_A]:

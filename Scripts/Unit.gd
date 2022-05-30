@@ -37,6 +37,13 @@ func reset_actions():
 	for action_num in actions.keys():
 		actions[action_num] = false
 
+func do_with_timeout(action : int, new_current_action : int = -1):
+	if timer_actions[action] == 0:
+		actions[action] = true
+		timer_actions[action] = Constants.UNIT_TIMERS[unit_type][action]
+		if new_current_action != -1:
+			set_current_action(new_current_action)
+
 func process_unit(delta, scene):
 	advance_timers(delta)
 	current_action_time_elapsed += delta

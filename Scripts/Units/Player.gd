@@ -28,15 +28,6 @@ func reset_actions():
 		actions[Constants.ActionType.SLIDE] = true
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.RECOILING:
 		actions[Constants.ActionType.RECOIL] = true
-	
-func do_with_timeout(action : int, new_current_action : int = -1):
-	if timer_actions[action] == 0:
-		actions[action] = true
-		timer_actions[action] = Constants.UNIT_TIMERS[Constants.UnitType.PLAYER][action]
-		if new_current_action != -1:
-			set_current_action(new_current_action)
-		if action == Constants.ActionType.FLOAT:
-			unit_conditions[Constants.UnitCondition.IS_ON_GROUND] = false
 
 func execute_actions(delta, scene):
 	for action_num in actions.keys():
@@ -81,10 +72,10 @@ func discard():
 	pass
 
 func dash(delta):
-	if (unit_conditions[Constants.UnitCondition.MOVING_STATUS] != Constants.UnitMovingStatus.IDLE
-	and unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE
-	and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
-		set_sprite("Dash")
+	#if (unit_conditions[Constants.UnitCondition.MOVING_STATUS] != Constants.UnitMovingStatus.IDLE
+	#and unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE
+	#and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
+	set_sprite("Dash")
 
 func drop_porting():
 	pass
