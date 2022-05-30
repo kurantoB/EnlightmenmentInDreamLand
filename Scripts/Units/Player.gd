@@ -10,7 +10,7 @@ var just_absorbed : bool = false
 func handle_input_move():
 	actions[Constants.ActionType.MOVE] = true
 	unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.MOVING
-	target_move_speed = Constants.MOVE_SPEEDS[Constants.UnitType.PLAYER]
+	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[Constants.UnitType.PLAYER]
 
 func handle_input_dash():
 	actions[Constants.ActionType.DASH] = true

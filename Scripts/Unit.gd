@@ -33,7 +33,7 @@ func _ready():
 		unit_condition_timers[condition_num] = 0
 	for timer_action_num in Constants.UNIT_TIMERS[unit_type].keys():
 		timer_actions[timer_action_num] = 0
-	target_move_speed = Constants.MOVE_SPEEDS[unit_type]
+	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
 
 func reset_actions():
 	for action_num in actions.keys():
