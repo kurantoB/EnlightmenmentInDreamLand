@@ -19,7 +19,6 @@ var input_table = {
 	Constants.PlayerInput.GBA_B: false,
 	Constants.PlayerInput.GBA_SELECT: false,
 }
-var new_player_move_status
 var stage_env
 
 var time_elapsed : float = 0
@@ -78,11 +77,11 @@ func handle_player_input():
 			if player.unit_conditions[Constants.UnitCondition.IS_PORTING]:
 				player.actions[Constants.ActionType.DIGEST] = true
 				player.unit_conditions[Constants.UnitCondition.IS_PORTING] = false
-				new_player_move_status = Constants.UnitMovingStatus.IDLE
+				player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.IDLE
 			else:
 				player.actions[Constants.ActionType.CROUCH] = true
 				player.set_current_action(Constants.UnitCurrentAction.CROUCHING)
-				new_player_move_status = Constants.UnitMovingStatus.IDLE
+				player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.IDLE
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING:
 			player.actions[Constants.ActionType.CROUCH] = true
 	
@@ -105,13 +104,11 @@ func handle_player_input():
 						player.dash_facing == Constants.DIRECTION.LEFT and dir_input == Constants.PlayerInput.LEFT
 						or player.dash_facing == Constants.DIRECTION.RIGHT and dir_input == Constants.PlayerInput.RIGHT)):
 						# set dash
-						player.actions[Constants.ActionType.DASH] = true
-						new_player_move_status = Constants.UnitMovingStatus.DASHING
+						player.handle_input_dash()
 					# if action-idle + move-idle + grounded + (not-dash-timer-active or not-input-dash-facing-match)
 					else:
 						# set move
-						player.actions[Constants.ActionType.MOVE] = true
-						new_player_move_status = Constants.UnitMovingStatus.MOVING
+						player.handle_input_move()
 					# start timer, set dash-facing
 					player.timer_actions[Constants.ActionType.DASH] = Constants.UNIT_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.DASH]
 					if dir_input == Constants.PlayerInput.LEFT:
@@ -121,8 +118,7 @@ func handle_player_input():
 				# if action-idle + move-idle + not-grounded
 				else:
 					# set move, kill timer
-					player.actions[Constants.ActionType.MOVE] = true
-					new_player_move_status = Constants.UnitMovingStatus.MOVING
+					player.handle_input_move()
 					player.timer_actions[Constants.ActionType.DASH] = 0
 			# if action-idle + move-moving
 			elif player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.MOVING:
@@ -149,13 +145,11 @@ func handle_player_input():
 				if (player.facing == Constants.DIRECTION.LEFT and dir_input == Constants.PlayerInput.RIGHT
 					or player.facing == Constants.DIRECTION.RIGHT and dir_input == Constants.PlayerInput.LEFT):
 					# set move
-					player.actions[Constants.ActionType.MOVE] = true
-					new_player_move_status = Constants.UnitMovingStatus.MOVING
+					player.handle_input_move()
 				# if action-idle + move-dashing + not-facing-change
 				else:
 					# set dash
-					player.actions[Constants.ActionType.DASH] = true
-					new_player_move_status = Constants.UnitMovingStatus.DASHING
+					player.handle_input_dash()
 				# start timer, set dash-facing
 				player.timer_actions[Constants.ActionType.DASH] = Constants.UNIT_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.DASH]
 				if dir_input == Constants.PlayerInput.LEFT:
@@ -165,8 +159,7 @@ func handle_player_input():
 		# if action-jumping or action-flying
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 			# set move, kill timer
-			player.actions[Constants.ActionType.MOVE] = true
-			new_player_move_status = Constants.UnitMovingStatus.MOVING
+			player.handle_input_move()
 			player.timer_actions[Constants.ActionType.DASH] = 0
 		# set facing
 		if dir_input == Constants.PlayerInput.LEFT:
@@ -175,7 +168,7 @@ func handle_player_input():
 			player.facing = Constants.DIRECTION.RIGHT
 	
 	if not input_table[Constants.PlayerInput.LEFT] and not input_table[Constants.PlayerInput.RIGHT]:
-		new_player_move_status = Constants.UnitMovingStatus.IDLE
+		player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.IDLE
 	
 	if input_table[Constants.PlayerInput.GBA_A]:
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING:
@@ -219,7 +212,7 @@ func handle_player_input():
 				# channel
 				player.actions[Constants.ActionType.CHANNEL] = true
 				player.set_current_action(Constants.UnitCurrentAction.CHANNELING)
-				new_player_move_status = Constants.UnitMovingStatus.IDLE
+				player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.IDLE
 		# else if flying
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 			player.actions[Constants.ActionType.CANCEL_FLYING] = true
@@ -234,8 +227,6 @@ func handle_player_input():
 	and player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] != Constants.UnitCurrentAction.SLIDING):
 		player.actions[Constants.ActionType.DISCARD] = true
 		player.unit_conditions[Constants.UnitCondition.HAS_ABILITY] = false
-		
-	player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] = new_player_move_status
 
 func set_logging_iteration(unit : Unit, delta):
 	if (log_triggered or

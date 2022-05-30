@@ -12,6 +12,16 @@ func _ready():
 	for timer_action_num in Constants.UNIT_TIMERS[Constants.UnitType.PLAYER].keys():
 		timer_actions[timer_action_num] = 0
 
+func handle_input_move():
+	actions[Constants.ActionType.MOVE] = true
+	unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.MOVING
+	target_move_speed = Constants.MOVE_SPEEDS[Constants.UnitType.PLAYER]
+
+func handle_input_dash():
+	actions[Constants.ActionType.DASH] = true
+	unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.DASHING
+	target_move_speed = Constants.DASH_SPEED
+
 func reset_actions():
 	.reset_actions()
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.SLIDING:

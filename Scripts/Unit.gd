@@ -19,6 +19,7 @@ var unit_condition_timers = {}
 var pos : Vector2
 var h_speed : float = 0
 var v_speed : float = 0
+var target_move_speed : float
 
 var current_sprite : Node2D
 
@@ -30,6 +31,7 @@ func _ready():
 		unit_conditions[condition_num] = Constants.UNIT_TYPE_CONDITIONS[unit_type][condition_num]
 	for condition_num in Constants.UNIT_CONDITION_TIMERS[unit_type].keys():
 		unit_condition_timers[condition_num] = 0
+	target_move_speed = Constants.MOVE_SPEEDS[unit_type]
 
 func reset_actions():
 	for action_num in actions.keys():
@@ -101,10 +103,11 @@ func handle_moving_status(delta, scene):
 		# if is facing-aligned
 		if (h_speed <= 0 and facing == Constants.DIRECTION.LEFT) or (h_speed >= 0 and facing == Constants.DIRECTION.RIGHT):
 			# speed up
-			if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.DASHING:
-				magnitude = move_toward(magnitude, Constants.DASH_SPEED, Constants.ACCELERATION * delta)
-			else:
-				magnitude = move_toward(magnitude, Constants.MOVE_SPEEDS[unit_type], Constants.ACCELERATION * delta)
+			#if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.DASHING:
+			#	magnitude = move_toward(magnitude, Constants.DASH_SPEED, Constants.ACCELERATION * delta)
+			#else:
+			#	magnitude = move_toward(magnitude, Constants.MOVE_SPEEDS[unit_type], Constants.ACCELERATION * delta)
+			magnitude = move_toward(magnitude, target_move_speed, Constants.ACCELERATION * delta)
 			scene.conditional_log("not-move-idle, facing-aligned: speed-up: magnitude: " + str(magnitude))
 		# if is not facing-aligned
 		else:
