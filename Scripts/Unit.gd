@@ -39,6 +39,11 @@ func reset_actions():
 	for action_num in actions.keys():
 		actions[action_num] = false
 
+func handle_input_move():
+	actions[Constants.ActionType.MOVE] = true
+	unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.MOVING
+	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
+
 func do_with_timeout(action : int, new_current_action : int = -1):
 	if timer_actions[action] == 0:
 		actions[action] = true
