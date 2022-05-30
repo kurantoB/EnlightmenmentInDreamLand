@@ -86,7 +86,6 @@ func process_unit(delta, scene):
 func advance_timers(delta):
 	for timer_action_num in Constants.ACTION_TIMERS[unit_type].keys():
 		timer_actions[timer_action_num] = move_toward(timer_actions[timer_action_num], 0, delta)
-	current_action_time_elapsed += delta
 	for condition_num in Constants.UNIT_CONDITION_TIMERS[unit_type].keys():
 		unit_condition_timers[condition_num] = move_toward(unit_condition_timers[condition_num], 0, delta)
 		if unit_condition_timers[condition_num] == 0:

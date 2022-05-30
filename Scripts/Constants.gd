@@ -108,7 +108,7 @@ const ACTION_TIMERS = {
 	UnitType.PLAYER: {
 		ActionType.SLIDE: 0.5,
 		ActionType.FLOAT: 0.25,
-		ActionType.DASH: 0.3
+		ActionType.DASH: 0.25
 	}
 }
 
@@ -116,7 +116,7 @@ const CURRENT_ACTION_TIMERS = {
 	UnitType.PLAYER: {
 		UnitCurrentAction.SLIDING: 0.7,
 		UnitCurrentAction.RECOILING: 1.5,
-		UnitCurrentAction.JUMPING: 0.7,
+		UnitCurrentAction.JUMPING: 0.35,
 	}
 }
 
