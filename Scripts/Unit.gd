@@ -35,19 +35,33 @@ func _ready():
 		timer_actions[timer_action_num] = 0
 	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
 
+func set_action(action : int):
+	assert(action in Constants.UNIT_TYPE_ACTIONS[unit_type])
+	actions[action] = true
+
+func set_timer_action(action : int):
+	assert(action in Constants.UNIT_TYPE_ACTIONS[unit_type])
+	assert(action in Constants.UNIT_TIMERS[unit_type].keys())
+	timer_actions[action] = Constants.UNIT_TIMERS[unit_type][action]
+
+func reset_timer_action(action : int):
+	assert(action in Constants.UNIT_TYPE_ACTIONS[unit_type])
+	assert(action in Constants.UNIT_TIMERS[unit_type].keys())
+	timer_actions[action] = 0
+
 func reset_actions():
 	for action_num in Constants.UNIT_TYPE_ACTIONS[unit_type]:
 		actions[action_num] = false
 
 func handle_input_move():
-	actions[Constants.ActionType.MOVE] = true
+	set_action(Constants.ActionType.MOVE)
 	unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.MOVING
 	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
 
 func do_with_timeout(action : int, new_current_action : int = -1):
 	if timer_actions[action] == 0:
-		actions[action] = true
-		timer_actions[action] = Constants.UNIT_TIMERS[unit_type][action]
+		set_action(action)
+		set_timer_action(action)
 		if new_current_action != -1:
 			set_current_action(new_current_action)
 
@@ -57,7 +71,7 @@ func process_unit(delta, scene):
 	execute_actions(delta, scene)
 
 func advance_timers(delta):
-	for timer_action_num in timer_actions.keys():
+	for timer_action_num in Constants.UNIT_TIMERS[unit_type].keys():
 		timer_actions[timer_action_num] = move_toward(timer_actions[timer_action_num], 0, delta)
 	current_action_time_elapsed += delta
 	for condition_num in unit_condition_timers.keys():
@@ -71,7 +85,7 @@ func set_current_action(current_action : int):
 	unit_conditions[Constants.UnitCondition.CURRENT_ACTION] = current_action
 
 func execute_actions(delta, scene):
-	for action_num in actions.keys():
+	for action_num in Constants.UNIT_TYPE_ACTIONS[unit_type]:
 		if !actions[action_num]:
 			continue
 		match action_num:

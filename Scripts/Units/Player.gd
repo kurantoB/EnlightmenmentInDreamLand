@@ -8,19 +8,19 @@ var dash_facing : int
 var just_absorbed : bool = false
 
 func handle_input_dash():
-	actions[Constants.ActionType.DASH] = true
+	set_action(Constants.ActionType.DASH)
 	unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.DASHING
 	target_move_speed = Constants.DASH_SPEED
 
 func reset_actions():
 	.reset_actions()
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.SLIDING:
-		actions[Constants.ActionType.SLIDE] = true
+		set_action(Constants.ActionType.SLIDE)
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.RECOILING:
-		actions[Constants.ActionType.RECOIL] = true
+		set_action(Constants.ActionType.RECOIL)
 
 func execute_actions(delta, scene):
-	for action_num in actions.keys():
+	for action_num in Constants.UNIT_TYPE_ACTIONS[Constants.UnitType.PLAYER]:
 		if !actions[action_num]:
 			continue
 		var found_action = true
