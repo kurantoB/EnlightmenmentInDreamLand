@@ -30,7 +30,7 @@ func execute_actions(delta, scene):
 			Constants.ActionType.CROUCH:
 				crouch()
 			Constants.ActionType.DASH:
-				dash(delta)
+				dash()
 			Constants.ActionType.DIGEST:
 				digest()
 			Constants.ActionType.DISCARD:
@@ -61,10 +61,7 @@ func digest():
 func discard():
 	pass
 
-func dash(delta):
-	#if (unit_conditions[Constants.UnitCondition.MOVING_STATUS] != Constants.UnitMovingStatus.IDLE
-	#and unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE
-	#and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
+func dash():
 	set_sprite("Dash")
 
 func drop_porting():
