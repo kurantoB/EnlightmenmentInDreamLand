@@ -23,7 +23,6 @@ func execute_actions(delta, scene):
 	for action_num in Constants.UNIT_TYPE_ACTIONS[Constants.UnitType.PLAYER]:
 		if !actions[action_num]:
 			continue
-		var found_action = true
 		match action_num:
 			Constants.ActionType.CANCEL_FLYING:
 				cancel_flying()
@@ -43,10 +42,6 @@ func execute_actions(delta, scene):
 				recoil()
 			Constants.ActionType.SLIDE:
 				slide()
-			_:
-				found_action = false
-		if found_action:
-			actions[action_num] = false
 	.execute_actions(delta, scene)
 
 func cancel_flying():

@@ -105,10 +105,9 @@ func execute_actions(delta, scene):
 			Constants.ActionType.JUMP:
 				jump()
 			Constants.ActionType.MOVE:
-				move(delta)
-		actions[action_num] = false
+				move()
 	handle_moving_status(delta, scene)
-	handle_idle(delta)
+	handle_idle()
 
 func jump():
 	v_speed = Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type]
@@ -118,7 +117,7 @@ func jump():
 		set_sprite("Jump", 0)
 		
 
-func move(delta):
+func move():
 	if (unit_conditions[Constants.UnitCondition.MOVING_STATUS] != Constants.UnitMovingStatus.IDLE
 	and unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE
 	and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
@@ -192,7 +191,7 @@ func handle_moving_status(delta, scene):
 			h_speed = 0
 		scene.conditional_log("not-grounded: set-h-speed: " + str(h_speed))
 
-func handle_idle(delta):
+func handle_idle():
 	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
 		if unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]:
 			if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
