@@ -132,10 +132,10 @@ func handle_player_input():
 						or player.facing == Constants.DIRECTION.RIGHT and dir_input == Constants.PlayerInput.LEFT):
 						# start timer, set dash-facing
 						player.set_timer_action(Constants.ActionType.DASH)
-						if dir_input == Constants.PlayerInput.LEFT:
-							player.dash_facing = Constants.DIRECTION.LEFT
-						elif dir_input == Constants.PlayerInput.RIGHT:
-							player.dash_facing = Constants.DIRECTION.RIGHT
+					if dir_input == Constants.PlayerInput.LEFT:
+						player.dash_facing = Constants.DIRECTION.LEFT
+					elif dir_input == Constants.PlayerInput.RIGHT:
+						player.dash_facing = Constants.DIRECTION.RIGHT
 				# if action-idle + move-moving + not-grounded
 				else:
 					# kill timer
