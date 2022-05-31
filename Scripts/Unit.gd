@@ -79,9 +79,9 @@ func do_with_timeout(action : int, new_current_action : int = -1):
 			set_current_action(new_current_action)
 
 func process_unit(delta, scene):
-	advance_timers(delta)
 	current_action_time_elapsed += delta
 	execute_actions(delta, scene)
+	advance_timers(delta)
 
 func advance_timers(delta):
 	for timer_action_num in Constants.ACTION_TIMERS[unit_type].keys():

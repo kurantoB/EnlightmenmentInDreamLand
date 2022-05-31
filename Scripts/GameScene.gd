@@ -124,7 +124,7 @@ func handle_player_input():
 			# if action-idle + move-moving
 			elif player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.MOVING:
 				# set move
-				player.set_action(Constants.ActionType.MOVE)
+				player.handle_input_move()
 				# if action-idle + move-moving + grounded
 				if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 					# if action-idle + move-moving + grounded + facing-change
@@ -158,7 +158,8 @@ func handle_player_input():
 				elif dir_input == Constants.PlayerInput.RIGHT:
 					player.dash_facing = Constants.DIRECTION.RIGHT
 		# if action-jumping or action-flying
-		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
+		elif (player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING
+		or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING):
 			# set move, kill timer
 			player.handle_input_move()
 			player.reset_timer_action(Constants.ActionType.DASH)
