@@ -88,10 +88,10 @@ func interact_grounded(unit : Unit, delta):
 		ground_movement_interaction(unit, delta)
 	# gravity-affected, grounded, v-speed-zero
 	else:
-		scene.conditional_log("interact_grounded v-speed-zero - zero-out speed, ground_still_placement")
+		scene.conditional_log("interact_grounded v-speed-zero - zero-out speed, ground_placement")
 		unit.h_speed = 0
 		unit.v_speed = 0
-		ground_still_placement(unit)
+		ground_placement(unit)
 
 func init_stage_grid(tilemap : TileMap):
 	for map_elem in tilemap.get_used_cells():
@@ -266,7 +266,7 @@ func ground_movement_interaction(unit : Unit, delta):
 	GameUtils.reangle_move(unit, angle_helper)
 	scene.conditional_log("ground_movement_interaction reangling:     " + str(Vector2(unit.h_speed, unit.v_speed)))
 
-func ground_still_placement(unit : Unit):
+func ground_placement(unit : Unit):
 	for unit_env_collider in Constants.ENV_COLLIDERS[unit.unit_type]:
 		if unit_env_collider[0] != Vector2(0, 0):
 			continue
@@ -397,3 +397,10 @@ func intersect_check_w_collider_uec_dir(unit : Unit, collider, direction_to_chec
 		collision_check + Vector2(unit.h_speed * delta, unit.v_speed * delta),
 		collider[0],
 		collider[1])
+
+func interact_post(unit : Unit):
+	# need to reground unit in case it ended up somewhere underneath ground level
+	if unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] and unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+		# gravity-affected, grounded
+		scene.conditional_log("interact_post gravity-affected, grounded - ground_placement")
+		ground_placement(unit)

@@ -41,11 +41,12 @@ func _process(delta):
 	handle_player_input()	
 	# handle enemy input
 	for unit in units:
-		set_logging_iteration(unit, delta)
 		unit.process_unit(delta, self)
+		set_logging_iteration(unit, delta)
 		stage_env.interact(unit, delta)
-		terminate_logging_iteration(unit)
 		unit.react(delta)
+		stage_env.interact_post(unit)
+		terminate_logging_iteration(unit)
 		time_elapsed = time_elapsed + delta
 
 func handle_player_input():
@@ -232,7 +233,7 @@ func handle_player_input():
 func set_logging_iteration(unit : Unit, delta):
 	if (log_triggered or
 	(num_iterations != 0
-	and unit.pos.x > 41.9)):
+	and unit.pos.x > 41.75)):
 		time_elapsed_to_log = time_elapsed
 		log_triggered = true
 		print("Iteration identified: " + str(time_elapsed_to_log))
