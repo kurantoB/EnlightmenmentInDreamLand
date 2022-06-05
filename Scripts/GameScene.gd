@@ -41,8 +41,8 @@ func _process(delta):
 	handle_player_input()	
 	# handle enemy input
 	for unit in units:
-		unit.process_unit(delta, self)
 		set_logging_iteration(unit, delta)
+		unit.process_unit(delta, self)
 		stage_env.interact(unit, delta)
 		terminate_logging_iteration(unit)
 		unit.react(delta)
@@ -169,7 +169,7 @@ func handle_player_input():
 		elif dir_input == Constants.PlayerInput.RIGHT:
 			player.facing = Constants.DIRECTION.RIGHT
 	
-	if not input_table[Constants.PlayerInput.LEFT] and not input_table[Constants.PlayerInput.RIGHT]:
+	if not player.actions[Constants.ActionType.MOVE] and not player.actions[Constants.ActionType.DASH]:
 		player.set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 	
 	if input_table[Constants.PlayerInput.GBA_A]:
@@ -232,7 +232,7 @@ func handle_player_input():
 func set_logging_iteration(unit : Unit, delta):
 	if (log_triggered or
 	(num_iterations != 0
-	and false)):
+	and unit.pos.x > 41.9)):
 		time_elapsed_to_log = time_elapsed
 		log_triggered = true
 		print("Iteration identified: " + str(time_elapsed_to_log))
