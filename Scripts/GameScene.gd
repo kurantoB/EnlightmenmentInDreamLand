@@ -4,6 +4,7 @@ class_name GameScene
 
 export var tile_set_name: String
 export(Array, String) var tilemaps_to_scale
+export(Array, String) var tilemaps_to_parallax_scroll
 
 const Constants = preload("res://Scripts/Constants.gd")
 const Unit = preload("res://Scripts/Unit.gd")
@@ -26,13 +27,22 @@ var time_elapsed_to_log : float = -1
 var num_iterations = 5
 var log_triggered : bool = false
 
+var player_cam : Camera2D
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	units.append(get_node("Player"))
 	player = units[0]
 	stage_env = load("res://Scripts/StageEnvironment.gd").new(self)
-	player.get_node("Camera2D").make_current()
+	player_cam = player.get_node("Camera2D")
+	player_cam.make_current()
 	get_node("AudioStreamPlayer").play()
+	
+	for tilemap_to_scale in tilemaps_to_scale:
+		if has_node(tilemap_to_scale):
+			var this_tilemap_to_scale = get_node(tilemap_to_scale)
+			this_tilemap_to_scale.scale.x = Constants.SCALE_FACTOR
+			this_tilemap_to_scale.scale.y = Constants.SCALE_FACTOR
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -48,6 +58,13 @@ func _process(delta):
 		stage_env.interact_post(unit)
 		terminate_logging_iteration(unit)
 		time_elapsed = time_elapsed + delta
+	
+	# visual effects
+	for tilemap_to_parallax_scroll in tilemaps_to_parallax_scroll:
+		if has_node(tilemap_to_parallax_scroll):
+			var this_tilemap_to_parallax_scroll = get_node(tilemap_to_parallax_scroll)
+			this_tilemap_to_parallax_scroll.position.x = player.position.x - player.position.x * Constants.PARALLAX_SCROLL_FACTOR
+			this_tilemap_to_parallax_scroll.position.y = player.position.y - player.position.y * Constants.PARALLAX_SCROLL_FACTOR
 
 func handle_player_input():
 	for input_num in input_table.keys():
@@ -233,7 +250,7 @@ func handle_player_input():
 func set_logging_iteration(unit : Unit, delta):
 	if (log_triggered or
 	(num_iterations != 0
-	and unit.pos.x > 41.75)):
+	and false)):
 		time_elapsed_to_log = time_elapsed
 		log_triggered = true
 		print("Iteration identified: " + str(time_elapsed_to_log))

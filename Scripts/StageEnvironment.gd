@@ -24,12 +24,6 @@ func _init(the_scene : GameScene):
 	player.position.y = player.position.y * Constants.SCALE_FACTOR
 	player.scale.x = Constants.SCALE_FACTOR
 	player.scale.y = Constants.SCALE_FACTOR
-	
-	for tilemap_to_scale in scene.tilemaps_to_scale:
-		if scene.has_node(tilemap_to_scale):
-			var this_tilemap_to_scale = scene.get_node(tilemap_to_scale)
-			this_tilemap_to_scale.scale.x = Constants.SCALE_FACTOR
-			this_tilemap_to_scale.scale.y = Constants.SCALE_FACTOR
 
 func init_player(player : Unit):
 	player.pos = Vector2(player.position.x / Constants.GRID_SIZE, -1 * player.position.y / Constants.GRID_SIZE)
