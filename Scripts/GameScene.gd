@@ -177,7 +177,7 @@ func handle_player_input():
 					player.dash_facing = Constants.DIRECTION.RIGHT
 		# if action-jumping or action-flying
 		elif (player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING
-		or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING):
+			or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING):
 			# set move, kill timer
 			player.handle_input_move()
 			player.reset_timer_action(Constants.ActionType.DASH)
@@ -191,7 +191,7 @@ func handle_player_input():
 		player.set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 	
 	if input_table[Constants.PlayerInput.GBA_A]:
-		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING:
+		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING and player.slide_available:
 			player.do_with_timeout(Constants.ActionType.SLIDE, Constants.UnitCurrentAction.SLIDING)
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING:
 			player.set_action(Constants.ActionType.JUMP)
@@ -207,16 +207,20 @@ func handle_player_input():
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 			player.do_with_timeout(Constants.ActionType.FLOAT, -1)
 		player.jump_available = false
+		player.slide_available = false
 	
-	if not input_table[Constants.PlayerInput.GBA_A]:
-		if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+	if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+		if not input_table[Constants.PlayerInput.GBA_A]:
 			player.jump_available = true
-		else:
+			if not input_table[Constants.PlayerInput.GBA_B] and player.timer_actions[Constants.ActionType.SLIDE] == 0:
+				player.slide_available = true
+	else:
+		if not input_table[Constants.PlayerInput.GBA_A]:
 			player.float_available = true
 	
 	if input_table[Constants.PlayerInput.GBA_B]:
 		# if crouching
-		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING:
+		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING and player.slide_available:
 			# slide
 			player.do_with_timeout(Constants.ActionType.SLIDE, Constants.UnitCurrentAction.SLIDING)
 		# else if idle or channeling
@@ -236,6 +240,7 @@ func handle_player_input():
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 			player.set_action(Constants.ActionType.CANCEL_FLYING)
 			player.set_current_action(Constants.UnitCurrentAction.IDLE)
+		player.slide_available = false
 	
 	if !input_table[Constants.PlayerInput.GBA_B]:
 		player.just_absorbed = false
