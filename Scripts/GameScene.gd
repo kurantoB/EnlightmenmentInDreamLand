@@ -20,6 +20,15 @@ var input_table = {
 	Constants.PlayerInput.GBA_B: false,
 	Constants.PlayerInput.GBA_SELECT: false,
 }
+var previous_frame_input_table = {
+	Constants.PlayerInput.UP: false,
+	Constants.PlayerInput.DOWN: false,
+	Constants.PlayerInput.LEFT: false,
+	Constants.PlayerInput.RIGHT: false,
+	Constants.PlayerInput.GBA_A: false,
+	Constants.PlayerInput.GBA_B: false,
+	Constants.PlayerInput.GBA_SELECT: false,
+}
 var stage_env
 
 var time_elapsed : float = 0
@@ -48,7 +57,8 @@ func _ready():
 func _process(delta):
 	for unit in units:
 		unit.reset_actions()
-	handle_player_input()	
+	handle_player_input()
+	update_previous_frame_input_table()
 	# handle enemy input
 	for unit in units:
 		unit.process_unit(delta, self)
@@ -73,15 +83,13 @@ func handle_player_input():
 		else:
 			input_table[input_num] = false
 	
+	# early exit
+	
 	if (player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.RECOILING
 	or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.SLIDING):
 		return
 	
-	if (player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CHANNELING and !input_table[Constants.PlayerInput.GBA_B]
-	or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING and !input_table[Constants.PlayerInput.DOWN]
-	or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING and !input_table[Constants.PlayerInput.GBA_A] and !input_table[Constants.PlayerInput.UP]):
-		player.set_current_action(Constants.UnitCurrentAction.IDLE)
-		
+	# process input_table
 
 	if input_table[Constants.PlayerInput.UP]:
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
@@ -187,50 +195,34 @@ func handle_player_input():
 		elif dir_input == Constants.PlayerInput.RIGHT:
 			player.facing = Constants.DIRECTION.RIGHT
 	
-	if not player.actions[Constants.ActionType.MOVE] and not player.actions[Constants.ActionType.DASH]:
-		player.set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
-	
 	if input_table[Constants.PlayerInput.GBA_A]:
-		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING and player.slide_available:
+		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING and just_pressed(Constants.PlayerInput.GBA_A):
 			player.do_with_timeout(Constants.ActionType.SLIDE, Constants.UnitCurrentAction.SLIDING)
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING:
 			player.set_action(Constants.ActionType.JUMP)
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
 			if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-				if player.jump_available:
+				if just_pressed(Constants.PlayerInput.GBA_A):
 					player.set_action(Constants.ActionType.JUMP)
 					player.set_current_action(Constants.UnitCurrentAction.JUMPING)
 					player.set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, false)
-					player.float_available = false
-			elif player.float_available and not player.unit_conditions[Constants.UnitCondition.IS_PORTING]:
+			elif not player.unit_conditions[Constants.UnitCondition.IS_PORTING] and just_pressed(Constants.PlayerInput.GBA_A):
 				player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 			player.do_with_timeout(Constants.ActionType.FLOAT, -1)
-		player.jump_available = false
-		player.slide_available = false
-	
-	if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-		if not input_table[Constants.PlayerInput.GBA_A]:
-			player.jump_available = true
-			if not input_table[Constants.PlayerInput.GBA_B] and player.timer_actions[Constants.ActionType.SLIDE] == 0:
-				player.slide_available = true
-	else:
-		if not input_table[Constants.PlayerInput.GBA_A]:
-			player.float_available = true
 	
 	if input_table[Constants.PlayerInput.GBA_B]:
 		# if crouching
-		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING and player.slide_available:
+		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING and just_pressed(Constants.PlayerInput.GBA_B):
 			# slide
 			player.do_with_timeout(Constants.ActionType.SLIDE, Constants.UnitCurrentAction.SLIDING)
 		# else if idle or channeling
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CHANNELING:
 			# if porting and B is not still pressed after absorb
 			if player.unit_conditions[Constants.UnitCondition.IS_PORTING]:
-				if not player.just_absorbed:
-					# drop porting
-					player.set_action(Constants.ActionType.DROP_PORTING)
-					player.set_unit_condition(Constants.UnitCondition.IS_PORTING, false)
+				# drop porting
+				player.set_action(Constants.ActionType.DROP_PORTING)
+				player.set_unit_condition(Constants.UnitCondition.IS_PORTING, false)
 			else:
 				# channel
 				player.set_action(Constants.ActionType.CHANNEL)
@@ -240,10 +232,6 @@ func handle_player_input():
 		elif player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
 			player.set_action(Constants.ActionType.CANCEL_FLYING)
 			player.set_current_action(Constants.UnitCurrentAction.IDLE)
-		player.slide_available = false
-	
-	if !input_table[Constants.PlayerInput.GBA_B]:
-		player.just_absorbed = false
 	
 	if (input_table[Constants.PlayerInput.GBA_SELECT]
 	and player.unit_conditions[Constants.UnitCondition.HAS_ABILITY]
@@ -251,6 +239,35 @@ func handle_player_input():
 	and player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] != Constants.UnitCurrentAction.SLIDING):
 		player.set_action(Constants.ActionType.DISCARD)
 		player.set_unit_condition(Constants.UnitCondition.HAS_ABILITY, false)
+	
+	# process CURRENT_ACTION
+	
+	if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CHANNELING:
+		if just_released(Constants.PlayerInput.GBA_B):
+			player.set_current_action(Constants.UnitCurrentAction.IDLE)
+	
+	if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING:
+		if just_released(Constants.PlayerInput.DOWN):
+			player.set_current_action(Constants.UnitCurrentAction.IDLE)
+			
+	if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING:
+		if just_released(Constants.PlayerInput.GBA_A):
+			player.set_current_action(Constants.UnitCurrentAction.IDLE)
+	
+	# process MOVING_STATUS
+	
+	if not player.actions[Constants.ActionType.MOVE] and not player.actions[Constants.ActionType.DASH]:
+		player.set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
+
+func update_previous_frame_input_table():
+	for player_input in input_table:
+		previous_frame_input_table[player_input] = input_table[player_input]
+
+func just_pressed(player_input : int):
+	return !previous_frame_input_table[player_input] and input_table[player_input]
+
+func just_released(player_input : int):
+	return previous_frame_input_table[player_input] and !input_table[player_input]
 
 func set_logging_iteration(unit : Unit, delta):
 	if (log_triggered or
