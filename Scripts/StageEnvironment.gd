@@ -51,29 +51,29 @@ func interact(unit : Unit, delta):
 		if unit.h_speed >= 0 and unit.v_speed > 0:
 			scene.conditional_log("interact not-still check UP, RIGHT")
 			for collider in top_right_colliders:
-				check_collision(unit, collider, [Constants.DIRECTION.UP, Constants.DIRECTION.RIGHT], delta)
+				check_collision(unit, collider, [Constants.Direction.UP, Constants.Direction.RIGHT], delta)
 		elif unit.h_speed > 0 and unit.v_speed <= 0:
 			scene.conditional_log("interact not-still check RIGHT, DOWN, RIGHT")
 			# We have to make sure every horizontal-direction check is preceded by a down check, and vice versa...
 			for collider in bottom_right_colliders:
-				check_collision(unit, collider, [Constants.DIRECTION.RIGHT], delta)
+				check_collision(unit, collider, [Constants.Direction.RIGHT], delta)
 			for collider in bottom_right_colliders:
-				check_collision(unit, collider, [Constants.DIRECTION.DOWN], delta)
+				check_collision(unit, collider, [Constants.Direction.DOWN], delta)
 			for collider in bottom_right_colliders:
-				check_collision(unit, collider, [Constants.DIRECTION.RIGHT], delta)
+				check_collision(unit, collider, [Constants.Direction.RIGHT], delta)
 		elif unit.h_speed <= 0 and unit.v_speed < 0:
 			scene.conditional_log("interact not-still check LEFT, DOWN, LEFT")
 			# We have to make sure every horizontal-direction check is preceded by a down check, and vice versa...
 			for collider in bottom_left_colliders:
-				check_collision(unit, collider, [Constants.DIRECTION.LEFT], delta)
+				check_collision(unit, collider, [Constants.Direction.LEFT], delta)
 			for collider in bottom_left_colliders:
-				check_collision(unit, collider, [Constants.DIRECTION.DOWN], delta)
+				check_collision(unit, collider, [Constants.Direction.DOWN], delta)
 			for collider in bottom_left_colliders:
-				check_collision(unit, collider, [Constants.DIRECTION.LEFT], delta)
+				check_collision(unit, collider, [Constants.Direction.LEFT], delta)
 		elif unit.h_speed < 0 and unit.v_speed >= 0:
 			scene.conditional_log("interact not-still check LEFT, UP")
 			for collider in top_left_colliders:
-				check_collision(unit, collider, [Constants.DIRECTION.LEFT, Constants.DIRECTION.UP], delta)
+				check_collision(unit, collider, [Constants.Direction.LEFT, Constants.Direction.UP], delta)
 
 func interact_grounded(unit : Unit, delta):
 	# gravity-affected, grounded, v-speed-negative
@@ -95,15 +95,15 @@ func init_stage_grid(tilemap : TileMap):
 		var cellv = tilemap.get_cellv(map_elem)
 		var found_map_elem_type : bool = false
 		for test_map_elem_type in [
-			Constants.MAP_ELEM_TYPES.SQUARE,
-			Constants.MAP_ELEM_TYPES.SLOPE_LEFT,
-			Constants.MAP_ELEM_TYPES.SLOPE_RIGHT,
-			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_LEFT_1,
-			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_LEFT_2,
-			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_RIGHT_1,
-			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_RIGHT_2,
-			Constants.MAP_ELEM_TYPES.LEDGE]:
-			for test_cell_v in Constants.TileSetMapElems[scene.tile_set_name][test_map_elem_type]:
+			Constants.MapElemTypes.SQUARE,
+			Constants.MapElemTypes.SLOPE_LEFT,
+			Constants.MapElemTypes.SLOPE_RIGHT,
+			Constants.MapElemTypes.SMALL_SLOPE_LEFT_1,
+			Constants.MapElemTypes.SMALL_SLOPE_LEFT_2,
+			Constants.MapElemTypes.SMALL_SLOPE_RIGHT_1,
+			Constants.MapElemTypes.SMALL_SLOPE_RIGHT_2,
+			Constants.MapElemTypes.LEDGE]:
+			for test_cell_v in Constants.TILE_SET_MAP_ELEMS[scene.tile_set_name][test_map_elem_type]:
 				if test_cell_v == cellv:
 					map_elem_type = test_map_elem_type
 					found_map_elem_type = true
@@ -111,71 +111,71 @@ func init_stage_grid(tilemap : TileMap):
 			if found_map_elem_type:
 				break
 		match map_elem_type:
-			Constants.MAP_ELEM_TYPES.SQUARE:
+			Constants.MapElemTypes.SQUARE:
 				if stage_x == 39 and stage_y == 2:
 					print("Found stage_x == 39 and stage_y == 2 square")
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.UP, 1)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.DOWN, 1)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.LEFT, 1)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.RIGHT, 1)
-			Constants.MAP_ELEM_TYPES.SLOPE_LEFT:
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.UP, 1)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.DOWN, 1)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.LEFT, 1)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.RIGHT, 1)
+			Constants.MapElemTypes.SLOPE_LEFT:
 				try_insert_collider(
 					[],
 					[top_right_colliders, bottom_right_colliders, bottom_left_colliders],
 					Vector2(stage_x, stage_y),
 					Vector2(stage_x + 1, stage_y + 1)
 				)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.RIGHT, 1)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.DOWN, 1)
-			Constants.MAP_ELEM_TYPES.SLOPE_RIGHT:
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.RIGHT, 1)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.DOWN, 1)
+			Constants.MapElemTypes.SLOPE_RIGHT:
 				try_insert_collider(
 					[],
 					[bottom_right_colliders, bottom_left_colliders, top_left_colliders],
 					Vector2(stage_x, stage_y + 1),
 					Vector2(stage_x + 1, stage_y)
 				)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.LEFT, 1)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.DOWN, 1)
-			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_LEFT_1:
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.LEFT, 1)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.DOWN, 1)
+			Constants.MapElemTypes.SMALL_SLOPE_LEFT_1:
 				try_insert_collider(
 					[],
 					[top_right_colliders, bottom_right_colliders, bottom_left_colliders],
 					Vector2(stage_x, stage_y),
 					Vector2(stage_x + 1, stage_y + .5)
 				)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.RIGHT, .5)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.DOWN, 1)
-			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_LEFT_2:
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.RIGHT, .5)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.DOWN, 1)
+			Constants.MapElemTypes.SMALL_SLOPE_LEFT_2:
 				try_insert_collider(
 					[],
 					[top_right_colliders, bottom_right_colliders, bottom_left_colliders],
 					Vector2(stage_x, stage_y + .5),
 					Vector2(stage_x + 1, stage_y + 1)
 				)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.LEFT, .5)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.RIGHT, 1)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.DOWN, 1)
-			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_RIGHT_1:
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.LEFT, .5)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.RIGHT, 1)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.DOWN, 1)
+			Constants.MapElemTypes.SMALL_SLOPE_RIGHT_1:
 				try_insert_collider(
 					[],
 					[bottom_right_colliders, bottom_left_colliders, top_left_colliders],
 					Vector2(stage_x, stage_y + .5),
 					Vector2(stage_x + 1, stage_y)
 				)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.LEFT, .5)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.DOWN, 1)
-			Constants.MAP_ELEM_TYPES.SMALL_SLOPE_RIGHT_2:
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.LEFT, .5)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.DOWN, 1)
+			Constants.MapElemTypes.SMALL_SLOPE_RIGHT_2:
 				try_insert_collider(
 					[],
 					[bottom_right_colliders, bottom_left_colliders, top_left_colliders],
 					Vector2(stage_x, stage_y + 1),
 					Vector2(stage_x + 1, stage_y + .5)
 				)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.LEFT, 1)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.RIGHT, .5)
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.DOWN, 1)
-			Constants.MAP_ELEM_TYPES.LEDGE:
-				insert_grid_collider(stage_x, stage_y, Constants.DIRECTION.UP, 1)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.LEFT, 1)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.RIGHT, .5)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.DOWN, 1)
+			Constants.MapElemTypes.LEDGE:
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.UP, 1)
 
 
 func insert_grid_collider(stage_x, stage_y, direction : int, fractional_height : float):
@@ -184,22 +184,22 @@ func insert_grid_collider(stage_x, stage_y, direction : int, fractional_height :
 	var point_a : Vector2
 	var point_b : Vector2
 	match direction:
-		Constants.DIRECTION.UP:
+		Constants.Direction.UP:
 			check_colliders = [top_right_colliders, top_left_colliders]
 			insert_colliders = [bottom_right_colliders, bottom_left_colliders]
 			point_a = Vector2(stage_x, stage_y + 1)
 			point_b = Vector2(stage_x + 1, stage_y + 1)
-		Constants.DIRECTION.DOWN:
+		Constants.Direction.DOWN:
 			check_colliders = [bottom_right_colliders, bottom_left_colliders]
 			insert_colliders = [top_right_colliders, top_left_colliders]
 			point_a = Vector2(stage_x, stage_y)
 			point_b = Vector2(stage_x + 1, stage_y)
-		Constants.DIRECTION.LEFT:
+		Constants.Direction.LEFT:
 			check_colliders = [bottom_left_colliders, top_left_colliders]
 			insert_colliders = [top_right_colliders, bottom_right_colliders]
 			point_a = Vector2(stage_x, stage_y + (1 * fractional_height))
 			point_b = Vector2(stage_x, stage_y)
-		Constants.DIRECTION.RIGHT:
+		Constants.Direction.RIGHT:
 			check_colliders = [top_right_colliders, bottom_right_colliders]
 			insert_colliders = [bottom_left_colliders, top_left_colliders]
 			point_a = Vector2(stage_x + 1, stage_y + (1 * fractional_height))
@@ -224,7 +224,7 @@ func ground_movement_interaction(unit : Unit, delta):
 	var angle_helper_collider
 	for collider in bottom_left_colliders:
 		# true/false, collision direction, collision point, and unit env collider
-		var env_collision = unit_is_colliding_w_env(unit, collider, [Constants.DIRECTION.DOWN], delta, true)
+		var env_collision = unit_is_colliding_w_env(unit, collider, [Constants.Direction.DOWN], delta, true)
 		if env_collision[0]:
 			# collided with ground
 			scene.conditional_log("ground_movement_interaction ground-collided: " + str(collider) + " at " + str(env_collision[2]))
@@ -295,9 +295,9 @@ func check_collision(unit : Unit, collider, collision_directions, delta):
 		var collision_dir = env_collision[1]
 		var collision_point = env_collision[2]
 		var unit_env_collider = env_collision[3]
-		scene.conditional_log("check_collision collided: " + str(collider) + " check-directions: " + str(collision_directions) + " direction: " + Constants.DIRECTION.keys()[env_collision[1]] + ", at " + str(collision_point) + " w/ env-collider: " + str(unit_env_collider[0]))
+		scene.conditional_log("check_collision collided: " + str(collider) + " check-directions: " + str(collision_directions) + " direction: " + Constants.Direction.keys()[env_collision[1]] + ", at " + str(collision_point) + " w/ env-collider: " + str(unit_env_collider[0]))
 		check_ground_collision(unit, collider, collision_point, unit_env_collider, delta)
-		if collision_dir == Constants.DIRECTION.UP:
+		if collision_dir == Constants.Direction.UP:
 			scene.conditional_log("check_collision up collision zero-out v-speed")
 			unit.v_speed = 0
 			var collider_set_pos_y = collision_point.y - Constants.QUANTUM_DIST
@@ -306,13 +306,13 @@ func check_collision(unit : Unit, collider, collision_directions, delta):
 			unit.pos.y = unit.pos.y + y_dist_to_translate
 			if unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING:
 				unit.set_current_action(Constants.UnitCurrentAction.IDLE)
-		elif collision_dir == Constants.DIRECTION.LEFT or collision_dir == Constants.DIRECTION.RIGHT:
+		elif collision_dir == Constants.Direction.LEFT or collision_dir == Constants.Direction.RIGHT:
 			if (collider[0].x == collider[1].x
 			or (not unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] or not unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND])):
 				scene.conditional_log("check_collision left/right non-slope-collision or not-grounded zero-out h-speed")
 				unit.h_speed = 0
 			var collider_set_pos_x = collision_point.x
-			if collision_dir == Constants.DIRECTION.LEFT:
+			if collision_dir == Constants.Direction.LEFT:
 				scene.conditional_log("check_collision left collision")
 				collider_set_pos_x = collider_set_pos_x + Constants.QUANTUM_DIST
 			else:
@@ -324,7 +324,7 @@ func check_collision(unit : Unit, collider, collision_directions, delta):
 
 # handle collision with ground if any
 func check_ground_collision(unit : Unit, collider, collision_point : Vector2, unit_env_collider, delta):
-	if not unit_env_collider[1].has(Constants.DIRECTION.DOWN):
+	if not unit_env_collider[1].has(Constants.Direction.DOWN):
 		scene.conditional_log("check_ground_collision " + str(unit_env_collider[0]) + " not ground collider")
 		return
 	if ((unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]
@@ -358,21 +358,21 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 # returns true/false, collision direction, collision point, and unit env collider
 func unit_is_colliding_w_env(unit : Unit, collider, directions, delta, grounded_check = false):
 	for direction_to_check in directions:
-		if (((direction_to_check == Constants.DIRECTION.LEFT or direction_to_check == Constants.DIRECTION.RIGHT)
+		if (((direction_to_check == Constants.Direction.LEFT or direction_to_check == Constants.Direction.RIGHT)
 		and collider[0].y == collider[1].y)
-		or ((direction_to_check == Constants.DIRECTION.UP or direction_to_check == Constants.DIRECTION.DOWN)
+		or ((direction_to_check == Constants.Direction.UP or direction_to_check == Constants.Direction.DOWN)
 		and collider[0].x == collider[1].x)):
 			continue
 		for unit_env_collider in Constants.ENV_COLLIDERS[unit.unit_type]:
 			if not unit_env_collider[1].has(direction_to_check):
 				continue
-			if ((direction_to_check == Constants.DIRECTION.LEFT or direction_to_check == Constants.DIRECTION.RIGHT)
+			if ((direction_to_check == Constants.Direction.LEFT or direction_to_check == Constants.Direction.RIGHT)
 			and (collider[0].x != collider[1].x and collider[0].y != collider[1].y)
 			and unit_env_collider[0] != Vector2(0, 0)):
 				continue;
 			var intersects_results = intersect_check_w_collider_uec_dir(unit, collider, direction_to_check, unit_env_collider, grounded_check, delta)
 			if intersects_results[0]:
-				scene.conditional_log("unit_is_colliding_w_env collection detected with collider " + str(collider) + ", direction " + Constants.DIRECTION.keys()[direction_to_check] + ", grounded_check " + str(grounded_check))
+				scene.conditional_log("unit_is_colliding_w_env collection detected with collider " + str(collider) + ", direction " + Constants.Direction.keys()[direction_to_check] + ", grounded_check " + str(grounded_check))
 				return [intersects_results[0], direction_to_check, intersects_results[1], unit_env_collider]
 	return [false, -1, Vector2(), {}]
 

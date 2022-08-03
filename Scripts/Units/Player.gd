@@ -71,7 +71,7 @@ func recoil():
 
 func slide():
 	var dir_factor = 1
-	if facing == Constants.DIRECTION.LEFT:
+	if facing == Constants.Direction.LEFT:
 		dir_factor = -1
 	h_speed = Constants.DASH_SPEED * dir_factor
 	if is_current_action_timer_done(Constants.UnitCurrentAction.SLIDING):

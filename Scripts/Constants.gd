@@ -56,11 +56,22 @@ enum PlayerInput {
 	GBA_SELECT,
 }
 
-enum DIRECTION {
+enum Direction {
 	UP,
 	DOWN,
 	LEFT,
 	RIGHT,
+}
+
+enum MapElemTypes {
+	SQUARE,
+	SLOPE_LEFT,
+	SLOPE_RIGHT,
+	SMALL_SLOPE_LEFT_1,
+	SMALL_SLOPE_LEFT_2,
+	SMALL_SLOPE_RIGHT_1,
+	SMALL_SLOPE_RIGHT_2,
+	LEDGE,
 }
 
 const UNIT_TYPE_ACTIONS = {
@@ -129,14 +140,14 @@ const UNIT_CONDITION_TIMERS = {
 
 const ENV_COLLIDERS = {
 	UnitType.PLAYER: [
-		[Vector2(0, 1.5), [DIRECTION.LEFT, DIRECTION.UP, DIRECTION.RIGHT]],
-		[Vector2(0, .75), [DIRECTION.LEFT, DIRECTION.RIGHT]],
-		[Vector2(0, 0), [DIRECTION.LEFT, DIRECTION.DOWN, DIRECTION.RIGHT]],
+		[Vector2(0, 1.5), [Direction.LEFT, Direction.UP, Direction.RIGHT]],
+		[Vector2(0, .75), [Direction.LEFT, Direction.RIGHT]],
+		[Vector2(0, 0), [Direction.LEFT, Direction.DOWN, Direction.RIGHT]],
 	],
 	UnitType.TEST_ENEMY: [
-		[Vector2(0, 1), [DIRECTION.LEFT, DIRECTION.UP, DIRECTION.RIGHT]],
-		[Vector2(0, .5), [DIRECTION.LEFT, DIRECTION.RIGHT]],
-		[Vector2(0, 0), [DIRECTION.LEFT, DIRECTION.DOWN, DIRECTION.RIGHT]],
+		[Vector2(0, 1), [Direction.LEFT, Direction.UP, Direction.RIGHT]],
+		[Vector2(0, .5), [Direction.LEFT, Direction.RIGHT]],
+		[Vector2(0, 0), [Direction.LEFT, Direction.DOWN, Direction.RIGHT]],
 	],
 }
 const CROUCH_FACTOR = 0.67 # of total height
@@ -152,18 +163,7 @@ const INPUT_MAP = {
 	PlayerInput.GBA_SELECT: "gba_select",
 }
 
-enum MAP_ELEM_TYPES {
-	SQUARE,
-	SLOPE_LEFT,
-	SLOPE_RIGHT,
-	SMALL_SLOPE_LEFT_1,
-	SMALL_SLOPE_LEFT_2,
-	SMALL_SLOPE_RIGHT_1,
-	SMALL_SLOPE_RIGHT_2,
-	LEDGE,
-}
-
-const UnitSprites = {
+const UNIT_SPRITES = {
 	# "Sprite class": [is animation?, [Node list]]
 	UnitType.PLAYER: {
 		"Idle": [true, ["Idle"]],
@@ -174,16 +174,16 @@ const UnitSprites = {
 	}
 }
 
-const TileSetMapElems = {
+const TILE_SET_MAP_ELEMS = {
 	"PalaceOfEarthSpirits_Stage": {
-		MAP_ELEM_TYPES.SQUARE: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-		MAP_ELEM_TYPES.SLOPE_LEFT: [19, 20],
-		MAP_ELEM_TYPES.SLOPE_RIGHT: [21, 22],
-		MAP_ELEM_TYPES.SMALL_SLOPE_LEFT_1: [9],
-		MAP_ELEM_TYPES.SMALL_SLOPE_LEFT_2: [10, 11],
-		MAP_ELEM_TYPES.SMALL_SLOPE_RIGHT_1: [12],
-		MAP_ELEM_TYPES.SMALL_SLOPE_RIGHT_2: [13, 14],
-		MAP_ELEM_TYPES.LEDGE: [15, 16, 17, 18],
+		MapElemTypes.SQUARE: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		MapElemTypes.SLOPE_LEFT: [19, 20],
+		MapElemTypes.SLOPE_RIGHT: [21, 22],
+		MapElemTypes.SMALL_SLOPE_LEFT_1: [9],
+		MapElemTypes.SMALL_SLOPE_LEFT_2: [10, 11],
+		MapElemTypes.SMALL_SLOPE_RIGHT_1: [12],
+		MapElemTypes.SMALL_SLOPE_RIGHT_2: [13, 14],
+		MapElemTypes.LEDGE: [15, 16, 17, 18],
 	}
 }
 

@@ -128,8 +128,8 @@ func handle_player_input():
 				if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 					# if action-idle + move-idle + grounded + dash-timer-active + input-dash-facing-match
 					if (player.timer_actions[Constants.ActionType.DASH] > 0 and (
-						player.dash_facing == Constants.DIRECTION.LEFT and dir_input == Constants.PlayerInput.LEFT
-						or player.dash_facing == Constants.DIRECTION.RIGHT and dir_input == Constants.PlayerInput.RIGHT)):
+						player.dash_facing == Constants.Direction.LEFT and dir_input == Constants.PlayerInput.LEFT
+						or player.dash_facing == Constants.Direction.RIGHT and dir_input == Constants.PlayerInput.RIGHT)):
 						# set dash
 						player.handle_input_dash()
 					# if action-idle + move-idle + grounded + (not-dash-timer-active or not-input-dash-facing-match)
@@ -139,9 +139,9 @@ func handle_player_input():
 					# start timer, set dash-facing
 					player.set_timer_action(Constants.ActionType.DASH)
 					if dir_input == Constants.PlayerInput.LEFT:
-						player.dash_facing = Constants.DIRECTION.LEFT
+						player.dash_facing = Constants.Direction.LEFT
 					elif dir_input == Constants.PlayerInput.RIGHT:
-						player.dash_facing = Constants.DIRECTION.RIGHT
+						player.dash_facing = Constants.Direction.RIGHT
 				# if action-idle + move-idle + not-grounded
 				else:
 					# set move, kill timer
@@ -154,14 +154,14 @@ func handle_player_input():
 				# if action-idle + move-moving + grounded
 				if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 					# if action-idle + move-moving + grounded + facing-change
-					if (player.facing == Constants.DIRECTION.LEFT and dir_input == Constants.PlayerInput.RIGHT
-						or player.facing == Constants.DIRECTION.RIGHT and dir_input == Constants.PlayerInput.LEFT):
+					if (player.facing == Constants.Direction.LEFT and dir_input == Constants.PlayerInput.RIGHT
+						or player.facing == Constants.Direction.RIGHT and dir_input == Constants.PlayerInput.LEFT):
 						# start timer, set dash-facing
 						player.set_timer_action(Constants.ActionType.DASH)
 					if dir_input == Constants.PlayerInput.LEFT:
-						player.dash_facing = Constants.DIRECTION.LEFT
+						player.dash_facing = Constants.Direction.LEFT
 					elif dir_input == Constants.PlayerInput.RIGHT:
-						player.dash_facing = Constants.DIRECTION.RIGHT
+						player.dash_facing = Constants.Direction.RIGHT
 				# if action-idle + move-moving + not-grounded
 				else:
 					# kill timer
@@ -169,8 +169,8 @@ func handle_player_input():
 			# if action-idle + move-dashing
 			else:
 				# if action-idle + move-dashing + facing-change
-				if (player.facing == Constants.DIRECTION.LEFT and dir_input == Constants.PlayerInput.RIGHT
-					or player.facing == Constants.DIRECTION.RIGHT and dir_input == Constants.PlayerInput.LEFT):
+				if (player.facing == Constants.Direction.LEFT and dir_input == Constants.PlayerInput.RIGHT
+					or player.facing == Constants.Direction.RIGHT and dir_input == Constants.PlayerInput.LEFT):
 					# set move
 					player.handle_input_move()
 				# if action-idle + move-dashing + not-facing-change
@@ -180,9 +180,9 @@ func handle_player_input():
 				# start timer, set dash-facing
 				player.set_timer_action(Constants.ActionType.DASH)
 				if dir_input == Constants.PlayerInput.LEFT:
-					player.dash_facing = Constants.DIRECTION.LEFT
+					player.dash_facing = Constants.Direction.LEFT
 				elif dir_input == Constants.PlayerInput.RIGHT:
-					player.dash_facing = Constants.DIRECTION.RIGHT
+					player.dash_facing = Constants.Direction.RIGHT
 		# if action-jumping or action-flying
 		elif (player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING
 			or player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING):
@@ -191,9 +191,9 @@ func handle_player_input():
 			player.reset_timer_action(Constants.ActionType.DASH)
 		# set facing
 		if dir_input == Constants.PlayerInput.LEFT:
-			player.facing = Constants.DIRECTION.LEFT
+			player.facing = Constants.Direction.LEFT
 		elif dir_input == Constants.PlayerInput.RIGHT:
-			player.facing = Constants.DIRECTION.RIGHT
+			player.facing = Constants.Direction.RIGHT
 	
 	if input_table[Constants.PlayerInput.GBA_A]:
 		if player.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING and just_pressed(Constants.PlayerInput.GBA_A):
