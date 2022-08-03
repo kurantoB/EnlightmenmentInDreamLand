@@ -63,7 +63,7 @@ enum Direction {
 	RIGHT,
 }
 
-enum MapElemTypes {
+enum MapElemType {
 	SQUARE,
 	SLOPE_LEFT,
 	SLOPE_RIGHT,
@@ -176,14 +176,14 @@ const UNIT_SPRITES = {
 
 const TILE_SET_MAP_ELEMS = {
 	"PalaceOfEarthSpirits_Stage": {
-		MapElemTypes.SQUARE: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-		MapElemTypes.SLOPE_LEFT: [19, 20],
-		MapElemTypes.SLOPE_RIGHT: [21, 22],
-		MapElemTypes.SMALL_SLOPE_LEFT_1: [9],
-		MapElemTypes.SMALL_SLOPE_LEFT_2: [10, 11],
-		MapElemTypes.SMALL_SLOPE_RIGHT_1: [12],
-		MapElemTypes.SMALL_SLOPE_RIGHT_2: [13, 14],
-		MapElemTypes.LEDGE: [15, 16, 17, 18],
+		MapElemType.SQUARE: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+		MapElemType.SLOPE_LEFT: [19, 20],
+		MapElemType.SLOPE_RIGHT: [21, 22],
+		MapElemType.SMALL_SLOPE_LEFT_1: [9],
+		MapElemType.SMALL_SLOPE_LEFT_2: [10, 11],
+		MapElemType.SMALL_SLOPE_RIGHT_1: [12],
+		MapElemType.SMALL_SLOPE_RIGHT_2: [13, 14],
+		MapElemType.LEDGE: [15, 16, 17, 18],
 	}
 }
 
