@@ -352,6 +352,8 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 					scene.conditional_log("check_ground_collision set current action flying -> idle")
 					unit.set_current_action(Constants.UnitCurrentAction.IDLE)
 				interact_grounded(unit, delta)
+			if (unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION]) == Constants.UnitCurrentAction.JUMPING:
+				unit.set_current_action(Constants.UnitCurrentAction.IDLE)
 		
 	
 
