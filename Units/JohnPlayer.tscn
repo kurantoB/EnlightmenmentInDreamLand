@@ -2,10 +2,10 @@
 
 [ext_resource path="res://Scripts/Unit.gd" type="Script" id=1]
 [ext_resource path="res://Graphics/Units/Satori_Fly.png" type="Texture" id=2]
-[ext_resource path="res://Graphics/Enemy/Pink Fairy Armadillo.png" type="Texture" id=3]
+[ext_resource path="res://Graphics/Units/Enemies/Pink Fairy Armadillo.png" type="Texture" id=3]
 [ext_resource path="res://Graphics/Units/Satori_Jump.png" type="Texture" id=7]
-[ext_resource path="res://Graphics/Units/Satori_Jump1.png" type="Texture" id=9]
-[ext_resource path="res://Graphics/Units/Satori_Fly1.png" type="Texture" id=10]
+[ext_resource path="res://Graphics/Units/Player/Satori_Jump1.png" type="Texture" id=9]
+[ext_resource path="res://Graphics/Units/Player/Satori_Fly1.png" type="Texture" id=10]
 
 [sub_resource type="StreamTexture" id=1]
 load_path = "res://.import/Pink Fairy Armadillo.png-503d3476776b4bf3850e4e065e5b973e.stex"

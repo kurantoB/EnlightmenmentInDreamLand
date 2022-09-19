@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Pink Fairy Armadillo.png-503d3476776b4bf3850e4e065e5b973e.stex"
+path="res://.import/Satori_Channel.png-619a26d6410ac3f10789803b7caa3961.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Graphics/Enemy/Pink Fairy Armadillo.png"
-dest_files=[ "res://.import/Pink Fairy Armadillo.png-503d3476776b4bf3850e4e065e5b973e.stex" ]
+source_file="res://Graphics/Units/Player/Satori_Channel.png"
+dest_files=[ "res://.import/Satori_Channel.png-619a26d6410ac3f10789803b7caa3961.stex" ]
 
 [params]
 

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Satori_Walk3.png-77f4f6f7264f216597cff48379088bc0.stex"
+path="res://.import/Satori_Crouch.png-ff75d538587851d3e847715beb5a6062.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Graphics/Units/Satori_Walk3.png"
-dest_files=[ "res://.import/Satori_Walk3.png-77f4f6f7264f216597cff48379088bc0.stex" ]
+source_file="res://Graphics/Units/Player/Satori_Crouch.png"
+dest_files=[ "res://.import/Satori_Crouch.png-ff75d538587851d3e847715beb5a6062.stex" ]
 
 [params]
 

@@ -30,7 +30,7 @@ func init_player(player : Unit):
 
 func interact(unit : Unit, delta):
 	# gravity-affected
-	if unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]:
+	if not unit.no_gravity:
 		# gravity-affected, grounded
 		if unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 			# gravity-affected, grounded, -v
@@ -39,7 +39,7 @@ func interact(unit : Unit, delta):
 		else:
 			var gravity_factor = Constants.GRAVITY
 			var max_fall_speed = Constants.MAX_FALL_SPEED
-			if unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
+			if unit.get_current_action() == Constants.UnitCurrentAction.FLYING:
 				scene.conditional_log("interact gravity-affected, not-grounded, flying - use GRAVITY_LITE, MAX_FALL_LITE")
 				gravity_factor = Constants.GRAVITY_LITE
 				max_fall_speed = Constants.MAX_FALL_LITE
@@ -304,11 +304,11 @@ func check_collision(unit : Unit, collider, collision_directions, delta):
 			var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
 			scene.conditional_log("check_collision up collision change-pos-y: " + str(unit.pos.y) + " -> " + str(unit.pos.y + y_dist_to_translate))
 			unit.pos.y = unit.pos.y + y_dist_to_translate
-			if unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING:
+			if unit.get_current_action() == Constants.UnitCurrentAction.JUMPING:
 				unit.set_current_action(Constants.UnitCurrentAction.IDLE)
 		elif collision_dir == Constants.Direction.LEFT or collision_dir == Constants.Direction.RIGHT:
 			if (collider[0].x == collider[1].x
-			or (not unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] or not unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND])):
+			or (unit.no_gravity or not unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND])):
 				scene.conditional_log("check_collision left/right non-slope-collision or not-grounded zero-out h-speed")
 				unit.h_speed = 0
 			var collider_set_pos_x = collision_point.x
@@ -321,15 +321,17 @@ func check_collision(unit : Unit, collider, collision_directions, delta):
 			var x_dist_to_translate = collider_set_pos_x - (unit.pos.x + unit_env_collider[0].x)
 			scene.conditional_log("check_collision change-pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
 			unit.pos.x = unit.pos.x + x_dist_to_translate
+			if collider[0].x == collider[1].x:
+				unit.wall_collision() # subclass implementation
 
 # handle collision with ground if any
 func check_ground_collision(unit : Unit, collider, collision_point : Vector2, unit_env_collider, delta):
 	if not unit_env_collider[1].has(Constants.Direction.DOWN):
 		scene.conditional_log("check_ground_collision " + str(unit_env_collider[0]) + " not ground collider")
 		return
-	if ((unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]
+	if ((not unit.no_gravity
 	and not unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]
-	or not unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED])
+	or unit.no_gravity)
 	and (collider[0].y == collider[1].y or (collider[0].x != collider[1].x and collider[0].y != collider[1].y))):
 			scene.conditional_log("check_ground_collision airborne ground collision on: " + str(collider) + " with " + str(unit_env_collider[0]))
 			unit.v_speed = -1 * abs(unit.h_speed)
@@ -346,13 +348,13 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 			scene.conditional_log("check_ground_collision change pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
 			unit.pos.x = unit.pos.x + x_dist_to_translate
 			scene.conditional_log("check_ground_collision set grounded")
-			if unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]:
+			if not unit.no_gravity:
 				unit.set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, true)
-				if unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
+				if unit.get_current_action() == Constants.UnitCurrentAction.FLYING:
 					scene.conditional_log("check_ground_collision set current action flying -> idle")
 					unit.set_current_action(Constants.UnitCurrentAction.IDLE)
 				interact_grounded(unit, delta)
-			if (unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION]) == Constants.UnitCurrentAction.JUMPING:
+			if (unit.get_current_action()) == Constants.UnitCurrentAction.JUMPING:
 				unit.set_current_action(Constants.UnitCurrentAction.IDLE)
 		
 	
@@ -380,9 +382,9 @@ func unit_is_colliding_w_env(unit : Unit, collider, directions, delta, grounded_
 
 func intersect_check_w_collider_uec_dir(unit : Unit, collider, direction_to_check : int, unit_env_collider, grounded_check : bool, delta):
 	var unit_env_collider_vector = unit_env_collider[0]
-	if (unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.CROUCHING
-	or unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.SLIDING
-	or unit.unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING):
+	if (unit.get_current_action() == Constants.UnitCurrentAction.CROUCHING
+	or unit.get_current_action() == Constants.UnitCurrentAction.SLIDING
+	or unit.get_current_action() == Constants.UnitCurrentAction.FLYING):
 		unit_env_collider_vector.y = unit_env_collider_vector.y * Constants.CROUCH_FACTOR
 	var collision_check : Vector2 = unit.pos + unit_env_collider_vector
 	var altered_collision_check: Vector2 = collision_check
@@ -396,7 +398,7 @@ func intersect_check_w_collider_uec_dir(unit : Unit, collider, direction_to_chec
 
 func interact_post(unit : Unit):
 	# need to reground unit in case it ended up somewhere underneath ground level
-	if unit.unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] and unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+	if not unit.no_gravity and unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 		# gravity-affected, grounded
 		scene.conditional_log("interact_post gravity-affected, grounded - ground_placement")
 		ground_placement(unit)

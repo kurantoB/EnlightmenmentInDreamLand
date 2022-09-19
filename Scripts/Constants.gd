@@ -1,6 +1,6 @@
 enum UnitType {
 	PLAYER,
-	TEST_ENEMY
+	JUMP_BIRD,
 }
 
 enum ActionType {
@@ -10,23 +10,19 @@ enum ActionType {
 	JUMP,
 	MOVE,
 	DASH,
-	DIGEST,
-	DROP_PORTING,
+	DROP_ABILITY,
 	FLOAT,
 	RECOIL,
 	SLIDE,
-	DISCARD,
 }
 
 enum UnitCondition {
 	CURRENT_ACTION,
 	HAS_ABILITY,
 	IS_ON_GROUND,
-	IS_PORTING,
 	IS_RECOILING,
 	MOVING_STATUS
 	IS_INVINCIBLE,
-	IS_GRAVITY_AFFECTED,
 }
 
 enum UnitCurrentAction {
@@ -82,13 +78,15 @@ const UNIT_TYPE_ACTIONS = {
 		ActionType.JUMP,
 		ActionType.MOVE,
 		ActionType.DASH,
-		ActionType.DIGEST,
-		ActionType.DROP_PORTING,
+		ActionType.DROP_ABILITY,
 		ActionType.FLOAT,
 		ActionType.RECOIL,
 		ActionType.SLIDE,
-		ActionType.DISCARD,
 	],
+	UnitType.JUMP_BIRD: [
+		ActionType.JUMP,
+		ActionType.MOVE,
+	]
 }
 
 const UNIT_TYPE_CURRENT_ACTIONS = {
@@ -101,6 +99,10 @@ const UNIT_TYPE_CURRENT_ACTIONS = {
 		UnitCurrentAction.FLYING,
 		UnitCurrentAction.RECOILING,
 	],
+	UnitType.JUMP_BIRD: [
+		UnitCurrentAction.IDLE,
+		UnitCurrentAction.JUMPING,
+	]
 }
 
 const UNIT_TYPE_CONDITIONS = {
@@ -108,10 +110,13 @@ const UNIT_TYPE_CONDITIONS = {
 		UnitCondition.CURRENT_ACTION: UnitCurrentAction.IDLE,
 		UnitCondition.HAS_ABILITY: false,
 		UnitCondition.IS_ON_GROUND: true,
-		UnitCondition.IS_PORTING: false,
 		UnitCondition.MOVING_STATUS: UnitMovingStatus.IDLE,
 		UnitCondition.IS_INVINCIBLE: false,
-		UnitCondition.IS_GRAVITY_AFFECTED: true,
+	},
+	UnitType.JUMP_BIRD: {
+		UnitCondition.CURRENT_ACTION: UnitCurrentAction.IDLE,
+		UnitCondition.IS_ON_GROUND: true,
+		UnitCondition.MOVING_STATUS: UnitMovingStatus.IDLE,
 	},
 }
 
@@ -126,7 +131,10 @@ const ACTION_TIMERS = {
 const CURRENT_ACTION_TIMERS = {
 	UnitType.PLAYER: {
 		UnitCurrentAction.SLIDING: 0.7,
-		UnitCurrentAction.RECOILING: 1.5,
+		UnitCurrentAction.RECOILING: 0.67,
+		UnitCurrentAction.JUMPING: 0.35,
+	},
+	UnitType.JUMP_BIRD: {
 		UnitCurrentAction.JUMPING: 0.35,
 	}
 }
@@ -134,7 +142,7 @@ const CURRENT_ACTION_TIMERS = {
 const UNIT_CONDITION_TIMERS = {
 	# condition type: [duration, on value, off value]
 	UnitType.PLAYER: {
-		UnitCondition.IS_INVINCIBLE: [3.0, true, false]
+		UnitCondition.IS_INVINCIBLE: [2.5, true, false]
 	}
 }
 
@@ -144,10 +152,8 @@ const ENV_COLLIDERS = {
 		[Vector2(0, .75), [Direction.LEFT, Direction.RIGHT]],
 		[Vector2(0, 0), [Direction.LEFT, Direction.DOWN, Direction.RIGHT]],
 	],
-	UnitType.TEST_ENEMY: [
-		[Vector2(0, 1), [Direction.LEFT, Direction.UP, Direction.RIGHT]],
-		[Vector2(0, .5), [Direction.LEFT, Direction.RIGHT]],
-		[Vector2(0, 0), [Direction.LEFT, Direction.DOWN, Direction.RIGHT]],
+	UnitType.JUMP_BIRD: [
+		
 	],
 }
 const CROUCH_FACTOR = 0.67 # of total height
@@ -170,8 +176,16 @@ const UNIT_SPRITES = {
 		"Walk": [true, ["Walk"]],
 		"Dash": [true, ["Dash"]],
 		"Jump": [false, ["Jump1", "Jump2"]],
-		"Fly": [false, ["Fly1", "Fly2"]]
-	}
+		"Fly": [false, ["Fly1", "Fly2"]],
+		"Slide": [false, ["Slide"]],
+		"Recoil": [false, ["Recoil"]],
+		"Channel": [false, ["Channel"]],
+		"Crouch": [false, ["Crouch"]]
+	},
+	UnitType.JUMP_BIRD: {
+		"Idle": [false, ["Idle"]],
+		"Jump": [false, ["Jump1", "Jump2"]],
+	},
 }
 
 const TILE_SET_MAP_ELEMS = {
@@ -188,11 +202,13 @@ const TILE_SET_MAP_ELEMS = {
 }
 
 const UNIT_TYPE_MOVE_SPEEDS = {
-	UnitType.PLAYER: 6
+	UnitType.PLAYER: 6,
+	UnitType.JUMP_BIRD: 5,
 }
 
 const UNIT_TYPE_JUMP_SPEEDS = {
-	UnitType.PLAYER: 8
+	UnitType.PLAYER: 8,
+	UnitType.JUMP_BIRD: 10,
 }
 
 const SCALE_FACTOR = 3
@@ -204,4 +220,18 @@ const ACCELERATION = 35
 const DASH_SPEED = 12
 const GRAVITY_LITE = 8
 const QUANTUM_DIST = 0.001
+
+# Cosmetics
 const PARALLAX_SCROLL_FACTOR = .8
+const FLASH_CYCLE = 0.25
+const UNIT_FLASH_MAPPINGS = {
+	UnitType.PLAYER: {
+		"ffa5d5": "ffd3ad",
+		"ffd3ad": "ffffff",
+		"ffaa6e": "ffe091",
+		"50b9eb": "8cdaff",
+		"27d3cb": "78fae6",
+		"f29faa": "ffccd0",
+		"c37289": "f29faa",
+	}
+}

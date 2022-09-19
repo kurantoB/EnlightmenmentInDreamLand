@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Scripts/GameScene.gd" type="Script" id=1]
 [ext_resource path="res://Units/Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Tile Sets/PalaceOfEarthSpirits_Stage.tres" type="TileSet" id=3]
 [ext_resource path="res://Tile Sets/PalaceOfEarthSpirits_BG.tres" type="TileSet" id=4]
+[ext_resource path="res://Scripts/Units/Player.gd" type="Script" id=5]
 
 [node name="Scene" type="Node"]
 script = ExtResource( 1 )
@@ -39,6 +40,7 @@ tile_data = PoolIntArray( -1310704, 0, 0, -1310703, 1, 0, -1310702, 1, 0, -13107
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 20, -20 )
+script = ExtResource( 5 )
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 offset = Vector2( 0, -21 )

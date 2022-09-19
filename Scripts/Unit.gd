@@ -6,8 +6,8 @@ class_name Unit
 const Constants = preload("res://Scripts/Constants.gd")
 const GameUtils = preload("res://Scripts/GameUtils.gd")
 
-# position
 export var unit_type : int
+var no_gravity : bool = false # whether gravity should affect this unit
 
 var actions = {}
 var unit_conditions = {}
@@ -19,9 +19,13 @@ var unit_condition_timers = {}
 var pos : Vector2
 var h_speed : float = 0
 var v_speed : float = 0
-var target_move_speed : float
+var target_move_speed : float = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
 
 var current_sprite : Node2D
+
+var time_elapsed : float
+var is_flash : bool = false
+var flash_start_timestamp : float
 
 # Called when the node enters the scene tree for the first time
 func _ready():
@@ -33,7 +37,7 @@ func _ready():
 		unit_condition_timers[condition_num] = 0
 	for timer_action_num in Constants.ACTION_TIMERS[unit_type].keys():
 		timer_actions[timer_action_num] = 0
-	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
+	build_iframe_sprites()
 
 func set_action(action : int):
 	assert(action in Constants.UNIT_TYPE_ACTIONS[unit_type])
@@ -66,11 +70,6 @@ func reset_actions():
 	for action_num in Constants.UNIT_TYPE_ACTIONS[unit_type]:
 		actions[action_num] = false
 
-func handle_input_move():
-	set_action(Constants.ActionType.MOVE)
-	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.MOVING)
-	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
-
 func do_with_timeout(action : int, new_current_action : int = -1):
 	if timer_actions[action] == 0:
 		set_action(action)
@@ -78,10 +77,11 @@ func do_with_timeout(action : int, new_current_action : int = -1):
 		if new_current_action != -1:
 			set_current_action(new_current_action)
 
-func process_unit(delta, scene):
+func process_unit(delta, time_elapsed : float, scene):
 	current_action_time_elapsed += delta
 	execute_actions(delta, scene)
 	advance_timers(delta)
+	self.time_elapsed = time_elapsed
 
 func advance_timers(delta):
 	for timer_action_num in Constants.ACTION_TIMERS[unit_type].keys():
@@ -91,9 +91,12 @@ func advance_timers(delta):
 		if unit_condition_timers[condition_num] == 0:
 			unit_conditions[condition_num] = Constants.UNIT_CONDITION_TIMERS[unit_type][condition_num][2]
 
+func get_current_action():
+	return unit_conditions[Constants.UnitCondition.CURRENT_ACTION]
+
 func set_current_action(current_action : int):
 	assert(current_action in Constants.UNIT_TYPE_CURRENT_ACTIONS[unit_type])
-	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] != current_action:
+	if get_current_action() != current_action:
 		current_action_time_elapsed = 0
 	set_unit_condition(Constants.UnitCondition.CURRENT_ACTION, current_action)
 
@@ -110,16 +113,19 @@ func execute_actions(delta, scene):
 	handle_idle()
 
 func jump():
+	set_current_action(Constants.UnitCurrentAction.JUMPING)
+	set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, false)
 	v_speed = Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type]
-	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.JUMPING and v_speed > 0:
+	if get_current_action() == Constants.UnitCurrentAction.JUMPING and v_speed > 0:
 		set_sprite("Jump", 0)
 	if is_current_action_timer_done(Constants.UnitCurrentAction.JUMPING):
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 		
 
 func move():
-	if (unit_conditions[Constants.UnitCondition.MOVING_STATUS] != Constants.UnitMovingStatus.IDLE
-	and unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE
+	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.MOVING)
+	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
+	if (get_current_action() == Constants.UnitCurrentAction.IDLE
 	and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
 		set_sprite("Walk")
 
@@ -127,7 +133,7 @@ func handle_moving_status(delta, scene):
 	# what we have: facing, current speed, move status, grounded
 	# we want: to set the new intended speed
 	var magnitude : float
-	if unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+	if not no_gravity and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 		magnitude = sqrt(pow(v_speed, 2) + pow(h_speed, 2))
 	else:
 		magnitude = abs(h_speed)
@@ -152,7 +158,7 @@ func handle_moving_status(delta, scene):
 			scene.conditional_log("not-move-idle, not-facing-aligned: slow-down: magnitude: " + str(magnitude))
 	
 	# if is grounded
-	if unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED] and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+	if not no_gravity and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 		# make magnitude greater than quantum distance
 		if magnitude > 0 and magnitude < Constants.QUANTUM_DIST:
 			magnitude = Constants.QUANTUM_DIST * 2
@@ -189,11 +195,10 @@ func handle_moving_status(delta, scene):
 					h_speed = -1 * magnitude
 		else:
 			h_speed = 0
-		scene.conditional_log("not-grounded: set-h-speed: " + str(h_speed))
 
 func handle_idle():
-	if unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.IDLE:
-		if unit_conditions[Constants.UnitCondition.IS_GRAVITY_AFFECTED]:
+	if get_current_action() == Constants.UnitCurrentAction.IDLE:
+		if not no_gravity:
 			if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 				if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
 					set_sprite("Idle")
@@ -201,7 +206,7 @@ func handle_idle():
 				set_sprite("Jump", 1)
 		else:
 			set_sprite("Idle")
-	elif unit_conditions[Constants.UnitCondition.CURRENT_ACTION] == Constants.UnitCurrentAction.FLYING:
+	elif get_current_action() == Constants.UnitCurrentAction.FLYING:
 		if v_speed > 0:
 			set_sprite("Fly", 0)
 		else:
@@ -214,7 +219,14 @@ func set_sprite(sprite_class : String, index : int = 0):
 	var true_index : int = index
 	if true_index > len(node_list) - 1:
 		true_index = 0
-	var new_sprite : Node2D = get_node(node_list[true_index])
+	var new_sprite : Node2D
+	if (is_flash):
+		if int((time_elapsed - flash_start_timestamp) / Constants.FLASH_CYCLE) % 2 == 1:
+			new_sprite = get_node(node_list[true_index] + "Flash")
+		else:
+			new_sprite = get_node(node_list[true_index])
+	else:
+		new_sprite = get_node(node_list[true_index])
 	if current_sprite == null or current_sprite != new_sprite:
 		if current_sprite != null:
 			current_sprite.visible = false
@@ -233,10 +245,50 @@ func react(delta):
 	position.x = pos.x * Constants.GRID_SIZE * Constants.SCALE_FACTOR
 	position.y = -1 * pos.y * Constants.GRID_SIZE * Constants.SCALE_FACTOR
 
+func hit(damage : int, dir : int):
+	pass
+
+func build_iframe_sprites():
+	if not Constants.UNIT_FLASH_MAPPINGS.keys().has(unit_type):
+		return
+	for child in get_children():
+		if child is Sprite:
+			var sprite_child : Sprite = child
+			var new_sprite_child : Sprite = sprite_child.duplicate()
+			add_child(new_sprite_child)
+			new_sprite_child.name = sprite_child.name + "Flash"
+			var new_texture : ImageTexture = build_iframe_texture(new_sprite_child.texture.get_data())
+			new_sprite_child.texture = new_texture
+		elif child is AnimatedSprite:
+			var animated_sprite_child : AnimatedSprite = child
+			var new_animated_sprite_child : AnimatedSprite = animated_sprite_child.duplicate()
+			add_child(new_animated_sprite_child)
+			new_animated_sprite_child.name = animated_sprite_child.name + "Flash"
+			var new_sprite_frames : SpriteFrames = new_animated_sprite_child.frames.duplicate()
+			new_animated_sprite_child.frames = new_sprite_frames
+			for frame_num in range(new_sprite_frames.get_frame_count(new_animated_sprite_child.animation)):
+				var new_texture : ImageTexture = build_iframe_texture(new_sprite_frames.get_frame(new_animated_sprite_child.animation, frame_num).get_data())
+				new_sprite_frames.set_frame(new_animated_sprite_child.animation, frame_num, new_texture)
+
+func build_iframe_texture(image : Image):
+	image.lock()
+	for y in image.get_height():
+		for x in image.get_width():
+			var color_html : String = image.get_pixel(x, y).to_html(false)
+			if Constants.UNIT_FLASH_MAPPINGS[unit_type].has(color_html):
+				image.set_pixel(x, y, Constants.UNIT_FLASH_MAPPINGS[unit_type][color_html])
+	image.unlock()
+	var new_texture = ImageTexture.new()
+	new_texture.create_from_image(image, 0)
+	return new_texture
+
+func wall_collision():
+	pass
+
 func log_unit():
 	print("===UNIT DEBUG====")
 	print("pos: " + str(pos))
 	print("speeds: " + str(Vector2(h_speed, v_speed)))
 	print("facing: " + Constants.Direction.keys()[facing])
-	print("conditions: action: " + Constants.UnitCurrentAction.keys()[unit_conditions[Constants.UnitCondition.CURRENT_ACTION]] + ", grounded: " + str(unit_conditions[Constants.UnitCondition.IS_ON_GROUND]) + ", movement: " + Constants.UnitMovingStatus.keys()[unit_conditions[Constants.UnitCondition.MOVING_STATUS]])
+	print("conditions: action: " + Constants.UnitCurrentAction.keys()[get_current_action()] + ", grounded: " + str(unit_conditions[Constants.UnitCondition.IS_ON_GROUND]) + ", movement: " + Constants.UnitMovingStatus.keys()[unit_conditions[Constants.UnitCondition.MOVING_STATUS]])
 	print("=================")
