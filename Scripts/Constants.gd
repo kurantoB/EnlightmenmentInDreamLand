@@ -68,6 +68,14 @@ enum MapElemType {
 	SMALL_SLOPE_RIGHT_1,
 	SMALL_SLOPE_RIGHT_2,
 	LEDGE,
+	HAZARD,
+}
+
+enum HIT_BOX_BOUND {
+	UPPER_BOUND,
+	LOWER_BOUND,
+	LEFT_BOUND,
+	RIGHT_BOUND
 }
 
 const UNIT_TYPE_ACTIONS = {
@@ -156,6 +164,17 @@ const ENV_COLLIDERS = {
 		
 	],
 }
+const UNIT_HIT_BOXES = {
+	UnitType.PLAYER: {
+		HIT_BOX_BOUND.UPPER_BOUND: 1.5,
+		HIT_BOX_BOUND.LOWER_BOUND: 0,
+		HIT_BOX_BOUND.LEFT_BOUND: -0.25,
+		HIT_BOX_BOUND.RIGHT_BOUND: 0.25,
+	},
+	UnitType.JUMP_BIRD: [
+		
+	],
+}
 const CROUCH_FACTOR = 0.67 # of total height
 
 const INPUT_MAP = {
@@ -198,6 +217,17 @@ const TILE_SET_MAP_ELEMS = {
 		MapElemType.SMALL_SLOPE_RIGHT_1: [12],
 		MapElemType.SMALL_SLOPE_RIGHT_2: [13, 14],
 		MapElemType.LEDGE: [15, 16, 17, 18],
+		MapElemType.HAZARD: [24, 25, 26, 27],
+	},
+}
+
+# To use for determining bounce-back direction
+const TILE_SET_HAZARD_REF_X = {
+	"PalaceOfEarthSpirits_Stage": {
+		24: -1,
+		25: Direction.RIGHT,
+		26: Direction.LEFT,
+		27: -1,
 	}
 }
 

@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=10 format=2]
+[gd_resource type="TileSet" load_steps=14 format=2]
 
 [ext_resource path="res://Graphics/Tiles/PalaceTileSet.png" type="Texture" id=1]
 [ext_resource path="res://Graphics/Tiles/ledge/LedgeRight.png" type="Texture" id=2]
@@ -9,6 +9,10 @@
 [ext_resource path="res://Graphics/Tiles/slope/SlopeLeftBorder.png" type="Texture" id=7]
 [ext_resource path="res://Graphics/Tiles/slope/SlopeLeft2Borderless.png" type="Texture" id=8]
 [ext_resource path="res://Graphics/Tiles/slope/SlopeRightBorder.png" type="Texture" id=9]
+[ext_resource path="res://Graphics/Tiles/spike/SpikeLeft.png" type="Texture" id=10]
+[ext_resource path="res://Graphics/Tiles/spike/SpikeRight.png" type="Texture" id=11]
+[ext_resource path="res://Graphics/Tiles/spike/SpikeDown.png" type="Texture" id=12]
+[ext_resource path="res://Graphics/Tiles/spike/SpikeUp.png" type="Texture" id=13]
 
 [resource]
 0/name = "PalaceTileSet.png 0"
@@ -333,3 +337,59 @@
 22/shape_one_way_margin = 0.0
 22/shapes = [  ]
 22/z_index = 0
+24/name = "SpikeDown.png 24"
+24/texture = ExtResource( 12 )
+24/tex_offset = Vector2( 0, 0 )
+24/modulate = Color( 1, 1, 1, 1 )
+24/region = Rect2( 0, 0, 20, 20 )
+24/tile_mode = 0
+24/occluder_offset = Vector2( 0, 0 )
+24/navigation_offset = Vector2( 0, 0 )
+24/shape_offset = Vector2( 0, 0 )
+24/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+24/shape_one_way = false
+24/shape_one_way_margin = 0.0
+24/shapes = [  ]
+24/z_index = 0
+25/name = "SpikeLeft.png 25"
+25/texture = ExtResource( 10 )
+25/tex_offset = Vector2( 0, 0 )
+25/modulate = Color( 1, 1, 1, 1 )
+25/region = Rect2( 0, 0, 20, 20 )
+25/tile_mode = 0
+25/occluder_offset = Vector2( 0, 0 )
+25/navigation_offset = Vector2( 0, 0 )
+25/shape_offset = Vector2( 0, 0 )
+25/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+25/shape_one_way = false
+25/shape_one_way_margin = 0.0
+25/shapes = [  ]
+25/z_index = 0
+26/name = "SpikeRight.png 26"
+26/texture = ExtResource( 11 )
+26/tex_offset = Vector2( 0, 0 )
+26/modulate = Color( 1, 1, 1, 1 )
+26/region = Rect2( 0, 0, 20, 20 )
+26/tile_mode = 0
+26/occluder_offset = Vector2( 0, 0 )
+26/navigation_offset = Vector2( 0, 0 )
+26/shape_offset = Vector2( 0, 0 )
+26/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+26/shape_one_way = false
+26/shape_one_way_margin = 0.0
+26/shapes = [  ]
+26/z_index = 0
+27/name = "SpikeUp.png 27"
+27/texture = ExtResource( 13 )
+27/tex_offset = Vector2( 0, 0 )
+27/modulate = Color( 1, 1, 1, 1 )
+27/region = Rect2( 0, 0, 20, 20 )
+27/tile_mode = 0
+27/occluder_offset = Vector2( 0, 0 )
+27/navigation_offset = Vector2( 0, 0 )
+27/shape_offset = Vector2( 0, 0 )
+27/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+27/shape_one_way = false
+27/shape_one_way_margin = 0.0
+27/shapes = [  ]
+27/z_index = 0

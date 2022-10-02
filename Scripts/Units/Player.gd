@@ -12,10 +12,10 @@ var channel_sparks = []
 var channel_spark_spawn_times = []
 var channel_spark_ys = []
 const CHANNEL_SPARK_PREFAB : PackedScene = preload("res://FX/ChannelSpark.tscn")
-const CHANNEL_SPARK_COUNT = 9
-const CHANNEL_RANGE_PIXELS = 50
-const CHANNEL_VERT_RANGE = 20
-const CHANNEL_SPARK_LIFE : float = .5
+const CHANNEL_SPARK_COUNT = 7
+const CHANNEL_RANGE_PIXELS = 38
+const CHANNEL_VERT_RANGE = 25
+const CHANNEL_SPARK_LIFE : float = .33
 var rng = RandomNumberGenerator.new()
 const CHANNEL_Y_MIDPOINT = 20
 
@@ -24,7 +24,6 @@ func _ready():
 	for i in range(CHANNEL_SPARK_COUNT):
 		var inst : Sprite = CHANNEL_SPARK_PREFAB.instance()
 		channel_sparks.append(inst)
-		inst.position.x = CHANNEL_RANGE_PIXELS + 1
 
 func reset_actions():
 	.reset_actions()
@@ -37,15 +36,27 @@ func reset_actions():
 func hit(damage : int, dir : int):
 	set_action(Constants.ActionType.RECOIL)
 	set_current_action(Constants.UnitCurrentAction.RECOILING)
+	stop_channel_sparks()
 	set_unit_condition_with_timer(Constants.UnitCondition.IS_INVINCIBLE)
-	target_move_speed = 0
-	if dir == Constants.Direction.LEFT:
-		h_speed += RECOIL_PUSHBACK
-		facing = Constants.Direction.LEFT
-	elif dir == Constants.Direction.RIGHT:
-		h_speed -= RECOIL_PUSHBACK
-		facing = Constants.Direction.RIGHT
 	is_flash = true
+	target_move_speed = 0
+	if get_condition(Constants.UnitCondition.IS_ON_GROUND, false):
+		var temp_h_speed
+		if dir == Constants.Direction.LEFT:
+			temp_h_speed = h_speed + RECOIL_PUSHBACK
+		else:
+			temp_h_speed = h_speed - RECOIL_PUSHBACK
+		if temp_h_speed > 0:
+			h_speed = Constants.QUANTUM_DIST
+		else:
+			h_speed = -Constants.QUANTUM_DIST
+		v_speed = -1 * abs(temp_h_speed)
+	else:
+		if dir == Constants.Direction.LEFT:
+			h_speed += RECOIL_PUSHBACK
+		else:
+			h_speed -= RECOIL_PUSHBACK
+	facing = dir
 
 func wall_collision():
 	if get_current_action() == Constants.UnitCurrentAction.SLIDING:
@@ -142,22 +153,30 @@ func init_channel_sparks():
 		sprite.position.x = CHANNEL_RANGE_PIXELS + 1
 		sprite.position.y = rng.randi_range(-CHANNEL_Y_MIDPOINT - CHANNEL_VERT_RANGE, -CHANNEL_Y_MIDPOINT + CHANNEL_VERT_RANGE)
 		channel_spark_ys.append(sprite.position.y)
-		channel_spark_spawn_times.append(time_elapsed + (i * CHANNEL_SPARK_LIFE / channel_sparks.size()))	
+		channel_spark_spawn_times.append(time_elapsed + (i * CHANNEL_SPARK_LIFE / channel_sparks.size()))
+		sprite.visible = false
+		if facing == Constants.Direction.LEFT:
+			sprite.position.x *= -1
 
 func handle_channel_sparks():
 	for i in range(channel_sparks.size()):
 		var sprite : Sprite = channel_sparks[i]
-		if sprite.position.x == CHANNEL_RANGE_PIXELS + 1 and time_elapsed > channel_spark_spawn_times[i]:
-			sprite.position.x -= 1
-			channel_spark_spawn_times[i] = time_elapsed
+		if abs(sprite.position.x) == CHANNEL_RANGE_PIXELS + 1:
+			if time_elapsed > channel_spark_spawn_times[i]:
+				sprite.position.x = abs(sprite.position.x) - 1
+				channel_spark_spawn_times[i] = time_elapsed
 			continue
 		var spark_time_elapsed = time_elapsed - channel_spark_spawn_times[i]
 		if spark_time_elapsed < CHANNEL_SPARK_LIFE * 0.5:
 			sprite.position.x = round(CHANNEL_RANGE_PIXELS - spark_time_elapsed / (CHANNEL_SPARK_LIFE * 0.5) * CHANNEL_RANGE_PIXELS * 0.2)
 		elif spark_time_elapsed < CHANNEL_SPARK_LIFE * 0.8:
 			sprite.position.x = round(CHANNEL_RANGE_PIXELS - CHANNEL_RANGE_PIXELS * 0.2 - (spark_time_elapsed - CHANNEL_SPARK_LIFE * 0.5) / (CHANNEL_SPARK_LIFE * 0.8) * CHANNEL_RANGE_PIXELS * 0.8)
+		elif spark_time_elapsed < CHANNEL_SPARK_LIFE * 0.9:
+			sprite.position.x = round(CHANNEL_RANGE_PIXELS - CHANNEL_RANGE_PIXELS * 0.5 - (spark_time_elapsed - CHANNEL_SPARK_LIFE * 0.8) / (CHANNEL_SPARK_LIFE * 0.9) * CHANNEL_RANGE_PIXELS * 0.9)
+		elif spark_time_elapsed < CHANNEL_SPARK_LIFE * 0.95:
+			sprite.position.x = round(CHANNEL_RANGE_PIXELS - CHANNEL_RANGE_PIXELS * 0.6 - (spark_time_elapsed - CHANNEL_SPARK_LIFE * 0.9) / (CHANNEL_SPARK_LIFE * 0.95) * CHANNEL_RANGE_PIXELS * 0.95)
 		elif spark_time_elapsed < CHANNEL_SPARK_LIFE:
-			sprite.position.x = round(CHANNEL_RANGE_PIXELS * .4)
+			sprite.position.x = round(CHANNEL_RANGE_PIXELS * .325)
 		else:
 			sprite.position.x = CHANNEL_RANGE_PIXELS
 			sprite.position.y = channel_spark_ys[i]
@@ -166,6 +185,7 @@ func handle_channel_sparks():
 			sprite.position.y = round(-CHANNEL_Y_MIDPOINT + ((1 - spark_time_elapsed / CHANNEL_SPARK_LIFE) * (channel_spark_ys[i] - -CHANNEL_Y_MIDPOINT)))
 		if facing == Constants.Direction.LEFT:
 			sprite.position.x *= -1
+		sprite.visible = true
 
 func stop_channel_sparks():
 	for sprite in channel_sparks:

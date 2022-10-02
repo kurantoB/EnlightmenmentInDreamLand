@@ -8,6 +8,7 @@ const GameUtils = preload("res://Scripts/GameUtils.gd")
 
 export var unit_type : int
 var no_gravity : bool = false # whether gravity should affect this unit
+var hit_box
 
 var actions = {}
 var unit_conditions = {}
@@ -37,6 +38,7 @@ func _ready():
 		unit_condition_timers[condition_num] = 0
 	for timer_action_num in Constants.ACTION_TIMERS[unit_type].keys():
 		timer_actions[timer_action_num] = 0
+	hit_box = Constants.UNIT_HIT_BOXES[unit_type]
 	build_iframe_sprites()
 
 func set_action(action : int):
@@ -61,6 +63,12 @@ func set_unit_condition_with_timer(condition_type : int):
 	assert(condition_type in Constants.UNIT_CONDITION_TIMERS[unit_type].keys())
 	set_unit_condition(condition_type, Constants.UNIT_CONDITION_TIMERS[unit_type][condition_type][1])
 	unit_condition_timers[condition_type] = Constants.UNIT_CONDITION_TIMERS[unit_type][condition_type][0]
+
+func get_condition(condition_num : int, default):
+	if condition_num in Constants.UNIT_TYPE_CONDITIONS[unit_type].keys():
+		return unit_conditions[condition_num]
+	else:
+		return default
 
 func is_current_action_timer_done(current_action : int):
 	assert(current_action in Constants.CURRENT_ACTION_TIMERS[unit_type].keys())

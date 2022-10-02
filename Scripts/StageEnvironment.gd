@@ -11,6 +11,7 @@ var top_right_colliders = []
 var bottom_right_colliders = []
 var bottom_left_colliders = []
 var top_left_colliders = []
+var stage_hazards = [] # [[bounds, bound_direction], ...]
 
 func _init(the_scene : GameScene):
 	scene = the_scene
@@ -29,6 +30,25 @@ func init_player(player : Unit):
 	player.pos = Vector2(player.position.x / Constants.GRID_SIZE, -1 * player.position.y / Constants.GRID_SIZE)
 
 func interact(unit : Unit, delta):
+	# do hazards
+	if not unit.get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):
+		for stage_hazard in stage_hazards:
+			if not ((unit.pos.y + unit.hit_box[Constants.HIT_BOX_BOUND.LOWER_BOUND] > stage_hazard[0][Constants.HIT_BOX_BOUND.UPPER_BOUND])
+			or (unit.pos.y + unit.hit_box[Constants.HIT_BOX_BOUND.UPPER_BOUND] < stage_hazard[0][Constants.HIT_BOX_BOUND.LOWER_BOUND])
+			or (unit.pos.x + unit.hit_box[Constants.HIT_BOX_BOUND.LEFT_BOUND] > stage_hazard[0][Constants.HIT_BOX_BOUND.RIGHT_BOUND])
+			or (unit.pos.x + unit.hit_box[Constants.HIT_BOX_BOUND.RIGHT_BOUND] < stage_hazard[0][Constants.HIT_BOX_BOUND.LEFT_BOUND])):
+				var dir: int
+				if stage_hazard[1] != -1:
+					dir = stage_hazard[1]
+				elif (stage_hazard[0][Constants.HIT_BOX_BOUND.LEFT_BOUND] + stage_hazard[0][Constants.HIT_BOX_BOUND.RIGHT_BOUND]) / 2 < unit.pos.x:
+					dir = Constants.Direction.LEFT
+				else:
+					dir = Constants.Direction.RIGHT
+				unit.hit(1, dir)
+				break
+
+	# do collisions
+	
 	# gravity-affected
 	if not unit.no_gravity:
 		# gravity-affected, grounded
@@ -102,7 +122,8 @@ func init_stage_grid(tilemap : TileMap):
 			Constants.MapElemType.SMALL_SLOPE_LEFT_2,
 			Constants.MapElemType.SMALL_SLOPE_RIGHT_1,
 			Constants.MapElemType.SMALL_SLOPE_RIGHT_2,
-			Constants.MapElemType.LEDGE]:
+			Constants.MapElemType.LEDGE,
+			Constants.MapElemType.HAZARD]:
 			for test_cell_v in Constants.TILE_SET_MAP_ELEMS[scene.tile_set_name][test_map_elem_type]:
 				if test_cell_v == cellv:
 					map_elem_type = test_map_elem_type
@@ -112,8 +133,6 @@ func init_stage_grid(tilemap : TileMap):
 				break
 		match map_elem_type:
 			Constants.MapElemType.SQUARE:
-				if stage_x == 39 and stage_y == 2:
-					print("Found stage_x == 39 and stage_y == 2 square")
 				insert_grid_collider(stage_x, stage_y, Constants.Direction.UP, 1)
 				insert_grid_collider(stage_x, stage_y, Constants.Direction.DOWN, 1)
 				insert_grid_collider(stage_x, stage_y, Constants.Direction.LEFT, 1)
@@ -176,6 +195,8 @@ func init_stage_grid(tilemap : TileMap):
 				insert_grid_collider(stage_x, stage_y, Constants.Direction.DOWN, 1)
 			Constants.MapElemType.LEDGE:
 				insert_grid_collider(stage_x, stage_y, Constants.Direction.UP, 1)
+			Constants.MapElemType.HAZARD:
+				insert_stage_hazard(stage_x, stage_y, cellv)
 
 
 func insert_grid_collider(stage_x, stage_y, direction : int, fractional_height : float):
@@ -217,6 +238,13 @@ func try_insert_collider(check_colliders, insert_colliders, point_a : Vector2, p
 	if not found_existing:
 		for i in range(len(insert_colliders)):
 			insert_colliders[i].append([point_a, point_b])
+
+func insert_stage_hazard(stage_x, stage_y, cellv):
+	stage_hazards.append([{
+		Constants.HIT_BOX_BOUND.UPPER_BOUND: stage_y + 1,
+		Constants.HIT_BOX_BOUND.LOWER_BOUND: stage_y,
+		Constants.HIT_BOX_BOUND.LEFT_BOUND: stage_x,
+		Constants.HIT_BOX_BOUND.RIGHT_BOUND: stage_x + 1}, Constants.TILE_SET_HAZARD_REF_X[scene.tile_set_name][cellv]])
 
 func ground_movement_interaction(unit : Unit, delta):
 	var has_ground_collision = false
