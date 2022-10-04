@@ -36,6 +36,7 @@ func reset_actions():
 func hit(damage : int, dir : int):
 	set_action(Constants.ActionType.RECOIL)
 	set_current_action(Constants.UnitCurrentAction.RECOILING)
+	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 	stop_channel_sparks()
 	set_unit_condition_with_timer(Constants.UnitCondition.IS_INVINCIBLE)
 	is_flash = true
@@ -112,10 +113,13 @@ func drop_ability():
 func dash():
 	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.DASHING)
 	target_move_speed = Constants.DASH_SPEED
-	set_sprite("Dash")
+	if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+		set_sprite("Dash")
 
 func flot():
 	v_speed = Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type] * .67
+	if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.DASHING:
+		unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.MOVING
 
 func recoil():
 	if is_current_action_timer_done(Constants.UnitCurrentAction.RECOILING):

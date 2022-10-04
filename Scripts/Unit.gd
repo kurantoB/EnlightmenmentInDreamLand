@@ -34,7 +34,7 @@ func _ready():
 	for action_num in Constants.UNIT_TYPE_ACTIONS[unit_type]:
 		actions[action_num] = false
 	for condition_num in Constants.UNIT_TYPE_CONDITIONS[unit_type].keys():
-		unit_conditions[condition_num] = Constants.UNIT_TYPE_CONDITIONS[unit_type][condition_num]
+		set_unit_condition(condition_num, Constants.UNIT_TYPE_CONDITIONS[unit_type][condition_num])
 	for condition_num in Constants.UNIT_CONDITION_TIMERS[unit_type].keys():
 		unit_condition_timers[condition_num] = 0
 	for timer_action_num in Constants.ACTION_TIMERS[unit_type].keys():
@@ -89,6 +89,7 @@ func do_with_timeout(action : int, new_current_action : int = -1):
 func process_unit(delta, time_elapsed : float, scene):
 	current_action_time_elapsed += delta
 	execute_actions(delta, scene)
+	handle_idle()
 	handle_moving_status(delta, scene)
 	advance_timers(delta)
 	self.time_elapsed = time_elapsed
@@ -99,7 +100,7 @@ func advance_timers(delta):
 	for condition_num in Constants.UNIT_CONDITION_TIMERS[unit_type].keys():
 		unit_condition_timers[condition_num] = move_toward(unit_condition_timers[condition_num], 0, delta)
 		if unit_condition_timers[condition_num] == 0:
-			unit_conditions[condition_num] = Constants.UNIT_CONDITION_TIMERS[unit_type][condition_num][2]
+			set_unit_condition(condition_num, Constants.UNIT_CONDITION_TIMERS[unit_type][condition_num][2])
 
 func get_current_action():
 	return unit_conditions[Constants.UnitCondition.CURRENT_ACTION]
@@ -119,7 +120,6 @@ func execute_actions(delta, scene):
 				jump()
 			Constants.ActionType.MOVE:
 				move()
-	handle_idle()
 
 func jump():
 	set_current_action(Constants.UnitCurrentAction.JUMPING)

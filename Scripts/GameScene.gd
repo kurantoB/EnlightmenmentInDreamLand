@@ -135,8 +135,13 @@ func handle_player_input():
 			player.dash_facing = input_dir
 			player.set_timer_action(Constants.ActionType.DASH)
 		else:
-			player.set_action(Constants.ActionType.MOVE)
-			player.reset_timer_action(Constants.ActionType.DASH)
+			if (player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.DASHING
+			and input_dir == player.facing
+			and player.h_speed != 0):
+				player.set_action(Constants.ActionType.DASH)
+			else:
+				player.set_action(Constants.ActionType.MOVE)
+				player.reset_timer_action(Constants.ActionType.DASH)
 		# set facing
 		player.facing = input_dir				
 	
