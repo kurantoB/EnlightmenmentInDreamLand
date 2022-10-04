@@ -89,6 +89,7 @@ func do_with_timeout(action : int, new_current_action : int = -1):
 func process_unit(delta, time_elapsed : float, scene):
 	current_action_time_elapsed += delta
 	execute_actions(delta, scene)
+	handle_moving_status(delta, scene)
 	advance_timers(delta)
 	self.time_elapsed = time_elapsed
 
@@ -118,7 +119,6 @@ func execute_actions(delta, scene):
 				jump()
 			Constants.ActionType.MOVE:
 				move()
-	handle_moving_status(delta, scene)
 	handle_idle()
 
 func jump():
@@ -211,7 +211,9 @@ func handle_idle():
 			if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 				if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
 					set_sprite("Idle")
-			elif v_speed < 0:
+			elif v_speed > 0:
+				set_sprite("Jump", 0)
+			else:
 				set_sprite("Jump", 1)
 		else:
 			set_sprite("Idle")

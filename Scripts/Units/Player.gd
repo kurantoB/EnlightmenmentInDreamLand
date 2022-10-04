@@ -68,6 +68,7 @@ func advance_timers(delta):
 		is_flash = false
 
 func execute_actions(delta, scene):
+	.execute_actions(delta, scene)
 	for action_num in Constants.UNIT_TYPE_ACTIONS[Constants.UnitType.PLAYER]:
 		if !actions[action_num]:
 			continue
@@ -88,7 +89,6 @@ func execute_actions(delta, scene):
 				recoil()
 			Constants.ActionType.SLIDE:
 				slide()
-	.execute_actions(delta, scene)
 
 func cancel_flying():
 	set_current_action(Constants.UnitCurrentAction.IDLE)

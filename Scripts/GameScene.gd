@@ -119,61 +119,26 @@ func handle_player_input():
 			input_dir = Constants.Direction.LEFT
 		else:
 			input_dir = Constants.Direction.RIGHT
-		# if action-idle
-		if player.get_current_action() == Constants.UnitCurrentAction.IDLE:
-			# if action-idle + move-idle
+		if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 			if player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
-				# if action-idle + move-idle + grounded
-				if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-					# if action-idle + move-idle + grounded + dash-timer-active + input-dash-facing-match
-					if player.timer_actions[Constants.ActionType.DASH] > 0 and player.dash_facing == input_dir:
-						# set dash
-						player.set_action(Constants.ActionType.DASH)
-					# if action-idle + move-idle + grounded + (not-dash-timer-active or not-input-dash-facing-match)
-					else:
-						# set move
-						player.set_action(Constants.ActionType.MOVE)
-					# start timer, set dash-facing
-					player.set_timer_action(Constants.ActionType.DASH)
-					player.dash_facing = input_dir
-				# if action-idle + move-idle + not-grounded
-				else:
-					# set move, kill timer
-					player.set_action(Constants.ActionType.MOVE)
-					player.reset_timer_action(Constants.ActionType.DASH)
-			# if action-idle + move-moving
-			elif player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.MOVING:
-				# set move
-				player.set_action(Constants.ActionType.MOVE)
-				# if action-idle + move-moving + grounded
-				if player.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-					player.set_timer_action(Constants.ActionType.DASH)
-					player.dash_facing = input_dir
-				# if action-idle + move-moving + not-grounded
-				else:
-					# kill timer
-					player.reset_timer_action(Constants.ActionType.DASH)
-			# if action-idle + move-dashing
-			else:
-				# if action-idle + move-dashing + facing-change
-				if player.facing != input_dir:
-					# set move
-					player.set_action(Constants.ActionType.MOVE)
-				# if action-idle + move-dashing + not-facing-change
-				else:
-					# set dash
+				if player.timer_actions[Constants.ActionType.DASH] > 0 and player.dash_facing == input_dir:
 					player.set_action(Constants.ActionType.DASH)
-				# start timer, set dash-facing
-				player.set_timer_action(Constants.ActionType.DASH)
-				player.dash_facing = input_dir
-		# if action-jumping or action-flying
-		elif (player.get_current_action() == Constants.UnitCurrentAction.JUMPING
-			or player.get_current_action() == Constants.UnitCurrentAction.FLYING):
-			# set move, kill timer
+				else:
+					player.set_action(Constants.ActionType.MOVE)
+			elif player.unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.MOVING:
+				player.set_action(Constants.ActionType.MOVE)
+			else:
+				if player.facing == input_dir:
+					player.set_action(Constants.ActionType.DASH)
+				else:
+					player.set_action(Constants.ActionType.MOVE)
+			player.dash_facing = input_dir
+			player.set_timer_action(Constants.ActionType.DASH)
+		else:
 			player.set_action(Constants.ActionType.MOVE)
 			player.reset_timer_action(Constants.ActionType.DASH)
 		# set facing
-		player.facing = input_dir
+		player.facing = input_dir				
 	
 	if input_table[Constants.PlayerInput.GBA_A][I_T_PRESSED]:
 		if player.get_current_action() == Constants.UnitCurrentAction.CROUCHING and input_table[Constants.PlayerInput.GBA_A][I_T_JUST_PRESSED]:
@@ -200,10 +165,10 @@ func handle_player_input():
 			player.set_action(Constants.ActionType.CANCEL_FLYING)
 		# else if channeling or (idle and not floating and just pressed)
 		elif (player.get_current_action() == Constants.UnitCurrentAction.CHANNELING
-		or (player.get_current_action() == Constants.UnitCurrentAction.IDLE
+		or ((player.get_current_action() == Constants.UnitCurrentAction.IDLE or player.get_current_action() == Constants.UnitCurrentAction.JUMPING) 
 		and input_table[Constants.PlayerInput.GBA_B][I_T_JUST_PRESSED])):
-				# channel
-				player.set_action(Constants.ActionType.CHANNEL)
+			# channel
+			player.set_action(Constants.ActionType.CHANNEL)
 	
 	if (input_table[Constants.PlayerInput.GBA_SELECT][I_T_JUST_PRESSED]
 	and player.unit_conditions[Constants.UnitCondition.HAS_ABILITY]
