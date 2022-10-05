@@ -372,11 +372,21 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 	or unit.no_gravity)
 	and (collider[0].y == collider[1].y or (collider[0].x != collider[1].x and collider[0].y != collider[1].y))):
 			scene.conditional_log("check_ground_collision airborne ground collision on: " + str(collider) + " with " + str(unit_env_collider[0]))
-			unit.v_speed = -1 * abs(unit.h_speed)
-			if unit.h_speed > 0:
-				unit.h_speed = Constants.QUANTUM_DIST
+			if unit.get_current_action() == Constants.UnitCurrentAction.JUMPING:
+				# don't lose any of the 2 components of velocity
+				var magnitude = sqrt(pow(unit.v_speed, 2) + pow(unit.h_speed, 2))
+				unit.v_speed = -magnitude
+				if unit.facing == Constants.Direction.RIGHT:
+					unit.h_speed = Constants.QUANTUM_DIST
+				else:
+					unit.h_speed = -Constants.QUANTUM_DIST
 			else:
-				unit.h_speed = -1 * Constants.QUANTUM_DIST
+				# only keep the horizontal component of velocity
+				unit.v_speed = -1 * abs(unit.h_speed)
+				if unit.h_speed > 0:
+					unit.h_speed = Constants.QUANTUM_DIST
+				else:
+					unit.h_speed = -1 * Constants.QUANTUM_DIST
 			scene.conditional_log("check_ground_collision change move speed's to ground movement: (" + str(unit.h_speed) + ", " + str(unit.v_speed) + ")")
 			var collider_set_pos_y = collision_point.y + Constants.QUANTUM_DIST
 			var y_dist_to_translate = collider_set_pos_y - (unit.pos.y + unit_env_collider[0].y)
@@ -392,8 +402,6 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 					scene.conditional_log("check_ground_collision set current action flying -> idle")
 					unit.set_current_action(Constants.UnitCurrentAction.IDLE)
 				interact_grounded(unit, delta)
-			if (unit.get_current_action()) == Constants.UnitCurrentAction.JUMPING:
-				unit.set_current_action(Constants.UnitCurrentAction.IDLE)
 		
 	
 
