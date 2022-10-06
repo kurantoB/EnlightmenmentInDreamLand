@@ -372,14 +372,19 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 	or unit.no_gravity)
 	and (collider[0].y == collider[1].y or (collider[0].x != collider[1].x and collider[0].y != collider[1].y))):
 			scene.conditional_log("check_ground_collision airborne ground collision on: " + str(collider) + " with " + str(unit_env_collider[0]))
+			unit.set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, true)
 			if unit.get_current_action() == Constants.UnitCurrentAction.JUMPING:
-				# don't lose any of the 2 components of velocity
-				var magnitude = sqrt(pow(unit.v_speed, 2) + pow(unit.h_speed, 2))
-				unit.v_speed = -magnitude
-				if unit.facing == Constants.Direction.RIGHT:
-					unit.h_speed = Constants.QUANTUM_DIST
+				if unit.h_speed == 0:
+					# hit wall
+					 unit.set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, false)
 				else:
-					unit.h_speed = -Constants.QUANTUM_DIST
+					# don't lose any of the 2 components of velocity
+					var magnitude = sqrt(pow(unit.v_speed, 2) + pow(unit.h_speed, 2))
+					unit.v_speed = -magnitude
+					if unit.facing == Constants.Direction.RIGHT:
+						unit.h_speed = Constants.QUANTUM_DIST
+					else:
+						unit.h_speed = -Constants.QUANTUM_DIST
 			else:
 				# only keep the horizontal component of velocity
 				unit.v_speed = -1 * abs(unit.h_speed)
@@ -397,11 +402,11 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 			unit.pos.x = unit.pos.x + x_dist_to_translate
 			scene.conditional_log("check_ground_collision set grounded")
 			if not unit.no_gravity:
-				unit.set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, true)
 				if unit.get_current_action() == Constants.UnitCurrentAction.FLYING:
 					scene.conditional_log("check_ground_collision set current action flying -> idle")
 					unit.set_current_action(Constants.UnitCurrentAction.IDLE)
-				interact_grounded(unit, delta)
+				if unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+					interact_grounded(unit, delta)
 		
 	
 

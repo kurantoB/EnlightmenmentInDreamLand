@@ -2,7 +2,7 @@ extends Unit
 
 class_name Player
 
-const RECOIL_PUSHBACK = 12
+const RECOIL_PUSHBACK = 15
 const SLIDE_COLLISION_BOUNCE = 12
 
 var dash_facing : int
@@ -40,18 +40,25 @@ func hit(damage : int, dir : int):
 	stop_channel_sparks()
 	set_unit_condition_with_timer(Constants.UnitCondition.IS_INVINCIBLE)
 	is_flash = true
-	target_move_speed = 0
 	if get_condition(Constants.UnitCondition.IS_ON_GROUND, false):
+		facing = dir
 		var temp_h_speed
-		if dir == Constants.Direction.LEFT:
-			temp_h_speed = h_speed + RECOIL_PUSHBACK
+		if h_speed > 0:
+			if dir == Constants.Direction.LEFT:
+				v_speed -= RECOIL_PUSHBACK
+			else:
+				v_speed += RECOIL_PUSHBACK
+				if v_speed > 0:
+					h_speed = -Constants.QUANTUM_DIST
+					v_speed *= -1
 		else:
-			temp_h_speed = h_speed - RECOIL_PUSHBACK
-		if temp_h_speed > 0:
-			h_speed = Constants.QUANTUM_DIST
-		else:
-			h_speed = -Constants.QUANTUM_DIST
-		v_speed = -1 * abs(temp_h_speed)
+			if dir == Constants.Direction.LEFT:
+				v_speed += RECOIL_PUSHBACK
+				if v_speed > 0:
+					h_speed = Constants.QUANTUM_DIST
+					v_speed *= -1
+			else:
+				v_speed -= RECOIL_PUSHBACK
 	else:
 		if dir == Constants.Direction.LEFT:
 			h_speed += RECOIL_PUSHBACK
