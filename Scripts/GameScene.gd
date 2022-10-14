@@ -7,6 +7,24 @@ export(Array, String) var tilemaps_to_scale
 export(Array, String) var tilemaps_to_parallax_scroll
 
 const Constants = preload("res://Scripts/Constants.gd")
+
+export(Array, float) var parallax_scroll_factors = []
+export(float) var player_move_speed : float = Constants.UNIT_TYPE_MOVE_SPEEDS[Constants.UnitType.PLAYER]
+export(float) var dash_speed : float = Constants.DASH_SPEED
+export(float) var player_jump_speed : float = Constants.UNIT_TYPE_JUMP_SPEEDS[Constants.UnitType.PLAYER]
+export(float) var player_jump_duration : float = Constants.CURRENT_ACTION_TIMERS[Constants.UnitType.PLAYER][Constants.UnitCurrentAction.JUMPING]
+export(float) var player_float_speed : float = Constants.FLOAT_SPEED
+export(float) var player_float_cooldown : float = Constants.ACTION_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.FLOAT]
+export(float) var player_dash_window : float = Constants.ACTION_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.DASH]
+export(float) var player_slide_duration : float = Constants.CURRENT_ACTION_TIMERS[Constants.UnitType.PLAYER][Constants.UnitCurrentAction.SLIDING]
+export(float) var player_recoil_duration : float = Constants.CURRENT_ACTION_TIMERS[Constants.UnitType.PLAYER][Constants.UnitCurrentAction.RECOILING]
+export(float) var player_invincible_duration : float = Constants.UNIT_CONDITION_TIMERS[Constants.UnitType.PLAYER][Constants.UnitCondition.IS_INVINCIBLE][0]
+export(float) var move_acceleration : float = Constants.ACCELERATION
+export(float) var gravity : float = Constants.GRAVITY
+export(float) var gravity_lite : float = Constants.GRAVITY_LITE
+export(float) var max_fall_speed : float = Constants.MAX_FALL_SPEED
+export(float) var max_fall_speed_lite : float = Constants.MAX_FALL_LITE
+
 const Unit = preload("res://Scripts/Unit.gd")
 
 var units = []
@@ -37,8 +55,13 @@ var player_cam : Camera2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	if parallax_scroll_factors.size() != tilemaps_to_parallax_scroll.size():
+		printerr("Parallax scroll factor array does not align with tilemaps to parallax scroll array.")
+		get_tree().quit()
+	
 	units.append(get_node("Player"))
 	player = units[0]
+	player.init_unit_w_scene(self)
 	stage_env = load("res://Scripts/StageEnvironment.gd").new(self)
 	player_cam = player.get_node("Camera2D")
 	player_cam.make_current()
@@ -49,6 +72,9 @@ func _ready():
 			var this_tilemap_to_scale = get_node(tilemap_to_scale)
 			this_tilemap_to_scale.scale.x = Constants.SCALE_FACTOR
 			this_tilemap_to_scale.scale.y = Constants.SCALE_FACTOR
+		else:
+			printerr("Unable to find tilemap to scale: " + tilemap_to_scale)
+			get_tree().quit()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -66,11 +92,18 @@ func _process(delta):
 		time_elapsed = time_elapsed + delta
 	
 	# visual effects
-	for tilemap_to_parallax_scroll in tilemaps_to_parallax_scroll:
-		if has_node(tilemap_to_parallax_scroll):
-			var this_tilemap_to_parallax_scroll = get_node(tilemap_to_parallax_scroll)
-			this_tilemap_to_parallax_scroll.position.x = player.position.x - player.position.x * Constants.PARALLAX_SCROLL_FACTOR
-			this_tilemap_to_parallax_scroll.position.y = player.position.y - player.position.y * Constants.PARALLAX_SCROLL_FACTOR
+	if (player.facing == Constants.Direction.RIGHT):
+		player_cam.offset_h = 1
+	else:
+		player_cam.offset_h = -1
+	for i in range(tilemaps_to_parallax_scroll.size()):
+		if has_node(tilemaps_to_parallax_scroll[i]):
+			var this_tilemap_to_parallax_scroll = get_node(tilemaps_to_parallax_scroll[i])
+			this_tilemap_to_parallax_scroll.position.x = player_cam.get_camera_screen_center().x - player_cam.get_camera_screen_center().x * parallax_scroll_factors[i]
+			this_tilemap_to_parallax_scroll.position.y = player_cam.get_camera_screen_center().y - player_cam.get_camera_screen_center().y * parallax_scroll_factors[i]
+		else:
+			printerr("Unable to find tilemap to parallax scroll: " + tilemaps_to_parallax_scroll[i])
+			get_tree().quit()
 
 func handle_player_input():
 	for input_num in input_table.keys():
@@ -101,7 +134,7 @@ func handle_player_input():
 		if player.get_current_action() == Constants.UnitCurrentAction.IDLE:
 			player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
 			player.set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, false)
-		elif player.get_current_action() == Constants.UnitCurrentAction.FLYING:
+		elif player.get_current_action() == Constants.UnitCurrentAction.FLYING or player.get_current_action() == Constants.UnitCurrentAction.FLYING_CEILING:
 			player.do_with_timeout(Constants.ActionType.FLOAT, -1)
 	
 	if input_table[Constants.PlayerInput.DOWN][I_T_PRESSED]:
@@ -110,7 +143,7 @@ func handle_player_input():
 			player.set_action(Constants.ActionType.CROUCH)
 	
 	if ((input_table[Constants.PlayerInput.LEFT][I_T_PRESSED] or input_table[Constants.PlayerInput.RIGHT][I_T_PRESSED])
-	and player.get_current_action() != Constants.UnitCurrentAction.CHANNELING):
+	and player.get_current_action() != Constants.UnitCurrentAction.CHANNELING and player.get_current_action() != Constants.UnitCurrentAction.CROUCHING):
 		if input_table[Constants.PlayerInput.LEFT][I_T_PRESSED] and input_table[Constants.PlayerInput.RIGHT][I_T_PRESSED]:
 			input_table[Constants.PlayerInput.LEFT][I_T_PRESSED] = false
 			input_table[Constants.PlayerInput.LEFT][I_T_JUST_PRESSED] = false
@@ -156,7 +189,7 @@ func handle_player_input():
 					player.set_action(Constants.ActionType.JUMP)
 			elif input_table[Constants.PlayerInput.GBA_A][I_T_JUST_PRESSED]:
 				player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
-		elif player.get_current_action() == Constants.UnitCurrentAction.FLYING:
+		elif player.get_current_action() == Constants.UnitCurrentAction.FLYING or player.get_current_action() == Constants.UnitCurrentAction.FLYING_CEILING:
 			player.do_with_timeout(Constants.ActionType.FLOAT, -1)
 	
 	if input_table[Constants.PlayerInput.GBA_B][I_T_PRESSED]:
@@ -165,7 +198,7 @@ func handle_player_input():
 			# slide
 			player.set_action(Constants.ActionType.SLIDE)
 		# else if flying and just pressed
-		elif (player.get_current_action() == Constants.UnitCurrentAction.FLYING
+		elif ((player.get_current_action() == Constants.UnitCurrentAction.FLYING or player.get_current_action() == Constants.UnitCurrentAction.FLYING_CEILING)
 		and input_table[Constants.PlayerInput.GBA_B][I_T_JUST_PRESSED]):
 			player.set_action(Constants.ActionType.CANCEL_FLYING)
 		# else if channeling or (idle and not floating and just pressed)

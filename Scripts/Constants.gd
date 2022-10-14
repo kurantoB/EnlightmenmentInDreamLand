@@ -32,6 +32,7 @@ enum UnitCurrentAction {
 	JUMPING,
 	SLIDING,
 	FLYING,
+	FLYING_CEILING,
 	RECOILING
 }
 
@@ -105,6 +106,7 @@ const UNIT_TYPE_CURRENT_ACTIONS = {
 		UnitCurrentAction.JUMPING,
 		UnitCurrentAction.SLIDING,
 		UnitCurrentAction.FLYING,
+		UnitCurrentAction.FLYING_CEILING,
 		UnitCurrentAction.RECOILING,
 	],
 	UnitType.JUMP_BIRD: [
@@ -117,7 +119,7 @@ const UNIT_TYPE_CONDITIONS = {
 	UnitType.PLAYER: {
 		UnitCondition.CURRENT_ACTION: UnitCurrentAction.IDLE,
 		UnitCondition.HAS_ABILITY: false,
-		UnitCondition.IS_ON_GROUND: true,
+		UnitCondition.IS_ON_GROUND: false,
 		UnitCondition.MOVING_STATUS: UnitMovingStatus.IDLE,
 		UnitCondition.IS_INVINCIBLE: false,
 	},
@@ -130,7 +132,6 @@ const UNIT_TYPE_CONDITIONS = {
 
 const ACTION_TIMERS = {
 	UnitType.PLAYER: {
-		ActionType.SLIDE: 0.5,
 		ActionType.FLOAT: 0.25,
 		ActionType.DASH: 0.25
 	}
@@ -141,6 +142,7 @@ const CURRENT_ACTION_TIMERS = {
 		UnitCurrentAction.SLIDING: 0.7,
 		UnitCurrentAction.RECOILING: 0.67,
 		UnitCurrentAction.JUMPING: 0.35,
+		UnitCurrentAction.FLYING_CEILING: 0.2,
 	},
 	UnitType.JUMP_BIRD: {
 		UnitCurrentAction.JUMPING: 0.35,
@@ -150,14 +152,17 @@ const CURRENT_ACTION_TIMERS = {
 const UNIT_CONDITION_TIMERS = {
 	# condition type: [duration, on value, off value]
 	UnitType.PLAYER: {
-		UnitCondition.IS_INVINCIBLE: [2.5, true, false]
+		UnitCondition.IS_INVINCIBLE: [2.5, true, false],
 	}
 }
 
 const ENV_COLLIDERS = {
 	UnitType.PLAYER: [
 		[Vector2(0, 1.5), [Direction.LEFT, Direction.UP, Direction.RIGHT]],
-		[Vector2(0, .75), [Direction.LEFT, Direction.RIGHT]],
+		[Vector2(-.25, .25), [Direction.LEFT]],
+		[Vector2(.25, .25), [Direction.RIGHT]],
+		[Vector2(-.25, 1.25), [Direction.LEFT]],
+		[Vector2(.25, 1.25), [Direction.RIGHT]],
 		[Vector2(0, 0), [Direction.LEFT, Direction.DOWN, Direction.RIGHT]],
 	],
 	UnitType.JUMP_BIRD: [
@@ -175,7 +180,7 @@ const UNIT_HIT_BOXES = {
 		
 	],
 }
-const CROUCH_FACTOR = 0.67 # of total height
+const CROUCH_FACTOR = 0.67 # fraction of total height
 
 const INPUT_MAP = {
 	PlayerInput.UP: "ui_up",
@@ -240,6 +245,7 @@ const UNIT_TYPE_JUMP_SPEEDS = {
 	UnitType.PLAYER: 8,
 	UnitType.JUMP_BIRD: 10,
 }
+const FLOAT_SPEED = 5.5
 
 const SCALE_FACTOR = 3
 const GRID_SIZE = 20
@@ -252,7 +258,6 @@ const GRAVITY_LITE = 8
 const QUANTUM_DIST = 0.001
 
 # Cosmetics
-const PARALLAX_SCROLL_FACTOR = .8
 const FLASH_CYCLE = 0.25
 const UNIT_FLASH_MAPPINGS = {
 	UnitType.PLAYER: {

@@ -33,7 +33,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Touhou: Enlightenment in Dream Land"
-run/main_scene="res://Scenes/TestLevel.tscn"
+run/main_scene="res://Scenes/KurantoScene.tscn"
 config/icon="res://icon.png"
 
 [display]
@@ -80,4 +80,5 @@ common/enable_pause_aware_picking=true
 [rendering]
 
 2d/snapping/use_gpu_pixel_snap=true
+environment/default_clear_color=Color( 0, 0, 0, 1 )
 environment/default_environment="res://default_env.tres"
