@@ -1,6 +1,7 @@
-[gd_resource type="TileSet" load_steps=2 format=2]
+[gd_resource type="TileSet" load_steps=3 format=2]
 
 [ext_resource path="res://Graphics/Tiles/PalaceTileSet.png" type="Texture" id=1]
+[ext_resource path="res://Graphics/Tiles/door/AnimatedDoor.tres" type="Texture" id=2]
 
 [resource]
 0/name = "PalaceTileSet.png 0"
@@ -577,3 +578,17 @@
 41/shape_one_way_margin = 0.0
 41/shapes = [  ]
 41/z_index = 0
+42/name = "AnimatedDoor.tres 42"
+42/texture = ExtResource( 2 )
+42/tex_offset = Vector2( 0, 0 )
+42/modulate = Color( 1, 1, 1, 1 )
+42/region = Rect2( 0, 0, 80, 100 )
+42/tile_mode = 0
+42/occluder_offset = Vector2( 0, 0 )
+42/navigation_offset = Vector2( 0, 0 )
+42/shape_offset = Vector2( 0, 0 )
+42/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+42/shape_one_way = false
+42/shape_one_way_margin = 0.0
+42/shapes = [  ]
+42/z_index = 0

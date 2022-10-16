@@ -44,6 +44,8 @@ window/size/height=480
 [global]
 
 pixel=false
+Environment=false
+Rendering=false
 
 [input]
 
