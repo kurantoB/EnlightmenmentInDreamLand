@@ -85,6 +85,9 @@ func is_current_action_timer_done(current_action : int):
 	else:
 		return .is_current_action_timer_done(current_action)
 
+func handle_unit_input(delta):
+	scene.handle_player_input()
+
 func handle_idle():
 	.handle_idle()
 	if get_current_action() == scene.Constants.UnitCurrentAction.FLYING or get_current_action() == scene.Constants.UnitCurrentAction.FLYING_CEILING:

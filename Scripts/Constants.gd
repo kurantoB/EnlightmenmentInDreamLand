@@ -125,7 +125,7 @@ const UNIT_TYPE_CONDITIONS = {
 	},
 	UnitType.JUMP_BIRD: {
 		UnitCondition.CURRENT_ACTION: UnitCurrentAction.IDLE,
-		UnitCondition.IS_ON_GROUND: true,
+		UnitCondition.IS_ON_GROUND: false,
 		UnitCondition.MOVING_STATUS: UnitMovingStatus.IDLE,
 	},
 }
@@ -134,7 +134,8 @@ const ACTION_TIMERS = {
 	UnitType.PLAYER: {
 		ActionType.FLOAT: 0.25,
 		ActionType.DASH: 0.25
-	}
+	},
+	UnitType.JUMP_BIRD: {},
 }
 
 const CURRENT_ACTION_TIMERS = {
@@ -153,7 +154,8 @@ const UNIT_CONDITION_TIMERS = {
 	# condition type: [duration, on value, off value]
 	UnitType.PLAYER: {
 		UnitCondition.IS_INVINCIBLE: [2.5, true, false],
-	}
+	},
+	UnitType.JUMP_BIRD: {},
 }
 
 const ENV_COLLIDERS = {
@@ -166,7 +168,10 @@ const ENV_COLLIDERS = {
 		[Vector2(0, 0), [Direction.LEFT, Direction.DOWN, Direction.RIGHT]],
 	],
 	UnitType.JUMP_BIRD: [
-		
+		[Vector2(0, 1), [Direction.LEFT, Direction.UP, Direction.RIGHT]],
+		[Vector2(-.25, .5), [Direction.LEFT]],
+		[Vector2(.25, .5), [Direction.RIGHT]],
+		[Vector2(0, 0), [Direction.LEFT, Direction.DOWN, Direction.RIGHT]],
 	],
 }
 const UNIT_HIT_BOXES = {
@@ -176,9 +181,12 @@ const UNIT_HIT_BOXES = {
 		HIT_BOX_BOUND.LEFT_BOUND: -0.25,
 		HIT_BOX_BOUND.RIGHT_BOUND: 0.25,
 	},
-	UnitType.JUMP_BIRD: [
-		
-	],
+	UnitType.JUMP_BIRD: {
+		HIT_BOX_BOUND.UPPER_BOUND: 1,
+		HIT_BOX_BOUND.LOWER_BOUND: 0,
+		HIT_BOX_BOUND.LEFT_BOUND: -0.25,
+		HIT_BOX_BOUND.RIGHT_BOUND: 0.25,
+	},
 }
 const CROUCH_FACTOR = 0.67 # fraction of total height
 
@@ -208,7 +216,8 @@ const UNIT_SPRITES = {
 	},
 	UnitType.JUMP_BIRD: {
 		"Idle": [false, ["Idle"]],
-		"Jump": [false, ["Jump1", "Jump2"]],
+		"Walk": [false, ["Walk"]],
+		"Jump": [false, ["Jump", "Jump"]],
 	},
 }
 
@@ -238,12 +247,12 @@ const TILE_SET_HAZARD_REF_X = {
 
 const UNIT_TYPE_MOVE_SPEEDS = {
 	UnitType.PLAYER: 6,
-	UnitType.JUMP_BIRD: 5,
+	UnitType.JUMP_BIRD: 3,
 }
 
 const UNIT_TYPE_JUMP_SPEEDS = {
 	UnitType.PLAYER: 8,
-	UnitType.JUMP_BIRD: 10,
+	UnitType.JUMP_BIRD: 12,
 }
 const FLOAT_SPEED = 5.5
 

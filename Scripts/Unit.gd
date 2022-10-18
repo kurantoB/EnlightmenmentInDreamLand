@@ -48,6 +48,8 @@ func init_unit_w_scene(scene):
 	hit_box = scene.Constants.UNIT_HIT_BOXES[unit_type]
 	build_iframe_sprites()
 	facing = scene.Constants.Direction.RIGHT
+	scale.x = scene.Constants.SCALE_FACTOR
+	scale.y = scene.Constants.SCALE_FACTOR
 
 func set_action(action : int):
 	assert(action in scene.Constants.UNIT_TYPE_ACTIONS[unit_type])
@@ -102,6 +104,9 @@ func do_with_timeout(action : int, new_current_action : int = -1):
 		set_timer_action(action)
 		if new_current_action != -1:
 			set_current_action(new_current_action)
+
+func handle_unit_input(delta):
+	pass
 
 func process_unit(delta, time_elapsed : float, scene):
 	current_action_time_elapsed += delta

@@ -22,8 +22,6 @@ func _init(the_scene : GameScene):
 	init_player(player)
 	player.position.x = player.position.x * scene.Constants.SCALE_FACTOR
 	player.position.y = player.position.y * scene.Constants.SCALE_FACTOR
-	player.scale.x = scene.Constants.SCALE_FACTOR
-	player.scale.y = scene.Constants.SCALE_FACTOR
 
 func init_player(player : Unit):
 	player.pos = Vector2(player.position.x / scene.Constants.GRID_SIZE, -1 * player.position.y / scene.Constants.GRID_SIZE)

@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Graphics/Units/Enemies/Bird.png" type="Texture" id=2]
+
+[node name="JumpBird" type="Node2D"]
+
+[node name="Idle" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+offset = Vector2( 0, -10 )
+
+[node name="Walk" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 2 )
+offset = Vector2( 0, -10 )
+
+[node name="Jump" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 2 )
+offset = Vector2( 0, -10 )

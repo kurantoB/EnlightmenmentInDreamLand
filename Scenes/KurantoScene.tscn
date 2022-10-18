@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Scripts/GameScene.gd" type="Script" id=1]
 [ext_resource path="res://Units/Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Tile Sets/PalaceOfEarthSpirits_Stage.tres" type="TileSet" id=3]
 [ext_resource path="res://Tile Sets/PalaceOfEarthSpirits_BG.tres" type="TileSet" id=4]
 [ext_resource path="res://Scripts/Units/Player.gd" type="Script" id=5]
+[ext_resource path="res://Units/JumpBird.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Scripts/Units/JumpBird.gd" type="Script" id=7]
 
 [node name="Scene" type="Node"]
 script = ExtResource( 1 )
@@ -47,6 +49,20 @@ offset = Vector2( 0, -21 )
 smoothing_enabled = true
 smoothing_speed = 6.0
 offset_h = -1.0
+
+[node name="JumpBird" parent="." instance=ExtResource( 6 )]
+position = Vector2( 200, -80 )
+script = ExtResource( 7 )
+unit_type = 1
+tick_duration = 2.0
+action_sequence_map = {
+[  ]: 1,
+[ [ 3, 4 ], [ 0.0, 0.0 ] ]: 1
+}
+action_duration_map = {
+3: 0.2,
+4: 0.33
+}
 
 [node name="Foreground" type="TileMap" parent="."]
 tile_set = ExtResource( 4 )

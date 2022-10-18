@@ -53,6 +53,8 @@ var log_triggered : bool = false
 
 var player_cam : Camera2D
 
+var rng = RandomNumberGenerator.new()
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	if parallax_scroll_factors.size() != tilemaps_to_parallax_scroll.size():
@@ -65,6 +67,10 @@ func _ready():
 	stage_env = load("res://Scripts/StageEnvironment.gd").new(self)
 	player_cam = player.get_node("Camera2D")
 	player_cam.make_current()
+	
+	units.append(get_node("JumpBird"))
+	units[1].init_unit_w_scene(self)
+	
 	get_node("AudioStreamPlayer").play()
 	
 	for tilemap_to_scale in tilemaps_to_scale:
@@ -80,9 +86,7 @@ func _ready():
 func _process(delta):
 	for unit in units:
 		unit.reset_actions()
-	handle_player_input()
-	# handle enemy input
-	for unit in units:
+		unit.handle_unit_input(delta)
 		unit.process_unit(delta, time_elapsed, self)
 		set_logging_iteration(unit, delta)
 		stage_env.interact(unit, delta)
