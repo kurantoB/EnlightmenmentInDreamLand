@@ -106,7 +106,7 @@ func do_with_timeout(action : int, new_current_action : int = -1):
 			set_current_action(new_current_action)
 
 func handle_input(delta):
-	# NPC override
+	# implemented in subclass
 	pass
 
 func reset_current_action():
@@ -165,7 +165,7 @@ func jump():
 		v_speed = max(jump_speed, v_speed)
 	else:
 		# airborne
-		v_speed = move_toward(v_speed, jump_speed, get_process_delta_time() * scene.gravity)
+		v_speed = max(scene.Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type], move_toward(v_speed, scene.Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type], get_process_delta_time() * scene.Constants.GRAVITY))
 	set_unit_condition(scene.Constants.UnitCondition.IS_ON_GROUND, false)
 	if get_current_action() == scene.Constants.UnitCurrentAction.JUMPING and v_speed > 0:
 		set_sprite("Jump", 0)
