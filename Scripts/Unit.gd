@@ -106,6 +106,7 @@ func do_with_timeout(action : int, new_current_action : int = -1):
 			set_current_action(new_current_action)
 
 func handle_input(delta):
+	# NPC override
 	pass
 
 func reset_current_action():
