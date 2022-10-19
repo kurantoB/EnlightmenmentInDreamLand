@@ -34,6 +34,8 @@ func reset_actions():
 
 # dir is which direction unit is taking an attack from: left / right
 func hit(damage : int, dir : int):
+	if get_condition(scene.Constants.UnitCondition.IS_INVINCIBLE, false):
+		return
 	set_action(scene.Constants.ActionType.RECOIL)
 	set_current_action(scene.Constants.UnitCurrentAction.RECOILING)
 	set_unit_condition(scene.Constants.UnitCondition.MOVING_STATUS, scene.Constants.UnitMovingStatus.IDLE)
@@ -84,6 +86,25 @@ func is_current_action_timer_done(current_action : int):
 		return current_action_time_elapsed >= scene.player_jump_duration
 	else:
 		return .is_current_action_timer_done(current_action)
+
+func hit_check():
+	# check unit collision
+	for other_unit in scene.units:
+		if other_unit != self:
+			var own_hit_box = scene.Constants.UNIT_HIT_BOXES[unit_type]
+			var other_hit_box = scene.Constants.UNIT_HIT_BOXES[other_unit.unit_type]
+			var hit_check_result : int = GameUtils.check_hitbox_collision(
+				pos.y + own_hit_box[scene.Constants.HIT_BOX_BOUND.UPPER_BOUND],
+				pos.y + own_hit_box[scene.Constants.HIT_BOX_BOUND.LOWER_BOUND],
+				pos.x + own_hit_box[scene.Constants.HIT_BOX_BOUND.LEFT_BOUND],
+				pos.x + own_hit_box[scene.Constants.HIT_BOX_BOUND.RIGHT_BOUND],
+				other_unit.pos.y + other_hit_box[scene.Constants.HIT_BOX_BOUND.UPPER_BOUND],
+				other_unit.pos.y + other_hit_box[scene.Constants.HIT_BOX_BOUND.LOWER_BOUND],
+				other_unit.pos.x + other_hit_box[scene.Constants.HIT_BOX_BOUND.LEFT_BOUND],
+				other_unit.pos.x + other_hit_box[scene.Constants.HIT_BOX_BOUND.RIGHT_BOUND])
+			if hit_check_result != -1:
+				hit(1, hit_check_result)
+				break
 
 func handle_input(delta):
 	scene.handle_player_input()

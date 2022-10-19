@@ -87,6 +87,7 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	for unit in units:
+		unit.hit_check()
 		unit.reset_actions()
 		unit.handle_input(delta)
 		unit.reset_current_action()

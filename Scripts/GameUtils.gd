@@ -1,4 +1,4 @@
-extends Node
+const Constants = preload("res://Scripts/Constants.gd")
 
 # also returns x, y of intersection
 static func path_intersects_border(path_from : Vector2, path_to : Vector2, border_pt_a : Vector2, border_pt_b : Vector2):
@@ -62,3 +62,14 @@ static func reangle_move(unit, angle_helper):
 	var factor = unit_magnitude / helper_magnitude
 	unit.h_speed = (angle_helper[1].x - angle_helper[0].x) * factor
 	unit.v_speed = (angle_helper[1].y - angle_helper[0].y) * factor
+
+# return direction of collision (left or right, relative to source), otherwise -1 if no collision
+static func check_hitbox_collision(source_upper, source_lower, source_left, source_right, other_upper, other_lower, other_left, other_right):
+	if source_upper <= other_lower || source_lower >= other_upper:
+		return -1
+	if source_left >= other_right || source_right <= other_left:
+		return -1
+	if (source_left + source_right) / 2 < (other_left + other_right) / 2:
+		return Constants.Direction.RIGHT
+	else:
+		return Constants.Direction.LEFT

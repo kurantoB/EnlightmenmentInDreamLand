@@ -94,6 +94,10 @@ func is_current_action_timer_done(current_action : int):
 	assert(current_action in scene.Constants.CURRENT_ACTION_TIMERS[unit_type].keys())
 	return current_action_time_elapsed >= scene.Constants.CURRENT_ACTION_TIMERS[unit_type][current_action]
 
+func hit_check():
+	# implemented in subclass
+	pass
+
 func reset_actions():
 	for action_num in scene.Constants.UNIT_TYPE_ACTIONS[unit_type]:
 		actions[action_num] = false
