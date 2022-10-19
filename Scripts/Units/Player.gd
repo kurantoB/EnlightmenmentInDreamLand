@@ -85,8 +85,11 @@ func is_current_action_timer_done(current_action : int):
 	else:
 		return .is_current_action_timer_done(current_action)
 
-func handle_unit_input(delta):
+func handle_input(delta):
 	scene.handle_player_input()
+
+func reset_current_action():
+	scene.reset_player_current_action()
 
 func handle_idle():
 	.handle_idle()

@@ -105,8 +105,17 @@ func do_with_timeout(action : int, new_current_action : int = -1):
 		if new_current_action != -1:
 			set_current_action(new_current_action)
 
-func handle_unit_input(delta):
+func handle_input(delta):
 	pass
+
+func reset_current_action():
+	# process CURRENT_ACTION
+	if get_current_action() == scene.Constants.UnitCurrentAction.JUMPING:
+		if not actions[scene.Constants.ActionType.JUMP]:
+			set_current_action(scene.Constants.UnitCurrentAction.IDLE)
+	# process MOVING_STATUS
+	if not actions[scene.Constants.ActionType.MOVE]:
+		set_unit_condition(scene.Constants.UnitCondition.MOVING_STATUS, scene.Constants.UnitMovingStatus.IDLE)
 
 func process_unit(delta, time_elapsed : float, scene):
 	current_action_time_elapsed += delta

@@ -146,7 +146,7 @@ const CURRENT_ACTION_TIMERS = {
 		UnitCurrentAction.FLYING_CEILING: 0.2,
 	},
 	UnitType.JUMP_BIRD: {
-		UnitCurrentAction.JUMPING: 0.35,
+		UnitCurrentAction.JUMPING: 0.2,
 	}
 }
 

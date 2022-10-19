@@ -1,7 +1,11 @@
 extends NPCUnit
 
 
-func move():
+func before_tick():
 	if (abs(player.pos.x - pos.x)) < 2:
 		facing = scene.Constants.Direction.LEFT if player.pos.x < pos.x else scene.Constants.Direction.RIGHT
-	.move()
+	elif scene.rng.randf() < 0.5:
+		if facing == scene.Constants.Direction.LEFT:
+			facing = scene.Constants.Direction.RIGHT
+		else:
+			facing = scene.Constants.Direction.LEFT

@@ -18,13 +18,13 @@ func _init(the_scene : GameScene):
 	init_stage_grid(stage)
 	stage.scale.x = scene.Constants.SCALE_FACTOR
 	stage.scale.y = scene.Constants.SCALE_FACTOR
-	var player = scene.get_node("Player")
-	init_player(player)
-	player.position.x = player.position.x * scene.Constants.SCALE_FACTOR
-	player.position.y = player.position.y * scene.Constants.SCALE_FACTOR
+	for unit in scene.units:
+		init_unit(unit)
+		unit.position.x = unit.position.x * scene.Constants.SCALE_FACTOR
+		unit.position.y = unit.position.y * scene.Constants.SCALE_FACTOR
 
-func init_player(player : Unit):
-	player.pos = Vector2(player.position.x / scene.Constants.GRID_SIZE, -1 * player.position.y / scene.Constants.GRID_SIZE)
+func init_unit(unit : Unit):
+	unit.pos = Vector2(unit.position.x / scene.Constants.GRID_SIZE, -1 * unit.position.y / scene.Constants.GRID_SIZE)
 
 func interact(unit : Unit, delta):
 	# do hazards

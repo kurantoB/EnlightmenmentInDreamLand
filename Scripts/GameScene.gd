@@ -64,12 +64,14 @@ func _ready():
 	units.append(get_node("Player"))
 	player = units[0]
 	player.init_unit_w_scene(self)
-	stage_env = load("res://Scripts/StageEnvironment.gd").new(self)
 	player_cam = player.get_node("Camera2D")
 	player_cam.make_current()
 	
 	units.append(get_node("JumpBird"))
 	units[1].init_unit_w_scene(self)
+	
+	# place the units
+	stage_env = load("res://Scripts/StageEnvironment.gd").new(self)
 	
 	get_node("AudioStreamPlayer").play()
 	
@@ -86,14 +88,15 @@ func _ready():
 func _process(delta):
 	for unit in units:
 		unit.reset_actions()
-		unit.handle_unit_input(delta)
+		unit.handle_input(delta)
+		unit.reset_current_action()
 		unit.process_unit(delta, time_elapsed, self)
 		set_logging_iteration(unit, delta)
 		stage_env.interact(unit, delta)
 		unit.react(delta)
 		stage_env.interact_post(unit)
 		terminate_logging_iteration(unit)
-		time_elapsed = time_elapsed + delta
+	time_elapsed = time_elapsed + delta
 	
 	# visual effects
 	if (player.facing == Constants.Direction.RIGHT):
@@ -217,30 +220,27 @@ func handle_player_input():
 	and player.get_current_action() != Constants.UnitCurrentAction.CHANNELING
 	and player.get_current_action() != Constants.UnitCurrentAction.SLIDING):
 		player.set_action(Constants.ActionType.DROP_ABILITY)
-	
+
+func reset_player_current_action():
 	# process CURRENT_ACTION
-	
 	if player.get_current_action() == Constants.UnitCurrentAction.CHANNELING:
 		if input_table[Constants.PlayerInput.GBA_B][I_T_JUST_RELEASED]:
 			player.stop_channel_sparks()
 			player.set_current_action(Constants.UnitCurrentAction.IDLE)
-	
 	if player.get_current_action() == Constants.UnitCurrentAction.CROUCHING:
 		if input_table[Constants.PlayerInput.DOWN][I_T_JUST_RELEASED]:
-			player.set_current_action(Constants.UnitCurrentAction.IDLE)
-			
+			player.set_current_action(Constants.UnitCurrentAction.IDLE)	
 	if player.get_current_action() == Constants.UnitCurrentAction.JUMPING:
 		if not input_table[Constants.PlayerInput.GBA_A][I_T_PRESSED]:
 			player.set_current_action(Constants.UnitCurrentAction.IDLE)
-	
 	# process MOVING_STATUS
-	
 	if not player.actions[Constants.ActionType.MOVE] and not player.actions[Constants.ActionType.DASH]:
 		player.set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 
 func set_logging_iteration(unit : Unit, delta):
 	if (log_triggered or
 	(num_iterations != 0
+	#and unit.unit_type == Constants.UnitType.JUMP_BIRD and unit.pos.y > -0.2 and unit.pos.y < 0.2 and time_elapsed > 0.5)):
 	and false)):
 		time_elapsed_to_log = time_elapsed
 		log_triggered = true
