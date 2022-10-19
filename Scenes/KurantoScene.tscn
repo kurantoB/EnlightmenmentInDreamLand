@@ -56,12 +56,11 @@ script = ExtResource( 7 )
 unit_type = 1
 tick_duration = 2.0
 action_sequence_map = {
-[ [ 0, 1 ], [ 0.0, 0.0 ] ]: 1,
-[ [ 0 ], [ 0.0 ] ]: 1
+[ [ 1 ], [ 0.0 ] ]: 1
 }
 action_duration_map = {
 0: 0.2,
-1: 0.5
+1: 1.0
 }
 
 [node name="Foreground" type="TileMap" parent="."]

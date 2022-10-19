@@ -178,14 +178,14 @@ const UNIT_HIT_BOXES = {
 	UnitType.PLAYER: {
 		HIT_BOX_BOUND.UPPER_BOUND: 1.5,
 		HIT_BOX_BOUND.LOWER_BOUND: 0,
-		HIT_BOX_BOUND.LEFT_BOUND: -0.25,
-		HIT_BOX_BOUND.RIGHT_BOUND: 0.25,
+		HIT_BOX_BOUND.LEFT_BOUND: -0.33,
+		HIT_BOX_BOUND.RIGHT_BOUND: 0.33,
 	},
 	UnitType.JUMP_BIRD: {
 		HIT_BOX_BOUND.UPPER_BOUND: 1,
 		HIT_BOX_BOUND.LOWER_BOUND: 0,
-		HIT_BOX_BOUND.LEFT_BOUND: -0.25,
-		HIT_BOX_BOUND.RIGHT_BOUND: 0.25,
+		HIT_BOX_BOUND.LEFT_BOUND: -0.33,
+		HIT_BOX_BOUND.RIGHT_BOUND: 0.33,
 	},
 }
 const CROUCH_FACTOR = 0.67 # fraction of total height
@@ -216,7 +216,7 @@ const UNIT_SPRITES = {
 	},
 	UnitType.JUMP_BIRD: {
 		"Idle": [false, ["Idle"]],
-		"Walk": [false, ["Walk"]],
+		"Walk": [true, ["Walk"]],
 		"Jump": [false, ["Jump", "Jump"]],
 	},
 }
