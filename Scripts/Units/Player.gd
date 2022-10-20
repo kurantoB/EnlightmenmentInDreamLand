@@ -43,7 +43,6 @@ func hit(damage : int, dir : int):
 	set_unit_condition_with_timer(scene.Constants.UnitCondition.IS_INVINCIBLE)
 	is_flash = true
 	if get_condition(scene.Constants.UnitCondition.IS_ON_GROUND, false):
-		facing = dir
 		var temp_h_speed
 		if h_speed > 0:
 			if dir == scene.Constants.Direction.LEFT:
@@ -53,7 +52,7 @@ func hit(damage : int, dir : int):
 				if v_speed > 0:
 					h_speed = -scene.Constants.QUANTUM_DIST
 					v_speed *= -1
-		else:
+		elif h_speed < 0:
 			if dir == scene.Constants.Direction.LEFT:
 				v_speed += RECOIL_PUSHBACK
 				if v_speed > 0:
@@ -61,6 +60,12 @@ func hit(damage : int, dir : int):
 					v_speed *= -1
 			else:
 				v_speed -= RECOIL_PUSHBACK
+		else: # h_speed == 0
+			if dir == scene.Constants.Direction.LEFT:
+				h_speed = scene.Constants.QUANTUM_DIST
+			else:
+				h_speed = -scene.Constants.QUANTUM_DIST
+			v_speed = -RECOIL_PUSHBACK
 	else:
 		if dir == scene.Constants.Direction.LEFT:
 			h_speed += RECOIL_PUSHBACK
