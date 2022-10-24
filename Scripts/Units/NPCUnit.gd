@@ -31,9 +31,6 @@ func _ready():
 		current_npc_action_times_elapsed[action] = 0
 		current_npc_action_active[action] = false
 
-func init(player : Player):
-	self.player = player
-
 func before_tick():
 	pass
 		

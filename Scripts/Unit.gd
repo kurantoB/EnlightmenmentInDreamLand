@@ -288,6 +288,7 @@ func set_sprite(sprite_class : String, index : int = 0):
 		current_sprite = new_sprite
 		current_sprite.visible = true
 		if (scene.Constants.UNIT_SPRITES[unit_type][sprite_class][0]):
+			current_sprite.set_frame(0)
 			current_sprite.play()
 	if facing == scene.Constants.Direction.LEFT:
 		current_sprite.scale.x = -1

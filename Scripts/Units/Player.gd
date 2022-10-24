@@ -42,6 +42,7 @@ func hit(damage : int, dir : int):
 	stop_channel_sparks()
 	set_unit_condition_with_timer(scene.Constants.UnitCondition.IS_INVINCIBLE)
 	is_flash = true
+	flash_start_timestamp = time_elapsed
 	if get_condition(scene.Constants.UnitCondition.IS_ON_GROUND, false):
 		var temp_h_speed
 		if h_speed > 0:
@@ -183,8 +184,8 @@ func flot():
 func recoil():
 	if is_current_action_timer_done(scene.Constants.UnitCurrentAction.RECOILING):
 		set_current_action(scene.Constants.UnitCurrentAction.IDLE)
-		flash_start_timestamp = time_elapsed
-	set_sprite("Recoil")
+	else:
+		set_sprite("Recoil")
 
 func slide():
 	set_current_action(scene.Constants.UnitCurrentAction.SLIDING)
