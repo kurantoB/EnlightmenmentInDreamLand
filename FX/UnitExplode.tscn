@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Graphics/Animations/UnitExplode.tres" type="SpriteFrames" id=1]
+[ext_resource path="res://FX/UnitExplode.gd" type="Script" id=2]
+
+[node name="AnimatedSprite" type="AnimatedSprite"]
+frames = ExtResource( 1 )
+frame = 8
+playing = true
+offset = Vector2( 0, -10 )
+script = ExtResource( 2 )

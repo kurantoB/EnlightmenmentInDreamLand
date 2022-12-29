@@ -114,6 +114,11 @@ const UNIT_TYPE_CURRENT_ACTIONS = {
 	]
 }
 
+const UNIT_TYPE_HEALTH = {
+	UnitType.PLAYER: 6,
+	UnitType.JUMP_BIRD: 1,
+}
+
 const UNIT_TYPE_CONDITIONS = {
 	UnitType.PLAYER: {
 		UnitCondition.CURRENT_ACTION: UnitCurrentAction.IDLE,
@@ -255,7 +260,7 @@ const UNIT_TYPE_JUMP_SPEEDS = {
 }
 const FLOAT_SPEED = 5.5
 
-const SCALE_FACTOR = 3
+const SCALE_FACTOR = 3.5
 const GRID_SIZE = 20
 const GRAVITY = 35
 const MAX_FALL_SPEED = -14
@@ -266,15 +271,5 @@ const GRAVITY_LITE = 8
 const QUANTUM_DIST = 0.001
 
 # Cosmetics
-const FLASH_CYCLE = 0.25
-const UNIT_FLASH_MAPPINGS = {
-	UnitType.PLAYER: {
-		"ffa5d5": "ffd3ad",
-		"ffd3ad": "ffffff",
-		"ffaa6e": "ffe091",
-		"50b9eb": "8cdaff",
-		"27d3cb": "78fae6",
-		"f29faa": "ffccd0",
-		"c37289": "f29faa",
-	}
-}
+const FLASH_CYCLE = 0.15
+const DEFEATED_LIFETIME = 0.5

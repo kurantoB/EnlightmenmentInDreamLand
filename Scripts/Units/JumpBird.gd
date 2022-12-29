@@ -9,3 +9,13 @@ func before_tick():
 			facing = scene.Constants.Direction.RIGHT
 		else:
 			facing = scene.Constants.Direction.LEFT
+
+func hit(damage, dir):
+	.hit(damage, dir)
+	facing = dir
+
+func hit_check():
+	# check player slide
+	if scene.player.get_current_action() == scene.Constants.UnitCurrentAction.SLIDING and collision_with(scene.player) != -1:
+		hit(1, scene.Constants.Direction.RIGHT if player.facing == scene.Constants.Direction.LEFT else scene.Constants.Direction.LEFT)
+		scene.player.slide_collision = true

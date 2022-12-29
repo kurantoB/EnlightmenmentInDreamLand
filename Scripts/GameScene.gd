@@ -6,6 +6,9 @@ export var tile_set_name: String
 export(Array, String) var tilemaps_to_scale
 export(Array, String) var tilemaps_to_parallax_scroll
 
+# positions to unit string
+export var spawning : Dictionary
+
 const Constants = preload("res://Scripts/Constants.gd")
 
 export(Array, float) var parallax_scroll_factors = []
@@ -26,8 +29,13 @@ export(float) var max_fall_speed : float = Constants.MAX_FALL_SPEED
 export(float) var max_fall_speed_lite : float = Constants.MAX_FALL_LITE
 
 const Unit = preload("res://Scripts/Unit.gd")
+const UNIT_DIRECTORY = {
+	Constants.UnitType.JUMP_BIRD: preload("res://Units/JumpBird.tscn"),
+}
 
 var units = []
+var inactive_units = []
+var spawning_map = {} # keeps track of what's alive
 var player : Player
 
 # [pressed?, just pressed?, just released?]
@@ -67,9 +75,6 @@ func _ready():
 	player_cam = player.get_node("Camera2D")
 	player_cam.make_current()
 	
-	units.append(get_node("JumpBird"))
-	units[1].init_unit_w_scene(self)
-	
 	# place the units
 	stage_env = load("res://Scripts/StageEnvironment.gd").new(self)
 	
@@ -83,9 +88,14 @@ func _ready():
 		else:
 			printerr("Unable to find tilemap to scale: " + tilemap_to_scale)
 			get_tree().quit()
+	
+	for spawning_key in spawning:
+		spawning_map[spawning_key] = null
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	process_spawning()
+	
 	for unit in units:
 		unit.hit_check()
 		unit.reset_actions()
@@ -93,10 +103,16 @@ func _process(delta):
 		unit.reset_current_action()
 		unit.process_unit(delta, time_elapsed, self)
 		set_logging_iteration(unit, delta)
+		stage_env.interact(unit, delta) # also check enviroment hazard hits
+		unit.react(delta) # also does death check
+		stage_env.interact_post(unit)
+		terminate_logging_iteration(unit)
+	for unit in inactive_units:
+		# defeated units are still affected by the environment
+		unit.process_unit(delta, time_elapsed, self)
 		stage_env.interact(unit, delta)
 		unit.react(delta)
 		stage_env.interact_post(unit)
-		terminate_logging_iteration(unit)
 	time_elapsed = time_elapsed + delta
 	
 	# visual effects
@@ -237,6 +253,27 @@ func reset_player_current_action():
 	# process MOVING_STATUS
 	if not player.actions[Constants.ActionType.MOVE] and not player.actions[Constants.ActionType.DASH]:
 		player.set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
+
+func process_spawning():
+	for one_spawn in spawning.keys():
+		if spawning_map[one_spawn] != null:
+			continue
+		if abs(one_spawn[0] - player.pos.x) >= 10 or abs(one_spawn[1] - player.pos.y) >= 10:
+			continue
+		if abs(one_spawn[0] - player.pos.x) <= 9:
+			continue
+		# NPCUnit
+		var enemy_scene = UNIT_DIRECTORY[Constants.UnitType.get(spawning[one_spawn])]
+		var enemy_instance = enemy_scene.instance()
+		add_child(enemy_instance)
+		units.append(enemy_instance)
+		enemy_instance.spawn_point = one_spawn
+		spawning_map[one_spawn] = enemy_instance
+		enemy_instance.pos.x = one_spawn[0]
+		enemy_instance.pos.y = one_spawn[1]
+		enemy_instance.position.x = enemy_instance.pos.x * Constants.GRID_SIZE
+		enemy_instance.position.y = -1 * enemy_instance.pos.y * Constants.GRID_SIZE
+		enemy_instance.init_unit_w_scene(self)
 
 func set_logging_iteration(unit : Unit, delta):
 	if (log_triggered or

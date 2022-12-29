@@ -27,90 +27,82 @@ func _ready():
 
 func reset_actions():
 	.reset_actions()
-	if get_current_action() == scene.Constants.UnitCurrentAction.RECOILING:
-		set_action(scene.Constants.ActionType.RECOIL)
-	if get_current_action() == scene.Constants.UnitCurrentAction.SLIDING:
-		set_action(scene.Constants.ActionType.SLIDE)
+	if get_current_action() == Constants.UnitCurrentAction.RECOILING:
+		set_action(Constants.ActionType.RECOIL)
+	if get_current_action() == Constants.UnitCurrentAction.SLIDING:
+		set_action(Constants.ActionType.SLIDE)
 
 # dir is which direction unit is taking an attack from: left / right
 func hit(damage : int, dir : int):
-	if get_condition(scene.Constants.UnitCondition.IS_INVINCIBLE, false):
+	.hit(damage, dir)
+	if get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):
 		return
-	set_action(scene.Constants.ActionType.RECOIL)
-	set_current_action(scene.Constants.UnitCurrentAction.RECOILING)
-	set_unit_condition(scene.Constants.UnitCondition.MOVING_STATUS, scene.Constants.UnitMovingStatus.IDLE)
-	stop_channel_sparks()
-	set_unit_condition_with_timer(scene.Constants.UnitCondition.IS_INVINCIBLE)
+	set_unit_condition_with_timer(Constants.UnitCondition.IS_INVINCIBLE)
 	is_flash = true
 	flash_start_timestamp = time_elapsed
-	if get_condition(scene.Constants.UnitCondition.IS_ON_GROUND, false):
+	set_action(Constants.ActionType.RECOIL)
+	set_current_action(Constants.UnitCurrentAction.RECOILING)
+	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
+	stop_channel_sparks()
+	if get_condition(Constants.UnitCondition.IS_ON_GROUND, false):
 		var temp_h_speed
 		if h_speed > 0:
-			if dir == scene.Constants.Direction.LEFT:
+			if dir == Constants.Direction.LEFT:
 				v_speed -= RECOIL_PUSHBACK
 			else:
 				v_speed += RECOIL_PUSHBACK
 				if v_speed > 0:
-					h_speed = -scene.Constants.QUANTUM_DIST
+					h_speed = -Constants.QUANTUM_DIST
 					v_speed *= -1
 		elif h_speed < 0:
-			if dir == scene.Constants.Direction.LEFT:
+			if dir == Constants.Direction.LEFT:
 				v_speed += RECOIL_PUSHBACK
 				if v_speed > 0:
-					h_speed = scene.Constants.QUANTUM_DIST
+					h_speed = Constants.QUANTUM_DIST
 					v_speed *= -1
 			else:
 				v_speed -= RECOIL_PUSHBACK
 		else: # h_speed == 0
-			if dir == scene.Constants.Direction.LEFT:
-				h_speed = scene.Constants.QUANTUM_DIST
+			if dir == Constants.Direction.LEFT:
+				h_speed = Constants.QUANTUM_DIST
 			else:
-				h_speed = -scene.Constants.QUANTUM_DIST
+				h_speed = -Constants.QUANTUM_DIST
 			v_speed = -RECOIL_PUSHBACK
 	else:
-		if dir == scene.Constants.Direction.LEFT:
+		if dir == Constants.Direction.LEFT:
 			h_speed += RECOIL_PUSHBACK
 		else:
 			h_speed -= RECOIL_PUSHBACK
 	facing = dir
 
 func wall_collision():
-	if get_current_action() == scene.Constants.UnitCurrentAction.SLIDING:
+	if get_current_action() == Constants.UnitCurrentAction.SLIDING:
 		slide_collision = true
 
 func advance_timers(delta):
 	.advance_timers(delta)
-	if not unit_conditions[scene.Constants.UnitCondition.IS_INVINCIBLE]:
+	if not unit_conditions[Constants.UnitCondition.IS_INVINCIBLE]:
 		is_flash = false
 
 func is_current_action_timer_done(current_action : int):
-	if current_action == scene.Constants.UnitCurrentAction.SLIDING:
+	if current_action == Constants.UnitCurrentAction.SLIDING:
 		return current_action_time_elapsed >= scene.player_slide_duration
-	elif current_action == scene.Constants.UnitCurrentAction.RECOILING:
+	elif current_action == Constants.UnitCurrentAction.RECOILING:
 		return current_action_time_elapsed >= scene.player_recoil_duration
-	elif current_action == scene.Constants.UnitCurrentAction.JUMPING:
+	elif current_action == Constants.UnitCurrentAction.JUMPING:
 		return current_action_time_elapsed >= scene.player_jump_duration
 	else:
 		return .is_current_action_timer_done(current_action)
 
 func hit_check():
 	# check unit collision
-	for other_unit in scene.units:
-		if other_unit != self:
-			var own_hit_box = scene.Constants.UNIT_HIT_BOXES[unit_type]
-			var other_hit_box = scene.Constants.UNIT_HIT_BOXES[other_unit.unit_type]
-			var hit_check_result : int = GameUtils.check_hitbox_collision(
-				pos.y + own_hit_box[scene.Constants.HIT_BOX_BOUND.UPPER_BOUND],
-				pos.y + own_hit_box[scene.Constants.HIT_BOX_BOUND.LOWER_BOUND],
-				pos.x + own_hit_box[scene.Constants.HIT_BOX_BOUND.LEFT_BOUND],
-				pos.x + own_hit_box[scene.Constants.HIT_BOX_BOUND.RIGHT_BOUND],
-				other_unit.pos.y + other_hit_box[scene.Constants.HIT_BOX_BOUND.UPPER_BOUND],
-				other_unit.pos.y + other_hit_box[scene.Constants.HIT_BOX_BOUND.LOWER_BOUND],
-				other_unit.pos.x + other_hit_box[scene.Constants.HIT_BOX_BOUND.LEFT_BOUND],
-				other_unit.pos.x + other_hit_box[scene.Constants.HIT_BOX_BOUND.RIGHT_BOUND])
-			if hit_check_result != -1:
-				hit(1, hit_check_result)
-				break
+	if get_current_action() != Constants.UnitCurrentAction.SLIDING:
+		for other_unit in scene.units:
+			if other_unit != self:
+				var collision_with : int = collision_with(other_unit)
+				if collision_with != -1:
+					hit(1, collision_with)
+					break
 
 func handle_input(delta):
 	scene.handle_player_input()
@@ -120,86 +112,86 @@ func reset_current_action():
 
 func handle_idle():
 	.handle_idle()
-	if get_current_action() == scene.Constants.UnitCurrentAction.FLYING or get_current_action() == scene.Constants.UnitCurrentAction.FLYING_CEILING:
+	if get_current_action() == Constants.UnitCurrentAction.FLYING or get_current_action() == Constants.UnitCurrentAction.FLYING_CEILING:
 		if v_speed > 0:
 			set_sprite("Fly", 0)
 		else:
 			set_sprite("Fly", 1)
-	if get_current_action() == scene.Constants.UnitCurrentAction.FLYING_CEILING and is_current_action_timer_done(scene.Constants.UnitCurrentAction.FLYING_CEILING):
-		set_current_action(scene.Constants.UnitCurrentAction.FLYING)
+	if get_current_action() == Constants.UnitCurrentAction.FLYING_CEILING and is_current_action_timer_done(Constants.UnitCurrentAction.FLYING_CEILING):
+		set_current_action(Constants.UnitCurrentAction.FLYING)
 
 func execute_actions(delta, scene):
 	.execute_actions(delta, scene)
-	for action_num in scene.Constants.UNIT_TYPE_ACTIONS[scene.Constants.UnitType.PLAYER]:
+	for action_num in Constants.UNIT_TYPE_ACTIONS[Constants.UnitType.PLAYER]:
 		if !actions[action_num]:
 			continue
 		match action_num:
-			scene.Constants.ActionType.CANCEL_FLYING:
+			Constants.ActionType.CANCEL_FLYING:
 				cancel_flying()
-			scene.Constants.ActionType.CHANNEL:
+			Constants.ActionType.CHANNEL:
 				channel()
-			scene.Constants.ActionType.CROUCH:
+			Constants.ActionType.CROUCH:
 				crouch()
-			scene.Constants.ActionType.DASH:
+			Constants.ActionType.DASH:
 				dash()
-			scene.Constants.ActionType.DROP_ABILITY:
+			Constants.ActionType.DROP_ABILITY:
 				drop_ability()
-			scene.Constants.ActionType.FLOAT:
+			Constants.ActionType.FLOAT:
 				flot()
-			scene.Constants.ActionType.RECOIL:
+			Constants.ActionType.RECOIL:
 				recoil()
-			scene.Constants.ActionType.SLIDE:
+			Constants.ActionType.SLIDE:
 				slide()
 
 func cancel_flying():
-	set_current_action(scene.Constants.UnitCurrentAction.IDLE)
+	set_current_action(Constants.UnitCurrentAction.IDLE)
 
 func channel():
-	if (get_current_action() != scene.Constants.UnitCurrentAction.CHANNELING):
+	if (get_current_action() != Constants.UnitCurrentAction.CHANNELING):
 		init_channel_sparks()
-	set_current_action(scene.Constants.UnitCurrentAction.CHANNELING)
-	set_unit_condition(scene.Constants.UnitCondition.MOVING_STATUS, scene.Constants.UnitMovingStatus.IDLE)
+	set_current_action(Constants.UnitCurrentAction.CHANNELING)
+	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 	handle_channel_sparks()
 	set_sprite("Channel")
 
 func crouch():
-	set_current_action(scene.Constants.UnitCurrentAction.CROUCHING)
-	set_unit_condition(scene.Constants.UnitCondition.MOVING_STATUS, scene.Constants.UnitMovingStatus.IDLE)
+	set_current_action(Constants.UnitCurrentAction.CROUCHING)
+	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 	set_sprite("Crouch")
 
 func drop_ability():
-	set_unit_condition(scene.Constants.UnitCondition.HAS_ABILITY, false)
+	set_unit_condition(Constants.UnitCondition.HAS_ABILITY, false)
 
 func dash():
-	set_unit_condition(scene.Constants.UnitCondition.MOVING_STATUS, scene.Constants.UnitMovingStatus.DASHING)
+	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.DASHING)
 	target_move_speed = scene.dash_speed
-	if unit_conditions[scene.Constants.UnitCondition.IS_ON_GROUND]:
+	if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 		set_sprite("Dash")
 
 func flot():
 	v_speed = scene.player_float_speed
-	if unit_conditions[scene.Constants.UnitCondition.MOVING_STATUS] == scene.Constants.UnitMovingStatus.DASHING:
-		unit_conditions[scene.Constants.UnitCondition.MOVING_STATUS] = scene.Constants.UnitMovingStatus.MOVING
+	if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.DASHING:
+		unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.MOVING
 
 func recoil():
-	if is_current_action_timer_done(scene.Constants.UnitCurrentAction.RECOILING):
-		set_current_action(scene.Constants.UnitCurrentAction.IDLE)
+	if is_current_action_timer_done(Constants.UnitCurrentAction.RECOILING):
+		set_current_action(Constants.UnitCurrentAction.IDLE)
 	else:
 		set_sprite("Recoil")
 
 func slide():
-	set_current_action(scene.Constants.UnitCurrentAction.SLIDING)
+	set_current_action(Constants.UnitCurrentAction.SLIDING)
 	var dir_factor = 1
-	if facing == scene.Constants.Direction.LEFT:
+	if facing == Constants.Direction.LEFT:
 		dir_factor = -1
 	h_speed = scene.dash_speed * dir_factor
-	if is_current_action_timer_done(scene.Constants.UnitCurrentAction.SLIDING):
-		set_current_action(scene.Constants.UnitCurrentAction.IDLE)
-	if (slide_collision):
-		set_unit_condition(scene.Constants.UnitCondition.IS_ON_GROUND, false)
-		set_current_action(scene.Constants.UnitCurrentAction.IDLE)
+	if is_current_action_timer_done(Constants.UnitCurrentAction.SLIDING):
+		set_current_action(Constants.UnitCurrentAction.IDLE)
+	if slide_collision:
+		set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, false)
+		set_current_action(Constants.UnitCurrentAction.IDLE)
 		v_speed = SLIDE_COLLISION_BOUNCE
-		if facing == scene.Constants.Direction.RIGHT:
+		if facing == Constants.Direction.RIGHT:
 			h_speed = -SLIDE_COLLISION_BOUNCE
 		else:
 			h_speed = SLIDE_COLLISION_BOUNCE
@@ -219,7 +211,7 @@ func init_channel_sparks():
 		channel_spark_ys.append(sprite.position.y)
 		channel_spark_spawn_times.append(time_elapsed + (i * CHANNEL_SPARK_LIFE / channel_sparks.size()))
 		sprite.visible = false
-		if facing == scene.Constants.Direction.LEFT:
+		if facing == Constants.Direction.LEFT:
 			sprite.position.x *= -1
 
 func handle_channel_sparks():
@@ -247,7 +239,7 @@ func handle_channel_sparks():
 			channel_spark_spawn_times[i] = time_elapsed
 		if spark_time_elapsed < CHANNEL_SPARK_LIFE:
 			sprite.position.y = round(-CHANNEL_Y_MIDPOINT + ((1 - spark_time_elapsed / CHANNEL_SPARK_LIFE) * (channel_spark_ys[i] - -CHANNEL_Y_MIDPOINT)))
-		if facing == scene.Constants.Direction.LEFT:
+		if facing == Constants.Direction.LEFT:
 			sprite.position.x *= -1
 		sprite.visible = true
 

@@ -6,14 +6,13 @@ class_name NPCUnit
 export var tick_duration : float
 var tick_timer : float = 0
 
-export var action_sequence_map = {} # action sequence to weight, [] = do nothing
+export(Dictionary) var action_sequence_map # action sequence to weight, [] = do nothing
 # action sequence is an array of action type and an array of timestamps
-# action type is the ordinal number in Constants.UNIT_TYPE_ACTIONS[unit_type]
+# action type is the string representation of Constants.ActionType
 # example action map: {[[action1], [0]]: 1, [[action2, action3], [0, 1]]: 2}
 var weight_sum : float
 
 export var action_duration_map = {} # specific durations for given action
-# action type is the ordinal number in Constants.UNIT_TYPE_ACTIONS[unit_type]
 var current_npc_action_times_elapsed = {}
 var current_npc_action_active = {}
 
@@ -21,6 +20,7 @@ var current_action_sequence = null
 var current_action_sequence_time_elapsed : float = 0
 var current_action_sequence_index : int = 0
 
+var spawn_point : Vector2
 var player : Player
 
 
@@ -43,14 +43,14 @@ func handle_input(delta):
 		for action in current_npc_action_active:
 			if current_npc_action_active[action]:
 				if current_npc_action_times_elapsed[action] < action_duration_map[action]:
-					set_action(scene.Constants.UNIT_TYPE_ACTIONS[unit_type][action])
+					set_action(Constants.ActionType.get(action))
 					current_npc_action_times_elapsed[action] += delta
 				else:
 					current_npc_action_active[action] = false
 		if (current_action_sequence_index < current_action_sequence[1].size()
 		and current_action_sequence_time_elapsed >= current_action_sequence[1][current_action_sequence_index]):
 			var action = current_action_sequence[0][current_action_sequence_index]
-			set_action(scene.Constants.UNIT_TYPE_ACTIONS[unit_type][action])
+			set_action(Constants.ActionType.get(action))
 			if action_duration_map.has(action):
 				current_npc_action_active[action] = true
 				current_npc_action_times_elapsed[action] = 0
@@ -84,3 +84,6 @@ func reset_npc_unit():
 	tick_timer = tick_duration
 	for action in current_npc_action_active:
 		current_npc_action_active[action] = false
+
+func unit_death_hook():
+	scene.spawning_map[spawn_point] = null

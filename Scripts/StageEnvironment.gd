@@ -30,20 +30,21 @@ func interact(unit : Unit, delta):
 	var unit_pos_y_upper_bound_check = unit.hit_box[scene.Constants.HIT_BOX_BOUND.UPPER_BOUND]
 	if unit_is_shortened(unit):
 		unit_pos_y_upper_bound_check *= scene.Constants.CROUCH_FACTOR
-	for stage_hazard in stage_hazards:
-		if not ((unit.pos.y + unit.hit_box[scene.Constants.HIT_BOX_BOUND.LOWER_BOUND] > stage_hazard[0][scene.Constants.HIT_BOX_BOUND.UPPER_BOUND])
-		or (unit.pos.y + unit_pos_y_upper_bound_check < stage_hazard[0][scene.Constants.HIT_BOX_BOUND.LOWER_BOUND])
-		or (unit.pos.x + unit.hit_box[scene.Constants.HIT_BOX_BOUND.LEFT_BOUND] > stage_hazard[0][scene.Constants.HIT_BOX_BOUND.RIGHT_BOUND])
-		or (unit.pos.x + unit.hit_box[scene.Constants.HIT_BOX_BOUND.RIGHT_BOUND] < stage_hazard[0][scene.Constants.HIT_BOX_BOUND.LEFT_BOUND])):
-			var dir: int
-			if stage_hazard[1] != -1:
-				dir = stage_hazard[1]
-			elif (stage_hazard[0][scene.Constants.HIT_BOX_BOUND.LEFT_BOUND] + stage_hazard[0][scene.Constants.HIT_BOX_BOUND.RIGHT_BOUND]) / 2 < unit.pos.x:
-				dir = scene.Constants.Direction.LEFT
-			else:
-				dir = scene.Constants.Direction.RIGHT
-			unit.hit(1, dir)
-			break
+	if unit.unit_type == scene.Constants.UnitType.PLAYER:
+		for stage_hazard in stage_hazards:
+			if not ((unit.pos.y + unit.hit_box[scene.Constants.HIT_BOX_BOUND.LOWER_BOUND] > stage_hazard[0][scene.Constants.HIT_BOX_BOUND.UPPER_BOUND])
+			or (unit.pos.y + unit_pos_y_upper_bound_check < stage_hazard[0][scene.Constants.HIT_BOX_BOUND.LOWER_BOUND])
+			or (unit.pos.x + unit.hit_box[scene.Constants.HIT_BOX_BOUND.LEFT_BOUND] > stage_hazard[0][scene.Constants.HIT_BOX_BOUND.RIGHT_BOUND])
+			or (unit.pos.x + unit.hit_box[scene.Constants.HIT_BOX_BOUND.RIGHT_BOUND] < stage_hazard[0][scene.Constants.HIT_BOX_BOUND.LEFT_BOUND])):
+				var dir: int
+				if stage_hazard[1] != -1:
+					dir = stage_hazard[1]
+				elif (stage_hazard[0][scene.Constants.HIT_BOX_BOUND.LEFT_BOUND] + stage_hazard[0][scene.Constants.HIT_BOX_BOUND.RIGHT_BOUND]) / 2 < unit.pos.x:
+					dir = scene.Constants.Direction.LEFT
+				else:
+					dir = scene.Constants.Direction.RIGHT
+				unit.hit(1, dir)
+				break
 
 	# do collisions
 	

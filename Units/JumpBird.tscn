@@ -1,12 +1,24 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Graphics/Units/Enemies/Bird_Jump.png" type="Texture" id=1]
 [ext_resource path="res://Graphics/Units/Enemies/Bird.png" type="Texture" id=2]
 [ext_resource path="res://Graphics/Animations/BirdWalk.tres" type="SpriteFrames" id=3]
+[ext_resource path="res://Scripts/Units/JumpBird.gd" type="Script" id=4]
 
 [node name="JumpBird" type="Node2D"]
+script = ExtResource( 4 )
+unit_type = 1
+tick_duration = 2.0
+action_sequence_map = {
+[ [ "MOVE", "JUMP" ], [ 0.0, 0.2 ] ]: 1,
+[ [ "MOVE" ], [ 0.0 ] ]: 1
+}
+action_duration_map = {
+"MOVE": 1.0
+}
 
 [node name="Idle" type="Sprite" parent="."]
+visible = false
 texture = ExtResource( 2 )
 offset = Vector2( 0, -10 )
 
