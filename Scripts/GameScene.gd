@@ -97,15 +97,14 @@ func _process(delta):
 	process_spawning()
 	
 	for unit in units:
-		unit.hit_check()
 		unit.reset_actions()
 		unit.handle_input(delta)
-		unit.reset_current_action()
 		unit.process_unit(delta, time_elapsed, self)
 		set_logging_iteration(unit, delta)
 		stage_env.interact(unit, delta) # also check enviroment hazard hits
-		unit.react(delta) # also does death check
+		unit.react(delta)
 		stage_env.interact_post(unit)
+		unit.death_check()
 		terminate_logging_iteration(unit)
 	for unit in inactive_units:
 		# defeated units are still affected by the environment
@@ -113,6 +112,7 @@ func _process(delta):
 		stage_env.interact(unit, delta)
 		unit.react(delta)
 		stage_env.interact_post(unit)
+		unit.death_cleanup()
 	time_elapsed = time_elapsed + delta
 	
 	# visual effects
@@ -148,8 +148,11 @@ func handle_player_input():
 	
 	# early exit
 	
-	if (player.get_current_action() == Constants.UnitCurrentAction.RECOILING
-	or player.get_current_action() == Constants.UnitCurrentAction.SLIDING):
+	if player.get_current_action() == Constants.UnitCurrentAction.RECOILING:
+		player.set_action(Constants.ActionType.RECOIL)
+		return
+	if player.get_current_action() == Constants.UnitCurrentAction.SLIDING:
+		player.set_action(Constants.ActionType.SLIDE)
 		return
 	
 	# process input_table

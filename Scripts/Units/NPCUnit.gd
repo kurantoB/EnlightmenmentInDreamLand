@@ -85,5 +85,22 @@ func reset_npc_unit():
 	for action in current_npc_action_active:
 		current_npc_action_active[action] = false
 
+func hit_check():
+	if not scene.player.melee_hit_box[0]:
+		return
+	var own_hit_box = Constants.UNIT_HIT_BOXES[unit_type]
+	var collision_result = GameUtils.check_hitbox_collision(
+		pos.y + own_hit_box[Constants.HIT_BOX_BOUND.UPPER_BOUND],
+		pos.y + own_hit_box[Constants.HIT_BOX_BOUND.LOWER_BOUND],
+		pos.x + own_hit_box[Constants.HIT_BOX_BOUND.LEFT_BOUND],
+		pos.x + own_hit_box[Constants.HIT_BOX_BOUND.RIGHT_BOUND],
+		scene.player.melee_hit_box[2] + scene.player.melee_hit_box[4],
+		scene.player.melee_hit_box[2],
+		scene.player.melee_hit_box[1],
+		scene.player.melee_hit_box[1] + scene.player.melee_hit_box[3])
+	if collision_result != -1:
+		hit(1, collision_result)
+		scene.player.melee_hit = true
+
 func unit_death_hook():
 	scene.spawning_map[spawn_point] = null

@@ -26,6 +26,10 @@ var v_speed : float = 0
 var target_move_speed : float
 var last_contacted_collider : Array
 
+# [active, x, y, width, height], assuming right-facing
+var melee_hit_box = [false, 0, 0, 0, 0]
+var melee_hit : bool
+
 var current_sprite : Node2D
 
 var time_elapsed : float
@@ -101,6 +105,10 @@ func is_current_action_timer_done(current_action : int):
 	assert(current_action in Constants.CURRENT_ACTION_TIMERS[unit_type].keys())
 	return current_action_time_elapsed >= Constants.CURRENT_ACTION_TIMERS[unit_type][current_action]
 
+func melee_attack_check():
+	# implemented in subclass
+	pass
+
 func hit_check():
 	# implemented in subclass
 	pass
@@ -144,10 +152,14 @@ func reset_current_action():
 
 func process_unit(delta, time_elapsed : float, scene):
 	current_action_time_elapsed += delta
+	melee_attack_check()
+	hit_check()
+	process_current_action_melee()
 	execute_actions(delta, scene)
 	handle_idle()
 	handle_moving_status(delta, scene)
 	advance_timers(delta)
+	reset_current_action()
 	self.time_elapsed = time_elapsed
 
 func advance_timers(delta):
@@ -176,6 +188,24 @@ func execute_actions(delta, scene):
 				jump()
 			Constants.ActionType.MOVE:
 				move()
+				
+func process_current_action_melee():
+	if Constants.CURRENT_ACTION_HAS_MELEE_HITBOX[get_current_action()]:
+		for i in range (Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()].size()):
+			var current_action_hit_box = Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()][Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()].size() - 1 - i]
+			if current_action_time_elapsed >= current_action_hit_box[0]:
+				melee_hit_box[0] = true
+				if facing == Constants.Direction.RIGHT:
+					melee_hit_box[1] = pos.x + current_action_hit_box[1]
+				else:
+					melee_hit_box[1] = pos.x - current_action_hit_box[1] - current_action_hit_box[3]
+				melee_hit_box[2] = pos.y + current_action_hit_box[2]
+				melee_hit_box[3] = current_action_hit_box[3]
+				melee_hit_box[4] = current_action_hit_box[4]
+				break
+	else:
+		melee_hit_box[0] = false
+	pass
 
 func jump():
 	set_current_action(Constants.UnitCurrentAction.JUMPING)
@@ -320,7 +350,12 @@ func react(delta):
 	pos.y = pos.y + v_speed * delta
 	position.x = pos.x * Constants.GRID_SIZE * Constants.SCALE_FACTOR
 	position.y = -1 * pos.y * Constants.GRID_SIZE * Constants.SCALE_FACTOR
-	if active and health == 0:
+
+func unit_death_hook():
+	pass
+
+func death_check():
+	if health == 0:
 		reset_actions()
 		reset_current_action()
 		scene.units.erase(self)
@@ -335,20 +370,18 @@ func react(delta):
 			else:
 				h_speed = DEFEATED_KNOCKBACK
 			defeated_time_elapsed = time_elapsed
-	if not active:
-		if time_elapsed - defeated_time_elapsed >= Constants.DEFEATED_LIFETIME:
-			scene.inactive_units.erase(self)
-			var unit_explode : AnimatedSprite = UnitExplode.instance()
-			scene.add_child(unit_explode)
-			unit_explode.position = position
-			unit_explode.scale.x = Constants.SCALE_FACTOR
-			unit_explode.scale.y = Constants.SCALE_FACTOR
-			unit_explode.frame = 0
-			unit_death_hook()
-			queue_free()
 
-func unit_death_hook():
-	pass
+func death_cleanup():
+	if time_elapsed - defeated_time_elapsed >= Constants.DEFEATED_LIFETIME:
+		scene.inactive_units.erase(self)
+		var unit_explode : AnimatedSprite = UnitExplode.instance()
+		scene.add_child(unit_explode)
+		unit_explode.position = position
+		unit_explode.scale.x = Constants.SCALE_FACTOR
+		unit_explode.scale.y = Constants.SCALE_FACTOR
+		unit_explode.frame = 0
+		unit_death_hook()
+		queue_free()
 
 func hit(damage : int, dir : int):
 	if get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):

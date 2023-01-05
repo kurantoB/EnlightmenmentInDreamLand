@@ -114,6 +114,17 @@ const UNIT_TYPE_CURRENT_ACTIONS = {
 	]
 }
 
+const CURRENT_ACTION_HAS_MELEE_HITBOX = {
+	UnitCurrentAction.IDLE: false,
+	UnitCurrentAction.CHANNELING: false,
+	UnitCurrentAction.CROUCHING: false,
+	UnitCurrentAction.JUMPING: false,
+	UnitCurrentAction.SLIDING: true,
+	UnitCurrentAction.FLYING: false,
+	UnitCurrentAction.FLYING_CEILING: false,
+	UnitCurrentAction.RECOILING: false,
+}
+
 const UNIT_TYPE_HEALTH = {
 	UnitType.PLAYER: 6,
 	UnitType.JUMP_BIRD: 1,
@@ -193,6 +204,16 @@ const UNIT_HIT_BOXES = {
 	},
 }
 const CROUCH_FACTOR = 0.67 # fraction of total height
+
+# [timestamp, [x, y, width, height]]
+# assuming right-facing
+const UNIT_MELEE_HIT_BOXES = {
+	UnitType.PLAYER: {
+		UnitCurrentAction.SLIDING: [
+			[0, .5, .0, .5, .5],
+		],
+	},
+}
 
 const INPUT_MAP = {
 	PlayerInput.UP: "ui_up",

@@ -94,15 +94,20 @@ func is_current_action_timer_done(current_action : int):
 	else:
 		return .is_current_action_timer_done(current_action)
 
+func melee_attack_check():
+	if melee_hit:
+		if get_current_action() == Constants.UnitCurrentAction.SLIDING:
+			slide_collision = true
+		melee_hit = false
+
 func hit_check():
 	# check unit collision
-	if get_current_action() != Constants.UnitCurrentAction.SLIDING:
-		for other_unit in scene.units:
-			if other_unit != self:
-				var collision_with : int = collision_with(other_unit)
-				if collision_with != -1:
-					hit(1, collision_with)
-					break
+	for other_unit in scene.units:
+		if other_unit != self:
+			var collision_with : int = collision_with(other_unit)
+			if collision_with != -1:
+				hit(1, collision_with)
+				break
 
 func handle_input(delta):
 	scene.handle_player_input()
@@ -177,9 +182,12 @@ func recoil():
 	if is_current_action_timer_done(Constants.UnitCurrentAction.RECOILING):
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 	else:
+		set_current_action(Constants.UnitCurrentAction.RECOILING)
 		set_sprite("Recoil")
 
 func slide():
+	if get_current_action() != Constants.UnitCurrentAction.SLIDING:
+		slide_collision = false
 	set_current_action(Constants.UnitCurrentAction.SLIDING)
 	var dir_factor = 1
 	if facing == Constants.Direction.LEFT:
