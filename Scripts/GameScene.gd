@@ -210,7 +210,7 @@ func handle_player_input():
 			# slide
 			player.set_action(Constants.ActionType.SLIDE)
 		# else if flying and just pressed
-		elif ((player.get_current_action() == Constants.UnitCurrentAction.FLYING or player.get_current_action() == Constants.UnitCurrentAction.FLYING_CEILING)
+		elif (player.get_current_action() == Constants.UnitCurrentAction.FLYING
 		and input_table[Constants.PlayerInput.GBA_B][I_T_JUST_PRESSED]):
 			player.set_action(Constants.ActionType.CANCEL_FLYING)
 		# else if channeling or (idle and not floating and just pressed)

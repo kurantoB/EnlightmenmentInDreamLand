@@ -77,13 +77,11 @@ func reset_current_action():
 
 func handle_idle():
 	.handle_idle()
-	if get_current_action() == Constants.UnitCurrentAction.FLYING or get_current_action() == Constants.UnitCurrentAction.FLYING_CEILING:
+	if get_current_action() == Constants.UnitCurrentAction.FLYING:
 		if v_speed > 0:
 			set_sprite("Fly", 0)
 		else:
 			set_sprite("Fly", 1)
-	if get_current_action() == Constants.UnitCurrentAction.FLYING_CEILING and is_current_action_timer_done(Constants.UnitCurrentAction.FLYING_CEILING):
-		set_current_action(Constants.UnitCurrentAction.FLYING)
 
 func execute_actions(delta, scene):
 	.execute_actions(delta, scene)

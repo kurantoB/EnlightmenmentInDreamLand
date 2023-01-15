@@ -60,9 +60,6 @@ func interact(unit : Unit, delta):
 			scene.conditional_log("interact gravity-affected, not-grounded, flying - use GRAVITY_LITE, MAX_FALL_LITE")
 			gravity_factor = scene.Constants.GRAVITY_LITE
 			max_fall_speed = scene.Constants.MAX_FALL_LITE
-		elif unit.get_current_action() == scene.Constants.UnitCurrentAction.FLYING_CEILING:
-			gravity_factor = scene.Constants.GRAVITY_LITE
-			max_fall_speed = 0
 		scene.conditional_log("interact gravity-affected, not-grounded, change-v-speed: " + str(unit.v_speed) + " -> " + str(max(unit.v_speed - (gravity_factor * delta), max_fall_speed)))
 		unit.v_speed = max(unit.v_speed - (gravity_factor * delta), max_fall_speed)
 
@@ -347,8 +344,6 @@ func check_collision(unit : Unit, collider, collision_direction, delta):
 			unit.pos.y = unit.pos.y + y_dist_to_translate
 			if unit.get_current_action() == scene.Constants.UnitCurrentAction.JUMPING:
 				unit.set_current_action(scene.Constants.UnitCurrentAction.IDLE)
-			elif unit.get_current_action() == scene.Constants.UnitCurrentAction.FLYING:
-				unit.set_current_action(scene.Constants.UnitCurrentAction.FLYING_CEILING)
 		elif collision_dir == scene.Constants.Direction.LEFT or collision_dir == scene.Constants.Direction.RIGHT:
 			if (collider[0].x == collider[1].x
 			or not unit.unit_conditions[scene.Constants.UnitCondition.IS_ON_GROUND]):
@@ -448,7 +443,7 @@ func intersect_check_w_collider_uec_dir(unit : Unit, collider, direction_to_chec
 func unit_is_shortened(unit : Unit):
 	return (unit.get_current_action() == scene.Constants.UnitCurrentAction.CROUCHING
 		or unit.get_current_action() == scene.Constants.UnitCurrentAction.SLIDING
-		or unit.get_current_action() == scene.Constants.UnitCurrentAction.FLYING or unit.get_current_action() == scene.Constants.UnitCurrentAction.FLYING_CEILING)
+		or unit.get_current_action() == scene.Constants.UnitCurrentAction.FLYING)
 
 func interact_post(unit : Unit):
 	# need to reground unit in case it ended up somewhere underneath ground level

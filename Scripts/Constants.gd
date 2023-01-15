@@ -31,8 +31,7 @@ enum UnitCurrentAction {
 	JUMPING,
 	SLIDING,
 	FLYING,
-	FLYING_CEILING,
-	RECOILING
+	RECOILING,
 }
 
 enum UnitMovingStatus {
@@ -105,7 +104,6 @@ const UNIT_TYPE_CURRENT_ACTIONS = {
 		UnitCurrentAction.JUMPING,
 		UnitCurrentAction.SLIDING,
 		UnitCurrentAction.FLYING,
-		UnitCurrentAction.FLYING_CEILING,
 		UnitCurrentAction.RECOILING,
 	],
 	UnitType.JUMP_BIRD: [
@@ -121,7 +119,6 @@ const CURRENT_ACTION_HAS_MELEE_HITBOX = {
 	UnitCurrentAction.JUMPING: false,
 	UnitCurrentAction.SLIDING: true,
 	UnitCurrentAction.FLYING: false,
-	UnitCurrentAction.FLYING_CEILING: false,
 	UnitCurrentAction.RECOILING: false,
 }
 
@@ -158,7 +155,6 @@ const CURRENT_ACTION_TIMERS = {
 		UnitCurrentAction.SLIDING: 0.7,
 		UnitCurrentAction.RECOILING: 0.67,
 		UnitCurrentAction.JUMPING: 0.35,
-		UnitCurrentAction.FLYING_CEILING: 0.2,
 	},
 	UnitType.JUMP_BIRD: {
 		UnitCurrentAction.JUMPING: 0.2,
