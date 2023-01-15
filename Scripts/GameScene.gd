@@ -12,21 +12,6 @@ export var spawning : Dictionary
 const Constants = preload("res://Scripts/Constants.gd")
 
 export(Array, float) var parallax_scroll_factors = []
-export(float) var player_move_speed : float = Constants.UNIT_TYPE_MOVE_SPEEDS[Constants.UnitType.PLAYER]
-export(float) var dash_speed : float = Constants.DASH_SPEED
-export(float) var player_jump_speed : float = Constants.UNIT_TYPE_JUMP_SPEEDS[Constants.UnitType.PLAYER]
-export(float) var player_jump_duration : float = Constants.CURRENT_ACTION_TIMERS[Constants.UnitType.PLAYER][Constants.UnitCurrentAction.JUMPING]
-export(float) var player_float_speed : float = Constants.FLOAT_SPEED
-export(float) var player_float_cooldown : float = Constants.ACTION_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.FLOAT]
-export(float) var player_dash_window : float = Constants.ACTION_TIMERS[Constants.UnitType.PLAYER][Constants.ActionType.DASH]
-export(float) var player_slide_duration : float = Constants.CURRENT_ACTION_TIMERS[Constants.UnitType.PLAYER][Constants.UnitCurrentAction.SLIDING]
-export(float) var player_recoil_duration : float = Constants.CURRENT_ACTION_TIMERS[Constants.UnitType.PLAYER][Constants.UnitCurrentAction.RECOILING]
-export(float) var player_invincible_duration : float = Constants.UNIT_CONDITION_TIMERS[Constants.UnitType.PLAYER][Constants.UnitCondition.IS_INVINCIBLE][0]
-export(float) var move_acceleration : float = Constants.ACCELERATION
-export(float) var gravity : float = Constants.GRAVITY
-export(float) var gravity_lite : float = Constants.GRAVITY_LITE
-export(float) var max_fall_speed : float = Constants.MAX_FALL_SPEED
-export(float) var max_fall_speed_lite : float = Constants.MAX_FALL_LITE
 
 const Unit = preload("res://Scripts/Unit.gd")
 const UNIT_DIRECTORY = {
@@ -281,16 +266,14 @@ func process_spawning():
 func set_logging_iteration(unit : Unit, delta):
 	if (log_triggered or
 	(num_iterations != 0
-	#and unit.unit_type == Constants.UnitType.JUMP_BIRD and unit.pos.y > -0.2 and unit.pos.y < 0.2 and time_elapsed > 0.5)):
+	# and unit.unit_type == Constants.UnitType.PLAYER and unit.pos.x < 14.25 and time_elapsed > 5)):
 	and false)):
 		time_elapsed_to_log = time_elapsed
 		log_triggered = true
-		print("Iteration identified: " + str(time_elapsed_to_log))
 		unit.log_unit()
 
 func terminate_logging_iteration(unit : Unit):
 	if time_elapsed == time_elapsed_to_log:
-		print("Iteration ended")
 		num_iterations = num_iterations - 1
 		unit.log_unit()
 		if num_iterations == 0:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Graphics/Units/Player/Satori_Slide.png" type="Texture" id=1]
 [ext_resource path="res://Graphics/Units/Player/Satori_Fly2.png" type="Texture" id=2]
@@ -11,8 +11,10 @@
 [ext_resource path="res://Graphics/Units/Player/Satori_Crouch.png" type="Texture" id=9]
 [ext_resource path="res://Graphics/Units/Player/Satori_Fly1.png" type="Texture" id=10]
 [ext_resource path="res://Graphics/Animations/PlayerIdle.tres" type="SpriteFrames" id=11]
+[ext_resource path="res://Scripts/Units/Player.gd" type="Script" id=12]
 
 [node name="Player" type="Node2D"]
+script = ExtResource( 12 )
 
 [node name="Jump1" type="Sprite" parent="."]
 visible = false

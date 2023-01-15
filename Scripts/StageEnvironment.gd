@@ -26,11 +26,11 @@ func _init(the_scene : GameScene):
 		unit.scale.y = scene.Constants.SCALE_FACTOR
 
 func interact(unit : Unit, delta):
-	# do hazards
+	# do hazardss
 	var unit_pos_y_upper_bound_check = unit.hit_box[scene.Constants.HIT_BOX_BOUND.UPPER_BOUND]
 	if unit_is_shortened(unit):
 		unit_pos_y_upper_bound_check *= scene.Constants.CROUCH_FACTOR
-	if unit.unit_type == scene.Constants.UnitType.PLAYER:
+	if unit.unit_type == scene.Constants.UnitType.PLAYER and !unit.get_condition(scene.Constants.UnitCondition.IS_INVINCIBLE, false):
 		for stage_hazard in stage_hazards:
 			if not ((unit.pos.y + unit.hit_box[scene.Constants.HIT_BOX_BOUND.LOWER_BOUND] > stage_hazard[0][scene.Constants.HIT_BOX_BOUND.UPPER_BOUND])
 			or (unit.pos.y + unit_pos_y_upper_bound_check < stage_hazard[0][scene.Constants.HIT_BOX_BOUND.LOWER_BOUND])
@@ -48,25 +48,23 @@ func interact(unit : Unit, delta):
 
 	# do collisions
 	
-	# gravity-affected
-	if not unit.no_gravity:
-		# gravity-affected, grounded
-		if unit.unit_conditions[scene.Constants.UnitCondition.IS_ON_GROUND]:
-			# gravity-affected, grounded, -v
-			scene.conditional_log("interact gravity-affected, grounded - interact_grounded")
-			interact_grounded(unit, delta)
-		else:
-			var gravity_factor = scene.gravity
-			var max_fall_speed = scene.max_fall_speed
-			if unit.get_current_action() == scene.Constants.UnitCurrentAction.FLYING:
-				scene.conditional_log("interact gravity-affected, not-grounded, flying - use GRAVITY_LITE, MAX_FALL_LITE")
-				gravity_factor = scene.gravity_lite
-				max_fall_speed = scene.max_fall_speed_lite
-			elif unit.get_current_action() == scene.Constants.UnitCurrentAction.FLYING_CEILING:
-				gravity_factor = scene.gravity_lite
-				max_fall_speed = 0
-			scene.conditional_log("interact gravity-affected, not-grounded, change-v-speed: " + str(unit.v_speed) + " -> " + str(max(unit.v_speed - (gravity_factor * delta), max_fall_speed)))
-			unit.v_speed = max(unit.v_speed - (gravity_factor * delta), max_fall_speed)
+	# gravity-affected, grounded
+	if unit.unit_conditions[scene.Constants.UnitCondition.IS_ON_GROUND]:
+		# gravity-affected, grounded, -v
+		scene.conditional_log("interact gravity-affected, grounded - interact_grounded")
+		interact_grounded(unit, delta)
+	else:
+		var gravity_factor = scene.Constants.GRAVITY
+		var max_fall_speed = scene.Constants.MAX_FALL_SPEED
+		if unit.get_current_action() == scene.Constants.UnitCurrentAction.FLYING:
+			scene.conditional_log("interact gravity-affected, not-grounded, flying - use GRAVITY_LITE, MAX_FALL_LITE")
+			gravity_factor = scene.Constants.GRAVITY_LITE
+			max_fall_speed = scene.Constants.MAX_FALL_LITE
+		elif unit.get_current_action() == scene.Constants.UnitCurrentAction.FLYING_CEILING:
+			gravity_factor = scene.Constants.GRAVITY_LITE
+			max_fall_speed = 0
+		scene.conditional_log("interact gravity-affected, not-grounded, change-v-speed: " + str(unit.v_speed) + " -> " + str(max(unit.v_speed - (gravity_factor * delta), max_fall_speed)))
+		unit.v_speed = max(unit.v_speed - (gravity_factor * delta), max_fall_speed)
 
 	if not (unit.h_speed == 0 and unit.v_speed == 0):
 		# regular collision
@@ -353,7 +351,7 @@ func check_collision(unit : Unit, collider, collision_direction, delta):
 				unit.set_current_action(scene.Constants.UnitCurrentAction.FLYING_CEILING)
 		elif collision_dir == scene.Constants.Direction.LEFT or collision_dir == scene.Constants.Direction.RIGHT:
 			if (collider[0].x == collider[1].x
-			or (unit.no_gravity or not unit.unit_conditions[scene.Constants.UnitCondition.IS_ON_GROUND])):
+			or not unit.unit_conditions[scene.Constants.UnitCondition.IS_ON_GROUND]):
 				scene.conditional_log("check_collision left/right non-slope-collision or not-grounded zero-out h-speed")
 				unit.h_speed = 0
 			var collider_set_pos_x = collision_point.x
@@ -374,9 +372,7 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 	if not unit_env_collider[1].has(scene.Constants.Direction.DOWN):
 		scene.conditional_log("check_ground_collision " + str(unit_env_collider[0]) + " not ground collider")
 		return
-	if ((not unit.no_gravity
-	and not unit.unit_conditions[scene.Constants.UnitCondition.IS_ON_GROUND]
-	or unit.no_gravity)
+	if (not unit.unit_conditions[scene.Constants.UnitCondition.IS_ON_GROUND]
 	and (collider[0].y == collider[1].y or (collider[0].x != collider[1].x and collider[0].y != collider[1].y))):
 			scene.conditional_log("check_ground_collision airborne ground collision on: " + str(collider) + " with " + str(unit_env_collider[0]))
 			unit.set_unit_condition(scene.Constants.UnitCondition.IS_ON_GROUND, true)
@@ -408,12 +404,10 @@ func check_ground_collision(unit : Unit, collider, collision_point : Vector2, un
 			scene.conditional_log("check_ground_collision change pos-x: " + str(unit.pos.x) + " -> " + str(unit.pos.x + x_dist_to_translate))
 			unit.pos.x = unit.pos.x + x_dist_to_translate
 			scene.conditional_log("check_ground_collision set grounded")
-			if not unit.no_gravity:
-				if unit.get_current_action() == scene.Constants.UnitCurrentAction.FLYING:
-					scene.conditional_log("check_ground_collision set current action flying -> idle")
-					unit.set_current_action(scene.Constants.UnitCurrentAction.IDLE)
-				if unit.unit_conditions[scene.Constants.UnitCondition.IS_ON_GROUND]:
-					interact_grounded(unit, delta)
+			if unit.get_current_action() == scene.Constants.UnitCurrentAction.FLYING:
+				scene.conditional_log("check_ground_collision set current action flying -> idle")
+				unit.set_current_action(scene.Constants.UnitCurrentAction.IDLE)
+			interact_grounded(unit, delta)
 		
 	
 
@@ -458,7 +452,7 @@ func unit_is_shortened(unit : Unit):
 
 func interact_post(unit : Unit):
 	# need to reground unit in case it ended up somewhere underneath ground level
-	if not unit.no_gravity and unit.unit_conditions[scene.Constants.UnitCondition.IS_ON_GROUND]:
+	if unit.unit_conditions[scene.Constants.UnitCondition.IS_ON_GROUND]:
 		# gravity-affected, grounded
 		scene.conditional_log("interact_post gravity-affected, grounded - ground_placement")
 		ground_placement(unit)

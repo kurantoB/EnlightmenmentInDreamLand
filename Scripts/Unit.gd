@@ -8,7 +8,6 @@ const GameUtils = preload("res://Scripts/GameUtils.gd")
 const UnitExplode = preload("res://FX/UnitExplode.tscn")
 
 export var unit_type : int
-var no_gravity : bool = false # whether gravity should affect this unit
 var hit_box
 var health : int
 var active : bool = true
@@ -69,13 +68,6 @@ func set_action(action : int):
 func set_timer_action(action : int):
 	assert(action in Constants.UNIT_TYPE_ACTIONS[unit_type])
 	assert(action in Constants.ACTION_TIMERS[unit_type].keys())
-	if unit_type == Constants.UnitType.PLAYER:
-		if action == Constants.ActionType.FLOAT:
-			timer_actions[action] = scene.player_float_cooldown
-			return
-		elif action == Constants.ActionType.DASH:
-			timer_actions[action] = scene.player_dash_window
-			return
 	timer_actions[action] = Constants.ACTION_TIMERS[unit_type][action]
 
 func reset_timer_action(action : int):
@@ -90,9 +82,6 @@ func set_unit_condition(condition_type : int, condition):
 func set_unit_condition_with_timer(condition_type : int):
 	assert(condition_type in Constants.UNIT_CONDITION_TIMERS[unit_type].keys())
 	set_unit_condition(condition_type, Constants.UNIT_CONDITION_TIMERS[unit_type][condition_type][1])
-	if unit_type == Constants.UnitType.PLAYER and condition_type == Constants.UnitCondition.IS_INVINCIBLE:
-		unit_condition_timers[condition_type] = scene.player_invincible_duration
-		return
 	unit_condition_timers[condition_type] = Constants.UNIT_CONDITION_TIMERS[unit_type][condition_type][0]
 
 func get_condition(condition_num : int, default):
@@ -147,7 +136,7 @@ func reset_current_action():
 		if not actions[Constants.ActionType.JUMP]:
 			set_current_action(Constants.UnitCurrentAction.IDLE)
 	# process MOVING_STATUS
-	if not actions[Constants.ActionType.MOVE]:
+	if not actions[Constants.ActionType.MOVE] and not (Constants.UNIT_TYPE_ACTIONS[unit_type].find(Constants.ActionType.DASH) != -1 and actions[Constants.ActionType.DASH]):
 		set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 
 func process_unit(delta, time_elapsed : float, scene):
@@ -209,11 +198,7 @@ func process_current_action_melee():
 
 func jump():
 	set_current_action(Constants.UnitCurrentAction.JUMPING)
-	var jump_speed
-	if unit_type == Constants.UnitType.PLAYER:
-		jump_speed = scene.player_jump_speed
-	else:
-		jump_speed = Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type]
+	var jump_speed = Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type]
 	if (unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
 		# hit ground
 		v_speed = max(jump_speed, v_speed)
@@ -229,10 +214,7 @@ func jump():
 
 func move():
 	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.MOVING)
-	if unit_type == Constants.UnitType.PLAYER:
-		target_move_speed = scene.player_move_speed
-	else:
-		target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
+	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
 	if (get_current_action() == Constants.UnitCurrentAction.IDLE
 	and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
 		set_sprite("Walk")
@@ -241,7 +223,7 @@ func handle_moving_status(delta, scene):
 	# what we have: facing, current speed, move status, grounded
 	# we want: to set the new intended speed
 	var magnitude : float
-	if not no_gravity and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+	if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 		magnitude = sqrt(pow(v_speed, 2) + pow(h_speed, 2))
 	else:
 		magnitude = abs(h_speed)
@@ -250,23 +232,23 @@ func handle_moving_status(delta, scene):
 	# if move status is idle
 	if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
 		# slow down
-		magnitude = move_toward(magnitude, 0, scene.move_acceleration * delta)
+		magnitude = move_toward(magnitude, 0, Constants.ACCELERATION * delta)
 		scene.conditional_log("move-idle, not-near-still: slow-down: magnitude: " + str(magnitude))
 	# if move status is not idle
 	else:
 		# if is facing-aligned
 		if (h_speed <= 0 and facing == Constants.Direction.LEFT) or (h_speed >= 0 and facing == Constants.Direction.RIGHT):
 			# speed up
-			magnitude = move_toward(magnitude, target_move_speed, scene.move_acceleration * delta)
+			magnitude = move_toward(magnitude, target_move_speed, Constants.ACCELERATION * delta)
 			scene.conditional_log("not-move-idle, facing-aligned: speed-up: magnitude: " + str(magnitude))
 		# if is not facing-aligned
 		else:
 			# slow down
-			magnitude = move_toward(magnitude, 0, scene.move_acceleration * delta)
+			magnitude = move_toward(magnitude, 0, Constants.ACCELERATION * delta)
 			scene.conditional_log("not-move-idle, not-facing-aligned: slow-down: magnitude: " + str(magnitude))
 	
 	# if is grounded
-	if not no_gravity and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+	if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 		# make magnitude greater than quantum distance
 		if magnitude > 0 and magnitude < Constants.QUANTUM_DIST:
 			magnitude = Constants.QUANTUM_DIST * 2
@@ -306,16 +288,13 @@ func handle_moving_status(delta, scene):
 
 func handle_idle():
 	if get_current_action() == Constants.UnitCurrentAction.IDLE:
-		if not no_gravity:
-			if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-				if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
-					set_sprite("Idle")
-			elif v_speed > 0:
-				set_sprite("Jump", 0)
-			else:
-				set_sprite("Jump", 1)
+		if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
+			if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
+				set_sprite("Idle")
+		elif v_speed > 0:
+			set_sprite("Jump", 0)
 		else:
-			set_sprite("Idle")
+			set_sprite("Jump", 1)
 
 func set_sprite(sprite_class : String, index : int = 0):
 	if not unit_type in Constants.UNIT_SPRITES or not sprite_class in Constants.UNIT_SPRITES[unit_type]:
@@ -384,8 +363,6 @@ func death_cleanup():
 		queue_free()
 
 func hit(damage : int, dir : int):
-	if get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):
-		return
 	health = max(0, health - damage)
 
 func build_iframe_texture(image : Image):

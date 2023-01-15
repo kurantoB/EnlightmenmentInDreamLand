@@ -25,18 +25,9 @@ func _ready():
 		var inst : Sprite = CHANNEL_SPARK_PREFAB.instance()
 		channel_sparks.append(inst)
 
-func reset_actions():
-	.reset_actions()
-	if get_current_action() == Constants.UnitCurrentAction.RECOILING:
-		set_action(Constants.ActionType.RECOIL)
-	if get_current_action() == Constants.UnitCurrentAction.SLIDING:
-		set_action(Constants.ActionType.SLIDE)
-
 # dir is which direction unit is taking an attack from: left / right
 func hit(damage : int, dir : int):
 	.hit(damage, dir)
-	if get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):
-		return
 	set_unit_condition_with_timer(Constants.UnitCondition.IS_INVINCIBLE)
 	is_flash = true
 	flash_start_timestamp = time_elapsed
@@ -44,35 +35,10 @@ func hit(damage : int, dir : int):
 	set_current_action(Constants.UnitCurrentAction.RECOILING)
 	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 	stop_channel_sparks()
-	if get_condition(Constants.UnitCondition.IS_ON_GROUND, false):
-		var temp_h_speed
-		if h_speed > 0:
-			if dir == Constants.Direction.LEFT:
-				v_speed -= RECOIL_PUSHBACK
-			else:
-				v_speed += RECOIL_PUSHBACK
-				if v_speed > 0:
-					h_speed = -Constants.QUANTUM_DIST
-					v_speed *= -1
-		elif h_speed < 0:
-			if dir == Constants.Direction.LEFT:
-				v_speed += RECOIL_PUSHBACK
-				if v_speed > 0:
-					h_speed = Constants.QUANTUM_DIST
-					v_speed *= -1
-			else:
-				v_speed -= RECOIL_PUSHBACK
-		else: # h_speed == 0
-			if dir == Constants.Direction.LEFT:
-				h_speed = Constants.QUANTUM_DIST
-			else:
-				h_speed = -Constants.QUANTUM_DIST
-			v_speed = -RECOIL_PUSHBACK
+	if dir == Constants.Direction.LEFT:
+		h_speed += RECOIL_PUSHBACK
 	else:
-		if dir == Constants.Direction.LEFT:
-			h_speed += RECOIL_PUSHBACK
-		else:
-			h_speed -= RECOIL_PUSHBACK
+		h_speed -= RECOIL_PUSHBACK
 	facing = dir
 
 func wall_collision():
@@ -84,16 +50,6 @@ func advance_timers(delta):
 	if not unit_conditions[Constants.UnitCondition.IS_INVINCIBLE]:
 		is_flash = false
 
-func is_current_action_timer_done(current_action : int):
-	if current_action == Constants.UnitCurrentAction.SLIDING:
-		return current_action_time_elapsed >= scene.player_slide_duration
-	elif current_action == Constants.UnitCurrentAction.RECOILING:
-		return current_action_time_elapsed >= scene.player_recoil_duration
-	elif current_action == Constants.UnitCurrentAction.JUMPING:
-		return current_action_time_elapsed >= scene.player_jump_duration
-	else:
-		return .is_current_action_timer_done(current_action)
-
 func melee_attack_check():
 	if melee_hit:
 		if get_current_action() == Constants.UnitCurrentAction.SLIDING:
@@ -101,11 +57,15 @@ func melee_attack_check():
 		melee_hit = false
 
 func hit_check():
+	if get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):
+		return
 	# check unit collision
 	for other_unit in scene.units:
 		if other_unit != self:
 			var collision_with : int = collision_with(other_unit)
 			if collision_with != -1:
+				for action_num in Constants.UNIT_TYPE_ACTIONS[Constants.UnitType.PLAYER]:
+					actions[action_num] = false
 				hit(1, collision_with)
 				break
 
@@ -169,12 +129,12 @@ func drop_ability():
 
 func dash():
 	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.DASHING)
-	target_move_speed = scene.dash_speed
+	target_move_speed = Constants.DASH_SPEED
 	if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 		set_sprite("Dash")
 
 func flot():
-	v_speed = scene.player_float_speed
+	v_speed = Constants.FLOAT_SPEED
 	if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.DASHING:
 		unit_conditions[Constants.UnitCondition.MOVING_STATUS] = Constants.UnitMovingStatus.MOVING
 
@@ -192,7 +152,7 @@ func slide():
 	var dir_factor = 1
 	if facing == Constants.Direction.LEFT:
 		dir_factor = -1
-	h_speed = scene.dash_speed * dir_factor
+	h_speed = Constants.DASH_SPEED * dir_factor
 	if is_current_action_timer_done(Constants.UnitCurrentAction.SLIDING):
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 	if slide_collision:
