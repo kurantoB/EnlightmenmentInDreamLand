@@ -313,6 +313,7 @@ func check_collision(unit : Unit, collider, collision_into_directions, delta):
 					if unit.get_condition(Constants.UnitCondition.IS_ON_GROUND, false):
 						# also shorten vertical component to preserve move vector direction
 						unit.v_speed *= factor
+					unit.wall_collision()
 				else:
 					# ceiling collision (horizontal only for now)
 					var new_cc_y : float = intersects_results[1].y - Constants.QUANTUM_DIST
