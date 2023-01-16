@@ -80,9 +80,9 @@ func handle_idle():
 	.handle_idle()
 	if get_current_action() == Constants.UnitCurrentAction.FLYING:
 		if v_speed > 0:
-			set_sprite("Fly", 0)
+			set_sprite(Constants.SpriteClass.FLY, 0)
 		else:
-			set_sprite("Fly", 1)
+			set_sprite(Constants.SpriteClass.FLY, 1)
 
 func is_shortened():
 	return (get_current_action() == Constants.UnitCurrentAction.CROUCHING
@@ -121,12 +121,12 @@ func channel():
 	set_current_action(Constants.UnitCurrentAction.CHANNELING)
 	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 	handle_channel_sparks()
-	set_sprite("Channel")
+	set_sprite(Constants.SpriteClass.CHANNEL)
 
 func crouch():
 	set_current_action(Constants.UnitCurrentAction.CROUCHING)
 	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
-	set_sprite("Crouch")
+	set_sprite(Constants.SpriteClass.CROUCH)
 
 func drop_ability():
 	set_unit_condition(Constants.UnitCondition.HAS_ABILITY, false)
@@ -135,7 +135,7 @@ func dash():
 	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.DASHING)
 	target_move_speed = Constants.DASH_SPEED
 	if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
-		set_sprite("Dash")
+		set_sprite(Constants.SpriteClass.DASH)
 
 func flot():
 	v_speed = Constants.FLOAT_SPEED
@@ -147,7 +147,7 @@ func recoil():
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 	else:
 		set_current_action(Constants.UnitCurrentAction.RECOILING)
-		set_sprite("Recoil")
+		set_sprite(Constants.SpriteClass.RECOIL)
 
 func slide():
 	if get_current_action() != Constants.UnitCurrentAction.SLIDING:
@@ -168,9 +168,9 @@ func slide():
 		else:
 			h_speed = SLIDE_COLLISION_BOUNCE
 		slide_collision = false
-		set_sprite("Jump", 0)
+		set_sprite(Constants.SpriteClass.JUMP, 0)
 	else:
-		set_sprite("Slide")
+		set_sprite(Constants.SpriteClass.SLIDE)
 
 func init_channel_sparks():
 	channel_spark_spawn_times.clear()

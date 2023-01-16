@@ -70,6 +70,18 @@ enum MapElemType {
 	HAZARD,
 }
 
+enum SpriteClass {
+	IDLE,
+	WALK,
+	JUMP,
+	DASH,
+	FLY,
+	SLIDE,
+	RECOIL,
+	CHANNEL,
+	CROUCH,
+ }
+
 enum HIT_BOX_BOUND {
 	UPPER_BOUND,
 	LOWER_BOUND,
@@ -223,22 +235,22 @@ const INPUT_MAP = {
 }
 
 const UNIT_SPRITES = {
-	# "Sprite class": [is animation?, [Node list]]
+	# Sprite-class: [Is-animation?, Nodes]
 	UnitType.PLAYER: {
-		"Idle": [true, ["Idle"]],
-		"Walk": [true, ["Walk"]],
-		"Dash": [true, ["Dash"]],
-		"Jump": [false, ["Jump1", "Jump2"]],
-		"Fly": [false, ["Fly1", "Fly2"]],
-		"Slide": [false, ["Slide"]],
-		"Recoil": [false, ["Recoil"]],
-		"Channel": [false, ["Channel"]],
-		"Crouch": [false, ["Crouch"]]
+		SpriteClass.IDLE: [true, ["Idle"]],
+		SpriteClass.WALK: [true, ["Walk"]],
+		SpriteClass.DASH: [true, ["Dash"]],
+		SpriteClass.JUMP: [false, ["Jump1", "Jump2"]],
+		SpriteClass.FLY: [false, ["Fly1", "Fly2"]],
+		SpriteClass.SLIDE: [false, ["Slide"]],
+		SpriteClass.RECOIL: [false, ["Recoil"]],
+		SpriteClass.CHANNEL: [false, ["Channel"]],
+		SpriteClass.CROUCH: [false, ["Crouch"]],
 	},
 	UnitType.JUMP_BIRD: {
-		"Idle": [false, ["Idle"]],
-		"Walk": [true, ["Walk"]],
-		"Jump": [false, ["Jump", "Jump"]],
+		SpriteClass.IDLE: [false, ["Idle"]],
+		SpriteClass.WALK: [true, ["Walk"]],
+		SpriteClass.JUMP: [false, ["Jump", "Jump"]],
 	},
 }
 

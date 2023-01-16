@@ -30,6 +30,7 @@ var melee_hit_box = [false, 0, 0, 0, 0]
 var melee_hit : bool
 
 var current_sprite : Node2D
+var sprite_class_nodes = {} # sprite class to node list dictionary
 
 var time_elapsed : float
 var is_flash : bool = false
@@ -44,6 +45,12 @@ var defeated_time_elapsed : float
 func _ready():
 	for child in get_children():
 		child.visible = false
+	
+	# populate sprite_class_nodes
+	for sprite_class in Constants.UNIT_SPRITES[unit_type]:
+		sprite_class_nodes[sprite_class] = []
+		for node_name in Constants.UNIT_SPRITES[unit_type][sprite_class][1]:
+			sprite_class_nodes[sprite_class].append(get_node(node_name))
 
 func init_unit_w_scene(scene):
 	self.scene = scene
@@ -213,7 +220,7 @@ func jump():
 		v_speed = max(Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type], move_toward(v_speed, Constants.UNIT_TYPE_JUMP_SPEEDS[unit_type], get_process_delta_time() * Constants.GRAVITY))
 	set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, false)
 	if get_current_action() == Constants.UnitCurrentAction.JUMPING and v_speed > 0:
-		set_sprite("Jump", 0)
+		set_sprite(Constants.SpriteClass.JUMP, 0)
 	if is_current_action_timer_done(Constants.UnitCurrentAction.JUMPING):
 		set_current_action(Constants.UnitCurrentAction.IDLE)
 		
@@ -223,7 +230,7 @@ func move():
 	target_move_speed = Constants.UNIT_TYPE_MOVE_SPEEDS[unit_type]
 	if (get_current_action() == Constants.UnitCurrentAction.IDLE
 	and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
-		set_sprite("Walk")
+		set_sprite(Constants.SpriteClass.WALK)
 
 func handle_moving_status(delta):
 	# what we have: facing, current speed, move status, grounded
@@ -291,20 +298,20 @@ func handle_idle():
 	if get_current_action() == Constants.UnitCurrentAction.IDLE:
 		if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 			if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
-				set_sprite("Idle")
+				set_sprite(Constants.SpriteClass.IDLE)
 		elif v_speed > 0:
-			set_sprite("Jump", 0)
+			set_sprite(Constants.SpriteClass.JUMP, 0)
 		else:
-			set_sprite("Jump", 1)
+			set_sprite(Constants.SpriteClass.JUMP, 1)
 
-func set_sprite(sprite_class : String, index : int = 0):
-	if not unit_type in Constants.UNIT_SPRITES or not sprite_class in Constants.UNIT_SPRITES[unit_type]:
-		return
-	var node_list = Constants.UNIT_SPRITES[unit_type][sprite_class][1]
+func set_sprite(sprite_class : int, index : int = 0):
+	assert(unit_type in Constants.UNIT_SPRITES)
+	assert(sprite_class in Constants.UNIT_SPRITES[unit_type])
+	var node_list = sprite_class_nodes[sprite_class]
 	var true_index : int = index
 	if true_index > len(node_list) - 1:
 		true_index = 0
-	var new_sprite : Node2D = get_node(node_list[true_index])
+	var new_sprite : Node2D = node_list[true_index]
 	if (is_flash):
 		if int((time_elapsed - flash_start_timestamp) / Constants.FLASH_CYCLE) % 2 == 1:
 			new_sprite.set_modulate(Color(2, 1, 1))
