@@ -172,16 +172,16 @@ const UNIT_CONDITION_TIMERS = {
 const ENV_COLLIDERS = {
 	UnitType.PLAYER: [
 		[Vector2(0, 1.5), [Direction.LEFT, Direction.UP, Direction.RIGHT]],
-		[Vector2(-.25, .25), [Direction.LEFT]],
-		[Vector2(.25, .25), [Direction.RIGHT]],
-		[Vector2(-.25, 1.25), [Direction.LEFT]],
-		[Vector2(.25, 1.25), [Direction.RIGHT]],
+		[Vector2(-.33, .25), [Direction.LEFT]],
+		[Vector2(.33, .25), [Direction.RIGHT]],
+		[Vector2(-.33, 1.25), [Direction.LEFT]],
+		[Vector2(.33, 1.25), [Direction.RIGHT]],
 		[Vector2(0, 0), [Direction.LEFT, Direction.DOWN, Direction.RIGHT]],
 	],
 	UnitType.JUMP_BIRD: [
 		[Vector2(0, 1), [Direction.LEFT, Direction.UP, Direction.RIGHT]],
-		[Vector2(-.25, .5), [Direction.LEFT]],
-		[Vector2(.25, .5), [Direction.RIGHT]],
+		[Vector2(-.33, .5), [Direction.LEFT]],
+		[Vector2(.33, .5), [Direction.RIGHT]],
 		[Vector2(0, 0), [Direction.LEFT, Direction.DOWN, Direction.RIGHT]],
 	],
 }

@@ -23,7 +23,7 @@ var pos : Vector2
 var h_speed : float = 0
 var v_speed : float = 0
 var target_move_speed : float
-var last_contacted_collider : Array
+var last_contacted_ground_collider : Array
 
 # [active, x, y, width, height], assuming right-facing
 var melee_hit_box = [false, 0, 0, 0, 0]
@@ -105,12 +105,18 @@ func hit_check():
 func collision_with(other_unit : Unit):
 	var own_hit_box = Constants.UNIT_HIT_BOXES[unit_type]
 	var other_hit_box = Constants.UNIT_HIT_BOXES[other_unit.unit_type]
+	var own_y_factor = 1
+	if is_shortened():
+		own_y_factor = Constants.CROUCH_FACTOR
+	var other_y_factor = 1
+	if other_unit.is_shortened():
+		other_y_factor = Constants.CROUCH_FACTOR
 	return GameUtils.check_hitbox_collision(
-		pos.y + own_hit_box[Constants.HIT_BOX_BOUND.UPPER_BOUND],
+		pos.y + own_hit_box[Constants.HIT_BOX_BOUND.UPPER_BOUND] * own_y_factor,
 		pos.y + own_hit_box[Constants.HIT_BOX_BOUND.LOWER_BOUND],
 		pos.x + own_hit_box[Constants.HIT_BOX_BOUND.LEFT_BOUND],
 		pos.x + own_hit_box[Constants.HIT_BOX_BOUND.RIGHT_BOUND],
-		other_unit.pos.y + other_hit_box[Constants.HIT_BOX_BOUND.UPPER_BOUND],
+		other_unit.pos.y + other_hit_box[Constants.HIT_BOX_BOUND.UPPER_BOUND] * other_y_factor,
 		other_unit.pos.y + other_hit_box[Constants.HIT_BOX_BOUND.LOWER_BOUND],
 		other_unit.pos.x + other_hit_box[Constants.HIT_BOX_BOUND.LEFT_BOUND],
 		other_unit.pos.x + other_hit_box[Constants.HIT_BOX_BOUND.RIGHT_BOUND])
@@ -146,7 +152,7 @@ func process_unit(delta, time_elapsed : float, scene):
 	process_current_action_melee()
 	execute_actions(delta, scene)
 	handle_idle()
-	handle_moving_status(delta, scene)
+	handle_moving_status(delta)
 	advance_timers(delta)
 	reset_current_action()
 	self.time_elapsed = time_elapsed
@@ -219,7 +225,7 @@ func move():
 	and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
 		set_sprite("Walk")
 
-func handle_moving_status(delta, scene):
+func handle_moving_status(delta):
 	# what we have: facing, current speed, move status, grounded
 	# we want: to set the new intended speed
 	var magnitude : float
@@ -227,32 +233,27 @@ func handle_moving_status(delta, scene):
 		magnitude = sqrt(pow(v_speed, 2) + pow(h_speed, 2))
 	else:
 		magnitude = abs(h_speed)
-	scene.conditional_log("set magnitude: " + str(magnitude))
 	
 	# if move status is idle
 	if unit_conditions[Constants.UnitCondition.MOVING_STATUS] == Constants.UnitMovingStatus.IDLE:
 		# slow down
 		magnitude = move_toward(magnitude, 0, Constants.ACCELERATION * delta)
-		scene.conditional_log("move-idle, not-near-still: slow-down: magnitude: " + str(magnitude))
 	# if move status is not idle
 	else:
 		# if is facing-aligned
 		if (h_speed <= 0 and facing == Constants.Direction.LEFT) or (h_speed >= 0 and facing == Constants.Direction.RIGHT):
 			# speed up
 			magnitude = move_toward(magnitude, target_move_speed, Constants.ACCELERATION * delta)
-			scene.conditional_log("not-move-idle, facing-aligned: speed-up: magnitude: " + str(magnitude))
 		# if is not facing-aligned
 		else:
 			# slow down
 			magnitude = move_toward(magnitude, 0, Constants.ACCELERATION * delta)
-			scene.conditional_log("not-move-idle, not-facing-aligned: slow-down: magnitude: " + str(magnitude))
 	
 	# if is grounded
 	if unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 		# make magnitude greater than quantum distance
 		if magnitude > 0 and magnitude < Constants.QUANTUM_DIST:
 			magnitude = Constants.QUANTUM_DIST * 2
-			scene.conditional_log("grounded: quantum magnitude: " + str(magnitude))
 		
 		# make move vector point down
 		if magnitude > 0:
@@ -261,15 +262,14 @@ func handle_moving_status(delta, scene):
 			elif h_speed < 0:
 				h_speed = -1 * Constants.QUANTUM_DIST
 			else:
+				# from still to moving
 				if facing == Constants.Direction.RIGHT:
 					h_speed = Constants.QUANTUM_DIST
 				else:
 					h_speed = -1 * Constants.QUANTUM_DIST
-			scene.conditional_log("grounded, non-zero-magnitude: preserve-h-dir: " + str(h_speed))
 		else:
 			h_speed = 0
 		v_speed = -1 * magnitude
-		scene.conditional_log("grounded: point-down: " + str(v_speed) + ", set-h-speed: " + str(h_speed))
 	# if is not grounded
 	else:
 		# set h_speed
@@ -279,6 +279,7 @@ func handle_moving_status(delta, scene):
 			elif h_speed < 0:
 				h_speed = -1 * magnitude
 			else:
+				# from no lateral movement to having lateral movement
 				if facing == Constants.Direction.RIGHT:
 					h_speed = magnitude
 				else:
@@ -378,7 +379,12 @@ func build_iframe_texture(image : Image):
 	return new_texture
 
 func wall_collision():
+	# implemented in subclass
 	pass
+
+func is_shortened():
+	# implemented in subclass
+	return false
 
 func log_unit():
 	print("===UNIT DEBUG====")

@@ -73,6 +73,7 @@ func handle_input(delta):
 	scene.handle_player_input()
 
 func reset_current_action():
+	.reset_current_action()
 	scene.reset_player_current_action()
 
 func handle_idle():
@@ -82,6 +83,11 @@ func handle_idle():
 			set_sprite("Fly", 0)
 		else:
 			set_sprite("Fly", 1)
+
+func is_shortened():
+	return (get_current_action() == Constants.UnitCurrentAction.CROUCHING
+		or get_current_action() == Constants.UnitCurrentAction.SLIDING
+		or get_current_action() == Constants.UnitCurrentAction.FLYING)
 
 func execute_actions(delta, scene):
 	.execute_actions(delta, scene)

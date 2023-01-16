@@ -88,7 +88,6 @@ func _process(delta):
 		set_logging_iteration(unit, delta)
 		stage_env.interact(unit, delta) # also check enviroment hazard hits
 		unit.react(delta)
-		stage_env.interact_post(unit)
 		unit.death_check()
 		terminate_logging_iteration(unit)
 	for unit in inactive_units:
@@ -96,7 +95,6 @@ func _process(delta):
 		unit.process_unit(delta, time_elapsed, self)
 		stage_env.interact(unit, delta)
 		unit.react(delta)
-		stage_env.interact_post(unit)
 		unit.death_cleanup()
 	time_elapsed = time_elapsed + delta
 	
@@ -146,7 +144,7 @@ func handle_player_input():
 		if player.get_current_action() == Constants.UnitCurrentAction.IDLE:
 			player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
 			player.set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, false)
-		elif player.get_current_action() == Constants.UnitCurrentAction.FLYING or player.get_current_action() == Constants.UnitCurrentAction.FLYING_CEILING:
+		elif player.get_current_action() == Constants.UnitCurrentAction.FLYING:
 			player.do_with_timeout(Constants.ActionType.FLOAT, -1)
 	
 	if input_table[Constants.PlayerInput.DOWN][I_T_PRESSED]:
@@ -201,7 +199,7 @@ func handle_player_input():
 					player.set_action(Constants.ActionType.JUMP)
 			elif input_table[Constants.PlayerInput.GBA_A][I_T_JUST_PRESSED]:
 				player.do_with_timeout(Constants.ActionType.FLOAT, Constants.UnitCurrentAction.FLYING)
-		elif player.get_current_action() == Constants.UnitCurrentAction.FLYING or player.get_current_action() == Constants.UnitCurrentAction.FLYING_CEILING:
+		elif player.get_current_action() == Constants.UnitCurrentAction.FLYING:
 			player.do_with_timeout(Constants.ActionType.FLOAT, -1)
 	
 	if input_table[Constants.PlayerInput.GBA_B][I_T_PRESSED]:
@@ -227,7 +225,6 @@ func handle_player_input():
 		player.set_action(Constants.ActionType.DROP_ABILITY)
 
 func reset_player_current_action():
-	# process CURRENT_ACTION
 	if player.get_current_action() == Constants.UnitCurrentAction.CHANNELING:
 		if input_table[Constants.PlayerInput.GBA_B][I_T_JUST_RELEASED]:
 			player.stop_channel_sparks()
@@ -235,12 +232,6 @@ func reset_player_current_action():
 	if player.get_current_action() == Constants.UnitCurrentAction.CROUCHING:
 		if input_table[Constants.PlayerInput.DOWN][I_T_JUST_RELEASED]:
 			player.set_current_action(Constants.UnitCurrentAction.IDLE)	
-	if player.get_current_action() == Constants.UnitCurrentAction.JUMPING:
-		if not input_table[Constants.PlayerInput.GBA_A][I_T_PRESSED]:
-			player.set_current_action(Constants.UnitCurrentAction.IDLE)
-	# process MOVING_STATUS
-	if not player.actions[Constants.ActionType.MOVE] and not player.actions[Constants.ActionType.DASH]:
-		player.set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 
 func process_spawning():
 	for one_spawn in spawning.keys():
