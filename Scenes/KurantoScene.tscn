@@ -10,6 +10,9 @@ script = ExtResource( 1 )
 tile_set_name = "PalaceOfEarthSpirits_Stage"
 tilemaps_to_scale = [ "BackgroundBottom", "BackgroundMiddle", "StageProps", "Foreground" ]
 tilemaps_to_parallax_scroll = [ "BackgroundMiddle", "BackgroundBottom" ]
+camera_offset = 1.5
+camera_offset_offset = 0.5
+camera_easing_time = 0.05
 spawning = {
 Vector2( 11, 4 ): "JUMP_BIRD"
 }
@@ -46,8 +49,7 @@ position = Vector2( 20, -20 )
 [node name="Camera2D" type="Camera2D" parent="Player"]
 offset = Vector2( 0, -21 )
 smoothing_enabled = true
-smoothing_speed = 3.0
-offset_h = -1.0
+smoothing_speed = 5.5
 
 [node name="Foreground" type="TileMap" parent="."]
 tile_set = ExtResource( 4 )

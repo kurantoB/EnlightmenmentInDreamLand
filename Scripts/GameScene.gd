@@ -5,6 +5,9 @@ class_name GameScene
 export var tile_set_name: String
 export(Array, String) var tilemaps_to_scale
 export(Array, String) var tilemaps_to_parallax_scroll
+export var camera_offset : float
+export var camera_offset_offset : float
+export var camera_easing_time : float # half-life
 
 # positions to unit string
 export var spawning : Dictionary
@@ -47,6 +50,8 @@ var num_iterations = 5
 var log_triggered : bool = false
 
 var player_cam : Camera2D
+var player_cam_default_smoothing_speed : float
+var player_cam_easing_cum_time : float = 0
 
 var rng = RandomNumberGenerator.new()
 
@@ -61,6 +66,8 @@ func _ready():
 	player.init_unit_w_scene(self)
 	player_cam = player.get_node("Camera2D")
 	player_cam.make_current()
+	player_cam_default_smoothing_speed = player_cam.smoothing_speed
+	camera_op(0)
 	
 	# place the units
 	stage_env = load("res://Scripts/StageEnvironment.gd").new(self)
@@ -81,19 +88,7 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	# visual effects
-	if (player.facing == Constants.Direction.RIGHT):
-		player_cam.offset_h = 1
-	else:
-		player_cam.offset_h = -1
-	for i in range(tilemaps_to_parallax_scroll.size()):
-		if has_node(tilemaps_to_parallax_scroll[i]):
-			var this_tilemap_to_parallax_scroll = get_node(tilemaps_to_parallax_scroll[i])
-			this_tilemap_to_parallax_scroll.position.x = player_cam.get_camera_screen_center().x - player_cam.get_camera_screen_center().x * parallax_scroll_factors[i]
-			this_tilemap_to_parallax_scroll.position.y = player_cam.get_camera_screen_center().y - player_cam.get_camera_screen_center().y * parallax_scroll_factors[i]
-		else:
-			printerr("Unable to find tilemap to parallax scroll: " + tilemaps_to_parallax_scroll[i])
-			get_tree().quit()
+	camera_op(delta)
 	
 	read_paused()
 	if not paused:
@@ -115,6 +110,37 @@ func _process(delta):
 			unit.react(delta)
 			unit.death_cleanup()
 		time_elapsed = time_elapsed + delta
+
+func camera_op(delta):
+	var h_factor = max(abs(player.h_speed), Constants.UNIT_TYPE_MOVE_SPEEDS[player.unit_type]) / Constants.UNIT_TYPE_MOVE_SPEEDS[player.unit_type]
+	var target_camera_offset_offset = camera_offset_offset * h_factor
+	if (player.facing == Constants.Direction.RIGHT):
+		player_cam.offset_h = camera_offset + target_camera_offset_offset
+	else:
+		player_cam.offset_h = camera_offset - target_camera_offset_offset
+	var h_smoothing_speed = player_cam_default_smoothing_speed * h_factor
+	var v_smoothing_speed
+	if player.v_speed < 0:
+		player_cam_easing_cum_time += delta
+		var v_factor = 1 + 8 * max(0, ((player.v_speed - Constants.MAX_FALL_LITE) / (Constants.MAX_FALL_SPEED - Constants.MAX_FALL_LITE)))
+		var player_cam_target_offset_v = camera_offset_offset * v_factor
+		var offset_interpolation_displacement = pow(0.9, player_cam_easing_cum_time / camera_easing_time) * player_cam_target_offset_v
+		player_cam.offset_v = player_cam_target_offset_v - offset_interpolation_displacement
+		v_smoothing_speed = player_cam_default_smoothing_speed * v_factor
+	else:
+		player_cam_easing_cum_time = 0
+		player_cam.offset_v = 0
+		v_smoothing_speed = player_cam_default_smoothing_speed
+	# player_cam.smoothing_speed = max(h_smoothing_speed, v_smoothing_speed)
+	
+	for i in range(tilemaps_to_parallax_scroll.size()):
+		if has_node(tilemaps_to_parallax_scroll[i]):
+			var this_tilemap_to_parallax_scroll = get_node(tilemaps_to_parallax_scroll[i])
+			this_tilemap_to_parallax_scroll.position.x = player_cam.get_camera_screen_center().x - player_cam.get_camera_screen_center().x * parallax_scroll_factors[i]
+			this_tilemap_to_parallax_scroll.position.y = player_cam.get_camera_screen_center().y - player_cam.get_camera_screen_center().y * parallax_scroll_factors[i]
+		else:
+			printerr("Unable to find tilemap to parallax scroll: " + tilemaps_to_parallax_scroll[i])
+			get_tree().quit()
 
 func read_paused():
 	if Input.is_action_just_pressed(Constants.INPUT_MAP[Constants.PlayerInput.GBA_START]):
