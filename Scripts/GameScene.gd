@@ -18,6 +18,8 @@ const UNIT_DIRECTORY = {
 	Constants.UnitType.JUMP_BIRD: preload("res://Units/JumpBird.tscn"),
 }
 
+var paused : bool = false
+
 var units = []
 var inactive_units = []
 var spawning_map = {} # keeps track of what's alive
@@ -79,25 +81,6 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	process_spawning()
-	
-	for unit in units:
-		unit.reset_actions()
-		unit.handle_input(delta)
-		unit.process_unit(delta, time_elapsed, self)
-		set_logging_iteration(unit, delta)
-		stage_env.interact(unit, delta) # also check enviroment hazard hits
-		unit.react(delta)
-		unit.death_check()
-		terminate_logging_iteration(unit)
-	for unit in inactive_units:
-		# defeated units are still affected by the environment
-		unit.process_unit(delta, time_elapsed, self)
-		stage_env.interact(unit, delta)
-		unit.react(delta)
-		unit.death_cleanup()
-	time_elapsed = time_elapsed + delta
-	
 	# visual effects
 	if (player.facing == Constants.Direction.RIGHT):
 		player_cam.offset_h = 1
@@ -111,6 +94,31 @@ func _process(delta):
 		else:
 			printerr("Unable to find tilemap to parallax scroll: " + tilemaps_to_parallax_scroll[i])
 			get_tree().quit()
+	
+	read_paused()
+	if not paused:
+		# game logic
+		process_spawning()
+		for unit in units:
+			unit.reset_actions()
+			unit.handle_input(delta)
+			unit.process_unit(delta, time_elapsed, self)
+			set_logging_iteration(unit, delta)
+			stage_env.interact(unit, delta) # also check enviroment hazard hits
+			unit.react(delta)
+			unit.death_check()
+			terminate_logging_iteration(unit)
+		for unit in inactive_units:
+			# defeated units are still affected by the environment
+			unit.process_unit(delta, time_elapsed, self)
+			stage_env.interact(unit, delta)
+			unit.react(delta)
+			unit.death_cleanup()
+		time_elapsed = time_elapsed + delta
+
+func read_paused():
+	if Input.is_action_just_pressed(Constants.INPUT_MAP[Constants.PlayerInput.GBA_START]):
+		paused = !paused
 
 func handle_player_input():
 	for input_num in input_table.keys():
