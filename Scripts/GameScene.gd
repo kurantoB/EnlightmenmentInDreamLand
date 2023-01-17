@@ -271,9 +271,9 @@ func process_spawning():
 	for one_spawn in spawning.keys():
 		if spawning_map[one_spawn] != null:
 			continue
-		if abs(one_spawn[0] - player.pos.x) >= 10 or abs(one_spawn[1] - player.pos.y) >= 10:
+		if abs(one_spawn[0] - player.pos.x) >= Constants.SPAWN_DISTANCE + 1 or abs(one_spawn[1] - player.pos.y) >= Constants.SPAWN_DISTANCE + 1:
 			continue
-		if abs(one_spawn[0] - player.pos.x) <= 9:
+		if abs(one_spawn[0] - player.pos.x) <= Constants.SPAWN_DISTANCE:
 			continue
 		# NPCUnit
 		var enemy_scene = UNIT_DIRECTORY[Constants.UnitType.get(spawning[one_spawn])]

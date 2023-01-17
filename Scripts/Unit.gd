@@ -63,10 +63,13 @@ func init_unit_w_scene(scene):
 	for timer_action_num in Constants.ACTION_TIMERS[unit_type].keys():
 		timer_actions[timer_action_num] = 0
 	hit_box = Constants.UNIT_HIT_BOXES[unit_type]
+	health = Constants.UNIT_TYPE_HEALTH[unit_type]
 	facing = Constants.Direction.RIGHT
+	pos = Vector2(position.x / Constants.GRID_SIZE, -1 * position.y / Constants.GRID_SIZE)
+	position.x = position.x * Constants.SCALE_FACTOR
+	position.y = position.y * Constants.SCALE_FACTOR
 	scale.x = Constants.SCALE_FACTOR
 	scale.y = Constants.SCALE_FACTOR
-	health = Constants.UNIT_TYPE_HEALTH[unit_type]
 
 func set_action(action : int):
 	assert(action in Constants.UNIT_TYPE_ACTIONS[unit_type])
