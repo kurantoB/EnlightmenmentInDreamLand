@@ -56,19 +56,6 @@ func melee_attack_check():
 			slide_collision = true
 		melee_hit = false
 
-func hit_check():
-	if get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):
-		return
-	# check unit collision
-	for other_unit in scene.units:
-		if other_unit != self:
-			var collision_with : int = collision_with(other_unit)
-			if collision_with != -1:
-				for action_num in Constants.UNIT_TYPE_ACTIONS[Constants.UnitType.PLAYER]:
-					actions[action_num] = false
-				hit(1, collision_with)
-				break
-
 func handle_input(delta):
 	scene.handle_player_input()
 
@@ -218,3 +205,33 @@ func handle_channel_sparks():
 func stop_channel_sparks():
 	for sprite in channel_sparks:
 		remove_child(sprite)
+
+func _on_Player_area_entered(area: Area2D) -> void:
+	if get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):
+		return
+	if area is Unit:
+		hit_from_area(area, 1)
+
+func hit_from_area(other_area : Area2D, damage : int):
+	var collision_dir : int
+	if other_area.position > position:
+		collision_dir = Constants.Direction.RIGHT
+	else:
+		collision_dir = Constants.Direction.LEFT
+	hit(damage, collision_dir)
+
+
+func _on_Player_body_entered(body: Node) -> void:
+	if get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):
+		return
+	hit(1, stage_hazard_hit_direction)
+	#for s_h_key in scene.stage_env.stage_hazard_colliders.keys():
+	#	print(str(s_h_key) + ": " + Constants.Direction.keys()[scene.stage_env.stage_hazard_colliders[s_h_key]])
+
+func invincibility_ended():
+	if get_overlapping_areas().size() > 0:
+		if get_overlapping_areas()[0] is Unit:
+			hit_from_area(get_overlapping_areas()[0], 1)
+	if get_overlapping_bodies().size() > 0:
+		# TODO
+		hit(1, stage_hazard_hit_direction)

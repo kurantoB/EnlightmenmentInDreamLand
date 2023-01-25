@@ -298,7 +298,7 @@ const ACCELERATION = 50
 const DASH_SPEED = 12
 const GRAVITY_LITE = 8
 const QUANTUM_DIST = 0.001
-const SPAWN_DISTANCE = 10
+const SPAWN_DISTANCE = 4
 
 # Cosmetics
 const FLASH_CYCLE = 0.15

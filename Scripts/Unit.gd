@@ -1,4 +1,4 @@
-extends Node2D
+extends Area2D
 
 class_name Unit
 
@@ -24,6 +24,7 @@ var h_speed : float = 0
 var v_speed : float = 0
 var target_move_speed : float
 var last_contacted_ground_collider : Array
+var stage_hazard_hit_direction : int # applicable to player only for now
 
 # [active, x, y, width, height], assuming right-facing
 var melee_hit_box = [false, 0, 0, 0, 0]
@@ -44,16 +45,15 @@ var defeated_time_elapsed : float
 # Called when the node enters the scene tree for the first time
 func _ready():
 	for child in get_children():
-		child.visible = false
+		if child is Sprite or child is AnimatedSprite:
+			child.visible = false
 	
 	# populate sprite_class_nodes
 	for sprite_class in Constants.UNIT_SPRITES[unit_type]:
 		sprite_class_nodes[sprite_class] = []
 		for node_name in Constants.UNIT_SPRITES[unit_type][sprite_class][1]:
 			sprite_class_nodes[sprite_class].append(get_node(node_name))
-
-func init_unit_w_scene(scene):
-	self.scene = scene
+	
 	for action_num in Constants.UNIT_TYPE_ACTIONS[unit_type]:
 		actions[action_num] = false
 	for condition_num in Constants.UNIT_TYPE_CONDITIONS[unit_type].keys():
@@ -66,10 +66,11 @@ func init_unit_w_scene(scene):
 	health = Constants.UNIT_TYPE_HEALTH[unit_type]
 	facing = Constants.Direction.RIGHT
 	pos = Vector2(position.x / Constants.GRID_SIZE, -1 * position.y / Constants.GRID_SIZE)
-	position.x = position.x * Constants.SCALE_FACTOR
-	position.y = position.y * Constants.SCALE_FACTOR
 	scale.x = Constants.SCALE_FACTOR
 	scale.y = Constants.SCALE_FACTOR
+
+func init_unit_w_scene(scene):
+	self.scene = scene
 
 func set_action(action : int):
 	assert(action in Constants.UNIT_TYPE_ACTIONS[unit_type])
@@ -174,6 +175,8 @@ func advance_timers(delta):
 		unit_condition_timers[condition_num] = move_toward(unit_condition_timers[condition_num], 0, delta)
 		if unit_condition_timers[condition_num] == 0:
 			set_unit_condition(condition_num, Constants.UNIT_CONDITION_TIMERS[unit_type][condition_num][2])
+			if condition_num == Constants.UnitCondition.IS_INVINCIBLE:
+				invincibility_ended()
 
 func get_current_action():
 	return unit_conditions[Constants.UnitCondition.CURRENT_ACTION]
@@ -372,6 +375,11 @@ func death_cleanup():
 		unit_explode.frame = 0
 		unit_death_hook()
 		queue_free()
+
+
+func invincibility_ended():
+	# implemented in subclass
+	pass
 
 func hit(damage : int, dir : int):
 	health = max(0, health - damage)

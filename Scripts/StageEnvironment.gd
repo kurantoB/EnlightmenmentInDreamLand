@@ -14,7 +14,8 @@ var collision_into_direction_arrays = [] # nested array
 
 var unit_collision_bounds = {} # maps unit type to [upper, lower, left, right]
 
-var stage_hazards = [] # [[bounds, bound_direction], ...]
+var stage_hazard_colliders = {} # {collider: hit direction, ...}
+var stage_hazard_collision_into_direction_arrays = [] # {collider: map location, ...}
 
 func _init(the_scene : GameScene):
 	scene = the_scene
@@ -127,9 +128,13 @@ func init_stage_grid(tilemap : TileMap):
 			Constants.MapElemType.LEDGE:
 				insert_grid_collider(stage_x, stage_y, Constants.Direction.DOWN, 1)
 			Constants.MapElemType.HAZARD:
-				insert_stage_hazard(stage_x, stage_y, cellv)
+				var hit_dir : int = Constants.TILE_SET_HAZARD_REF_X[scene.tile_set_name][cellv]
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.UP, 1, true, hit_dir)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.DOWN, 1, true, hit_dir)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.LEFT, 1, true, hit_dir)
+				insert_grid_collider(stage_x, stage_y, Constants.Direction.RIGHT, 1, true, hit_dir)
 
-func insert_grid_collider(stage_x, stage_y, direction : int, fractional_height : float):
+func insert_grid_collider(stage_x, stage_y, direction : int, fractional_height : float = 1, is_hazard : bool = false, hit_direction : int = -1):
 	var check_colliders = []
 	var insert_colliders = []
 	var point_a : Vector2
@@ -147,20 +152,28 @@ func insert_grid_collider(stage_x, stage_y, direction : int, fractional_height :
 		Constants.Direction.RIGHT:
 			point_a = Vector2(stage_x, stage_y + (1 * fractional_height))
 			point_b = Vector2(stage_x, stage_y)
-	try_insert_collider(point_a, point_b, [direction])
+	if not is_hazard:
+		try_insert_collider(point_a, point_b, [direction])
+	else:
+		try_insert_collider(point_a, point_b, [direction], true, hit_direction)
 
-func try_insert_collider(point_a : Vector2, point_b : Vector2, directions : Array):
+func try_insert_collider(point_a : Vector2, point_b : Vector2, directions : Array, is_hazard : bool = false, hit_direction : int = -1):
 	if directions.size() == 1:
 		# aligned with grid
 		for i in range(len(colliders)):
 			if (colliders[i][0] == point_a
 			and colliders[i][1] == point_b
 			and are_inverse_directions(collision_into_direction_arrays[i][0], directions[0])):
-				colliders.remove(i)
-				collision_into_direction_arrays.remove(i)
+				if not is_hazard:
+					colliders.remove(i)
+					collision_into_direction_arrays.remove(i)
 				return
-	colliders.append([point_a, point_b])
-	collision_into_direction_arrays.append(directions)
+	if not is_hazard:
+		colliders.append([point_a, point_b])
+		collision_into_direction_arrays.append(directions)
+	else:
+		stage_hazard_colliders[[point_a, point_b]] = hit_direction
+		stage_hazard_collision_into_direction_arrays.append(directions)
 
 func are_inverse_directions(d1, d2):
 	return ((d1 == Constants.Direction.LEFT and d2 == Constants.Direction.RIGHT)
@@ -168,36 +181,7 @@ func are_inverse_directions(d1, d2):
 	or (d1 == Constants.Direction.UP and d2 == Constants.Direction.DOWN)
 	or (d1 == Constants.Direction.DOWN and d2 == Constants.Direction.UP))
 
-func insert_stage_hazard(stage_x, stage_y, cellv):
-	stage_hazards.append([{
-		Constants.HIT_BOX_BOUND.UPPER_BOUND: stage_y + 1,
-		Constants.HIT_BOX_BOUND.LOWER_BOUND: stage_y,
-		Constants.HIT_BOX_BOUND.LEFT_BOUND: stage_x,
-		Constants.HIT_BOX_BOUND.RIGHT_BOUND: stage_x + 1}, Constants.TILE_SET_HAZARD_REF_X[scene.tile_set_name][cellv]])
-
 func interact(unit : Unit, delta):
-	# do hazards
-	var unit_pos_y_upper_bound_check = unit.hit_box[Constants.HIT_BOX_BOUND.UPPER_BOUND]
-	if unit.is_shortened():
-		unit_pos_y_upper_bound_check *= Constants.CROUCH_FACTOR
-	if unit.unit_type == Constants.UnitType.PLAYER and !unit.get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):
-		for stage_hazard in stage_hazards:
-			if not ((unit.pos.y + unit.hit_box[Constants.HIT_BOX_BOUND.LOWER_BOUND] > stage_hazard[0][Constants.HIT_BOX_BOUND.UPPER_BOUND])
-			or (unit.pos.y + unit_pos_y_upper_bound_check < stage_hazard[0][Constants.HIT_BOX_BOUND.LOWER_BOUND])
-			or (unit.pos.x + unit.hit_box[Constants.HIT_BOX_BOUND.LEFT_BOUND] > stage_hazard[0][Constants.HIT_BOX_BOUND.RIGHT_BOUND])
-			or (unit.pos.x + unit.hit_box[Constants.HIT_BOX_BOUND.RIGHT_BOUND] < stage_hazard[0][Constants.HIT_BOX_BOUND.LEFT_BOUND])):
-				var dir: int
-				if stage_hazard[1] != -1:
-					dir = stage_hazard[1]
-				elif (stage_hazard[0][Constants.HIT_BOX_BOUND.LEFT_BOUND] + stage_hazard[0][Constants.HIT_BOX_BOUND.RIGHT_BOUND]) / 2 < unit.pos.x:
-					dir = Constants.Direction.LEFT
-				else:
-					dir = Constants.Direction.RIGHT
-				unit.hit(1, dir)
-				break
-	
-	# do collisions
-	
 	if unit.unit_conditions[Constants.UnitCondition.IS_ON_GROUND]:
 		if unit.v_speed < 0:
 			# reassign the move speeds so that it reflects the true movement
@@ -220,6 +204,11 @@ func interact(unit : Unit, delta):
 		for i in range(colliders.size()):
 			if check_collision(unit, colliders[i], collision_into_direction_arrays[i], delta):
 				break
+		# stage hazards
+		if unit.unit_type == Constants.UnitType.PLAYER:
+			for i in range(stage_hazard_colliders.keys().size()):
+				if check_collision(unit, stage_hazard_colliders.keys()[i], stage_hazard_collision_into_direction_arrays[i], delta, true):
+					break
 
 func reangle_grounded_move(unit : Unit):
 	var has_ground_collision : bool = false
@@ -259,7 +248,7 @@ func reangle_move(unit : Unit, collider, nullify_h_speed : bool):
 		unit.h_speed = 0
 	GameUtils.reangle_move(unit, angle_helper)
 
-func check_collision(unit : Unit, collider, collision_into_directions, delta):
+func check_collision(unit : Unit, collider, collision_into_directions, delta, is_hazard_collider : bool = false):
 	if collision_early_exit(unit, collider, collision_into_directions):
 		return false
 	var is_ground_collision : bool = collision_into_directions.find(Constants.Direction.DOWN) != -1
@@ -278,6 +267,21 @@ func check_collision(unit : Unit, collider, collision_into_directions, delta):
 			collider[0],
 			collider[1])
 		if intersects_results[0]:
+			if is_hazard_collider:
+				if stage_hazard_colliders[collider] == -1:
+					if collision_into_directions.find(Constants.Direction.RIGHT) != -1:
+						unit.stage_hazard_hit_direction = Constants.Direction.RIGHT
+					elif collision_into_directions.find(Constants.Direction.LEFT) != -1:
+						unit.stage_hazard_hit_direction = Constants.Direction.LEFT
+					else:
+						var midpoint = (collider[0].x + collider[1].x) / 2
+						if unit.pos.x > midpoint:
+							unit.stage_hazard_hit_direction = Constants.Direction.LEFT
+						else:
+							unit.stage_hazard_hit_direction = Constants.Direction.RIGHT
+				else:
+					unit.stage_hazard_hit_direction = stage_hazard_colliders[collider]
+				return true
 			if is_ground_collision:
 				if unit_env_collider[0] == Vector2(0, 0):
 					unit.pos.y = intersects_results[1].y + Constants.QUANTUM_DIST

@@ -284,8 +284,8 @@ func process_spawning():
 		spawning_map[one_spawn] = enemy_instance
 		enemy_instance.pos.x = one_spawn[0]
 		enemy_instance.pos.y = one_spawn[1]
-		enemy_instance.position.x = enemy_instance.pos.x * Constants.GRID_SIZE
-		enemy_instance.position.y = -1 * enemy_instance.pos.y * Constants.GRID_SIZE
+		enemy_instance.position.x = enemy_instance.pos.x * Constants.GRID_SIZE * Constants.SCALE_FACTOR
+		enemy_instance.position.y = -1 * enemy_instance.pos.y * Constants.GRID_SIZE * Constants.SCALE_FACTOR
 		enemy_instance.init_unit_w_scene(self)
 
 func set_logging_iteration(unit : Unit, delta):
@@ -313,3 +313,5 @@ func get_log_msg(message : String):
 
 func is_log_condition():
 	return time_elapsed == time_elapsed_to_log
+
+
