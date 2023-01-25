@@ -197,22 +197,23 @@ func execute_actions(delta, scene):
 				move()
 				
 func process_current_action_melee():
-	if Constants.CURRENT_ACTION_HAS_MELEE_HITBOX[get_current_action()]:
-		for i in range (Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()].size()):
-			var current_action_hit_box = Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()][Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()].size() - 1 - i]
-			if current_action_time_elapsed >= current_action_hit_box[0]:
-				melee_hit_box[0] = true
-				if facing == Constants.Direction.RIGHT:
-					melee_hit_box[1] = pos.x + current_action_hit_box[1]
-				else:
-					melee_hit_box[1] = pos.x - current_action_hit_box[1] - current_action_hit_box[3]
-				melee_hit_box[2] = pos.y + current_action_hit_box[2]
-				melee_hit_box[3] = current_action_hit_box[3]
-				melee_hit_box[4] = current_action_hit_box[4]
-				break
-	else:
-		melee_hit_box[0] = false
 	pass
+#	if Constants.CURRENT_ACTION_HAS_MELEE_HITBOX[get_current_action()]:
+#		for i in range (Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()].size()):
+#			var current_action_hit_box = Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()][Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()].size() - 1 - i]
+#			if current_action_time_elapsed >= current_action_hit_box[0]:
+#				melee_hit_box[0] = true
+#				if facing == Constants.Direction.RIGHT:
+#					melee_hit_box[1] = pos.x + current_action_hit_box[1]
+#				else:
+#					melee_hit_box[1] = pos.x - current_action_hit_box[1] - current_action_hit_box[3]
+#				melee_hit_box[2] = pos.y + current_action_hit_box[2]
+#				melee_hit_box[3] = current_action_hit_box[3]
+#				melee_hit_box[4] = current_action_hit_box[4]
+#				break
+#	else:
+#		melee_hit_box[0] = false
+#	pass
 
 func jump():
 	set_current_action(Constants.UnitCurrentAction.JUMPING)
