@@ -29,26 +29,15 @@ func _ready():
 func hit(damage : int, dir : int):
 	.hit(damage, dir)
 	set_unit_condition_with_timer(Constants.UnitCondition.IS_INVINCIBLE)
-	is_flash = true
-	flash_start_timestamp = time_elapsed
+	start_flash()
 	set_action(Constants.ActionType.RECOIL)
 	set_current_action(Constants.UnitCurrentAction.RECOILING)
 	set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 	stop_channel_sparks()
-	if dir == Constants.Direction.LEFT:
-		h_speed += RECOIL_PUSHBACK
-	else:
-		h_speed -= RECOIL_PUSHBACK
-	facing = dir
 
 func wall_collision():
 	if get_current_action() == Constants.UnitCurrentAction.SLIDING:
 		slide_collision = true
-
-func advance_timers(delta):
-	.advance_timers(delta)
-	if not unit_conditions[Constants.UnitCondition.IS_INVINCIBLE]:
-		is_flash = false
 
 func melee_attack_check():
 	if melee_hit:
@@ -225,13 +214,42 @@ func _on_Player_body_entered(body: Node) -> void:
 	if get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):
 		return
 	hit(1, stage_hazard_hit_direction)
-	#for s_h_key in scene.stage_env.stage_hazard_colliders.keys():
-	#	print(str(s_h_key) + ": " + Constants.Direction.keys()[scene.stage_env.stage_hazard_colliders[s_h_key]])
 
 func invincibility_ended():
+	is_flash = false
 	if get_overlapping_areas().size() > 0:
 		if get_overlapping_areas()[0] is Unit:
 			hit_from_area(get_overlapping_areas()[0], 1)
 	if get_overlapping_bodies().size() > 0:
-		# TODO
 		hit(1, stage_hazard_hit_direction)
+
+func handle_recoil():
+	if not hit_queued:
+		return
+	hit_queued = false
+	if get_condition(Constants.UnitCondition.IS_ON_GROUND, true):
+		if h_speed > 0:
+			if hit_dir == Constants.Direction.LEFT:
+				v_speed -= RECOIL_PUSHBACK
+			else:
+				v_speed += RECOIL_PUSHBACK
+		elif h_speed < 0:
+			if hit_dir == Constants.Direction.LEFT:
+				v_speed += RECOIL_PUSHBACK
+			else:
+				v_speed -= RECOIL_PUSHBACK
+		else:
+			v_speed = -RECOIL_PUSHBACK
+			if hit_dir == Constants.Direction.LEFT:
+				h_speed = Constants.QUANTUM_DIST
+			else:
+				h_speed = -Constants.QUANTUM_DIST
+		if v_speed > 0:
+			h_speed *= -1
+			v_speed = -v_speed
+	else:
+		if hit_dir == Constants.Direction.LEFT:
+			h_speed += RECOIL_PUSHBACK
+		else:
+			h_speed -= RECOIL_PUSHBACK
+	facing = hit_dir

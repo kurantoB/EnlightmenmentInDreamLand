@@ -109,7 +109,7 @@ func _process(delta):
 			stage_env.interact(unit, delta)
 			unit.react(delta)
 			unit.death_cleanup()
-		time_elapsed = time_elapsed + delta
+		time_elapsed += delta
 
 func camera_op(delta):
 	var h_factor = max(abs(player.h_speed), Constants.UNIT_TYPE_MOVE_SPEEDS[player.unit_type]) / Constants.UNIT_TYPE_MOVE_SPEEDS[player.unit_type]
@@ -278,8 +278,8 @@ func process_spawning():
 		# NPCUnit
 		var enemy_scene = UNIT_DIRECTORY[Constants.UnitType.get(spawning[one_spawn])]
 		var enemy_instance = enemy_scene.instance()
-		add_child(enemy_instance)
-		units.append(enemy_instance)
+		# add_child(enemy_instance)
+		# units.append(enemy_instance)
 		enemy_instance.spawn_point = one_spawn
 		spawning_map[one_spawn] = enemy_instance
 		enemy_instance.pos.x = one_spawn[0]

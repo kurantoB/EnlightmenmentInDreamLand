@@ -33,6 +33,8 @@ var melee_hit : bool
 var current_sprite : Node2D
 var sprite_class_nodes = {} # sprite class to node list dictionary
 
+var hit_queued : bool = false
+var hit_dir : int
 var time_elapsed : float
 var is_flash : bool = false
 var flash_start_timestamp : float
@@ -163,6 +165,7 @@ func process_unit(delta, time_elapsed : float, scene):
 	execute_actions(delta, scene)
 	handle_idle()
 	handle_moving_status(delta)
+	handle_recoil() # must be after handle_moving_status
 	advance_timers(delta)
 	reset_current_action()
 	self.time_elapsed = time_elapsed
@@ -237,6 +240,10 @@ func move():
 	if (get_current_action() == Constants.UnitCurrentAction.IDLE
 	and unit_conditions[Constants.UnitCondition.IS_ON_GROUND]):
 		set_sprite(Constants.SpriteClass.WALK)
+
+func handle_recoil():
+	# implemented in subclass
+	pass
 
 func handle_moving_status(delta):
 	# what we have: facing, current speed, move status, grounded
@@ -382,7 +389,14 @@ func invincibility_ended():
 	pass
 
 func hit(damage : int, dir : int):
+	# implemented in subclass
+	hit_queued = true
+	hit_dir = dir
 	health = max(0, health - damage)
+
+func start_flash():
+	is_flash = true
+	flash_start_timestamp = time_elapsed
 
 func build_iframe_texture(image : Image):
 	image.lock()

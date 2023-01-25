@@ -157,7 +157,7 @@ const UNIT_TYPE_CONDITIONS = {
 const ACTION_TIMERS = {
 	UnitType.PLAYER: {
 		ActionType.FLOAT: 0.25,
-		ActionType.DASH: 0.25
+		ActionType.DASH: 0.25,
 	},
 	UnitType.JUMP_BIRD: {},
 }

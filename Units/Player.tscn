@@ -55,6 +55,7 @@ texture = ExtResource( 10 )
 offset = Vector2( 0, -10 )
 
 [node name="Idle" type="AnimatedSprite" parent="."]
+visible = false
 frames = ExtResource( 11 )
 offset = Vector2( 0, -23 )
 
