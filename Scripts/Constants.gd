@@ -197,31 +197,18 @@ const ENV_COLLIDERS = {
 		[Vector2(0, 0), [Direction.LEFT, Direction.DOWN, Direction.RIGHT]],
 	],
 }
-const UNIT_HIT_BOXES = {
-	UnitType.PLAYER: {
-		HIT_BOX_BOUND.UPPER_BOUND: 1.5,
-		HIT_BOX_BOUND.LOWER_BOUND: 0,
-		HIT_BOX_BOUND.LEFT_BOUND: -0.33,
-		HIT_BOX_BOUND.RIGHT_BOUND: 0.33,
-	},
-	UnitType.JUMP_BIRD: {
-		HIT_BOX_BOUND.UPPER_BOUND: 1,
-		HIT_BOX_BOUND.LOWER_BOUND: 0,
-		HIT_BOX_BOUND.LEFT_BOUND: -0.33,
-		HIT_BOX_BOUND.RIGHT_BOUND: 0.33,
-	},
-}
+
 const CROUCH_FACTOR = 0.67 # fraction of total height
 
 # [timestamp, [x, y, width, height]]
 # assuming right-facing
-const UNIT_MELEE_HIT_BOXES = {
-	UnitType.PLAYER: {
-		UnitCurrentAction.SLIDING: [
-			[0, .5, .0, .5, .5],
-		],
-	},
-}
+#const UNIT_MELEE_HIT_BOXES = {
+#	UnitType.PLAYER: {
+#		UnitCurrentAction.SLIDING: [
+#			[0, .5, .0, .5, .5],
+#		],
+#	},
+#}
 
 const INPUT_MAP = {
 	PlayerInput.UP: "ui_up",

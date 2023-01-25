@@ -62,7 +62,6 @@ func _ready():
 		unit_condition_timers[condition_num] = 0
 	for timer_action_num in Constants.ACTION_TIMERS[unit_type].keys():
 		timer_actions[timer_action_num] = 0
-	hit_box = Constants.UNIT_HIT_BOXES[unit_type]
 	health = Constants.UNIT_TYPE_HEALTH[unit_type]
 	facing = Constants.Direction.RIGHT
 	pos = Vector2(position.x / Constants.GRID_SIZE, -1 * position.y / Constants.GRID_SIZE)
