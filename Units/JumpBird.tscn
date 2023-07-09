@@ -9,7 +9,6 @@
 extents = Vector2( 6.10136, 10 )
 
 [node name="JumpBird" type="Area2D"]
-monitoring = false
 collision_mask = 2
 script = ExtResource( 4 )
 unit_type = 1

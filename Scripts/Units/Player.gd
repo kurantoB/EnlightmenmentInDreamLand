@@ -8,6 +8,9 @@ const SLIDE_COLLISION_BOUNCE = 12
 var dash_facing : int
 var slide_collision : bool = false
 
+onready var standing_collision = get_node("CollisionShape2D")
+onready var crouching_collision = get_node("CollisionShape2DCrouch")
+
 var channel_sparks = []
 var channel_spark_spawn_times = []
 var channel_spark_ys = []
@@ -19,11 +22,24 @@ const CHANNEL_SPARK_LIFE : float = .33
 var rng = RandomNumberGenerator.new()
 const CHANNEL_Y_MIDPOINT = 20
 
+const SLIDE_HITBOX : PackedScene = preload("res://Units/AttackHitboxes/Slide.tscn")
+var slide_hitbox = SLIDE_HITBOX.instance()
+onready var slide_hitbox_coord = get_node("SlideAttackCoord")
+
 func _ready():
 	._ready()
 	for i in range(CHANNEL_SPARK_COUNT):
 		var inst : Sprite = CHANNEL_SPARK_PREFAB.instance()
 		channel_sparks.append(inst)
+
+func process_unit(delta, time_elapsed : float, scene):
+	.process_unit(delta, time_elapsed, scene)
+	if (get_current_action() == Constants.UnitCurrentAction.CROUCHING
+	or get_current_action() == Constants.UnitCurrentAction.SLIDING
+	or get_current_action() == Constants.UnitCurrentAction.FLYING):
+		standing_collision.set_deferred("disabled", true)
+	else:
+		standing_collision.set_deferred("disabled", false)
 
 # dir is which direction unit is taking an attack from: left / right
 func hit(damage : int, dir : int):
@@ -133,8 +149,24 @@ func slide():
 	if facing == Constants.Direction.LEFT:
 		dir_factor = -1
 	h_speed = Constants.DASH_SPEED * dir_factor
+	if not slide_hitbox in attack_hitbox_scenes:
+		attack_hitbox_scenes.append(slide_hitbox)
+		slide_hitbox_coord.add_child(slide_hitbox)
+	var slide_displ = 15
+	if not last_contacted_ground_collider:
+		last_contacted_ground_collider = [Vector2(0, 0), Vector2(1, 0)]
+	var width = last_contacted_ground_collider[1].x - last_contacted_ground_collider[0].x
+	var height = last_contacted_ground_collider[1].y - last_contacted_ground_collider[0].y
+	var magn = (last_contacted_ground_collider[1] - last_contacted_ground_collider[0]).length()
+	if facing == Constants.Direction.RIGHT:
+		slide_hitbox_coord.position.x = width / magn * slide_displ
+		slide_hitbox_coord.position.y = height / magn * slide_displ * -1
+	else:
+		slide_hitbox_coord.position.x = width / magn * slide_displ * -1
+		slide_hitbox_coord.position.y = height / magn * slide_displ
 	if is_current_action_timer_done(Constants.UnitCurrentAction.SLIDING):
 		set_current_action(Constants.UnitCurrentAction.IDLE)
+		cancel_attack_hitboxes()
 	if slide_collision:
 		set_unit_condition(Constants.UnitCondition.IS_ON_GROUND, false)
 		set_current_action(Constants.UnitCurrentAction.IDLE)
@@ -145,6 +177,7 @@ func slide():
 			h_speed = SLIDE_COLLISION_BOUNCE
 		slide_collision = false
 		set_sprite(Constants.SpriteClass.JUMP, 0)
+		cancel_attack_hitboxes()
 	else:
 		set_sprite(Constants.SpriteClass.SLIDE)
 
@@ -193,7 +226,8 @@ func handle_channel_sparks():
 
 func stop_channel_sparks():
 	for sprite in channel_sparks:
-		remove_child(sprite)
+		if sprite.get_parent() == self:
+			remove_child(sprite)
 
 func _on_Player_area_entered(area: Area2D) -> void:
 	if get_condition(Constants.UnitCondition.IS_INVINCIBLE, false):

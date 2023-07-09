@@ -26,7 +26,7 @@ var paused : bool = false
 var units = []
 var inactive_units = []
 var spawning_map = {} # keeps track of what's alive
-var player : Player
+var player
 
 # [pressed?, just pressed?, just released?]
 var input_table = {
@@ -131,7 +131,6 @@ func camera_op(delta):
 		player_cam_easing_cum_time = 0
 		player_cam.offset_v = 0
 		v_smoothing_speed = player_cam_default_smoothing_speed
-	# player_cam.smoothing_speed = max(h_smoothing_speed, v_smoothing_speed)
 	
 	for i in range(tilemaps_to_parallax_scroll.size()):
 		if has_node(tilemaps_to_parallax_scroll[i]):
@@ -265,21 +264,25 @@ func reset_player_current_action():
 			player.set_current_action(Constants.UnitCurrentAction.IDLE)
 	if player.get_current_action() == Constants.UnitCurrentAction.CROUCHING:
 		if input_table[Constants.PlayerInput.DOWN][I_T_JUST_RELEASED]:
-			player.set_current_action(Constants.UnitCurrentAction.IDLE)	
+			player.set_current_action(Constants.UnitCurrentAction.IDLE)
 
 func process_spawning():
 	for one_spawn in spawning.keys():
 		if spawning_map[one_spawn] != null:
+			if abs(spawning_map[one_spawn].pos.x - player.pos.x) >= Constants.SPAWN_DISTANCE + 2 or abs(spawning_map[one_spawn].pos.y - player.pos.y) >= Constants.SPAWN_DISTANCE + 2:
+				# despawn
+				spawning_map[one_spawn].deactivate_unit()
+				spawning_map[one_spawn].generic_queue_free()
 			continue
 		if abs(one_spawn[0] - player.pos.x) >= Constants.SPAWN_DISTANCE + 1 or abs(one_spawn[1] - player.pos.y) >= Constants.SPAWN_DISTANCE + 1:
 			continue
 		if abs(one_spawn[0] - player.pos.x) <= Constants.SPAWN_DISTANCE:
 			continue
-		# NPCUnit
+		# spawn NPCUnit
 		var enemy_scene = UNIT_DIRECTORY[Constants.UnitType.get(spawning[one_spawn])]
 		var enemy_instance = enemy_scene.instance()
-		# add_child(enemy_instance)
-		# units.append(enemy_instance)
+		add_child(enemy_instance)
+		units.append(enemy_instance)
 		enemy_instance.spawn_point = one_spawn
 		spawning_map[one_spawn] = enemy_instance
 		enemy_instance.pos.x = one_spawn[0]

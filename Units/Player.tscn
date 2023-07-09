@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://Graphics/Units/Player/Satori_Slide.png" type="Texture" id=1]
 [ext_resource path="res://Graphics/Units/Player/Satori_Fly2.png" type="Texture" id=2]
@@ -14,25 +14,19 @@
 [ext_resource path="res://Scripts/Units/Player.gd" type="Script" id=12]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 4.90335, 19.9574 )
-
-[sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 8.02503, 8.11771 )
+extents = Vector2( 4.90335, 20.5 )
 
 [node name="Player" type="Area2D"]
-monitorable = false
-collision_layer = 0
 script = ExtResource( 12 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0, -20 )
+position = Vector2( 0, -20.5 )
 shape = SubResource( 1 )
 
 [node name="CollisionShape2DCrouch" type="CollisionShape2D" parent="."]
-visible = false
-position = Vector2( 0, -20 )
+position = Vector2( 0, -14 )
+scale = Vector2( 1, 0.67 )
 shape = SubResource( 1 )
-disabled = true
 
 [node name="Jump1" type="Sprite" parent="."]
 visible = false
@@ -89,14 +83,8 @@ visible = false
 position = Vector2( 0, -23 )
 texture = ExtResource( 9 )
 
-[node name="SlideAttack" type="Node" parent="."]
-
-[node name="Straight" type="Area2D" parent="SlideAttack"]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SlideAttack/Straight"]
-position = Vector2( 15, -5 )
-shape = SubResource( 2 )
-disabled = true
+[node name="SlideAttackCoord" type="Node2D" parent="."]
+position = Vector2( 15, 0 )
 
 [connection signal="area_entered" from="." to="." method="_on_Player_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_Player_body_entered"]

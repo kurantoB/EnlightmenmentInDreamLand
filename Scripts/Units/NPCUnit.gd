@@ -21,7 +21,6 @@ var current_action_sequence_time_elapsed : float = 0
 var current_action_sequence_index : int = 0
 
 var spawn_point : Vector2
-var player : Player
 
 
 func _ready():
@@ -30,13 +29,19 @@ func _ready():
 	for action in action_duration_map:
 		current_npc_action_times_elapsed[action] = 0
 		current_npc_action_active[action] = false
+	connect("area_entered", self, "_on_area_entered")
+
+func _on_area_entered(area: Area2D):
+	var dist = scene.player.pos.x - pos.x
+	if dist > 0:
+		hit(1, Constants.Direction.RIGHT)
+	else:
+		hit(1, Constants.Direction.LEFT)
+	if area != scene.player:
+		scene.player.melee_hit = true
 
 func before_tick():
 	pass
-		
-func init_unit_w_scene(scene):
-	player = scene.player
-	.init_unit_w_scene(scene)
 
 func handle_input(delta):
 	if current_action_sequence != null:
@@ -86,21 +91,6 @@ func reset_npc_unit():
 		current_npc_action_active[action] = false
 
 func hit_check():
-#	if not scene.player.melee_hit_box[0]:
-#		return
-#	var own_hit_box = Constants.UNIT_HIT_BOXES[unit_type]
-#	var collision_result = GameUtils.check_hitbox_collision(
-#		pos.y + own_hit_box[Constants.HIT_BOX_BOUND.UPPER_BOUND],
-#		pos.y + own_hit_box[Constants.HIT_BOX_BOUND.LOWER_BOUND],
-#		pos.x + own_hit_box[Constants.HIT_BOX_BOUND.LEFT_BOUND],
-#		pos.x + own_hit_box[Constants.HIT_BOX_BOUND.RIGHT_BOUND],
-#		scene.player.melee_hit_box[2] + scene.player.melee_hit_box[4],
-#		scene.player.melee_hit_box[2],
-#		scene.player.melee_hit_box[1],
-#		scene.player.melee_hit_box[1] + scene.player.melee_hit_box[3])
-#	if collision_result != -1:
-#		hit(1, collision_result)
-#		scene.player.melee_hit = true
 	pass
 
 func unit_death_hook():

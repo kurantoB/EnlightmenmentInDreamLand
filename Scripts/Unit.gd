@@ -27,8 +27,9 @@ var last_contacted_ground_collider : Array
 var stage_hazard_hit_direction : int # applicable to player only for now
 
 # [active, x, y, width, height], assuming right-facing
-var melee_hit_box = [false, 0, 0, 0, 0]
+#var melee_hit_box = [false, 0, 0, 0, 0]
 var melee_hit : bool
+var attack_hitbox_scenes = []
 
 var current_sprite : Node2D
 var sprite_class_nodes = {} # sprite class to node list dictionary
@@ -110,29 +111,6 @@ func melee_attack_check():
 	# implemented in subclass
 	pass
 
-func hit_check():
-	# implemented in subclass
-	pass
-
-func collision_with(other_unit : Unit):
-	var own_hit_box = Constants.UNIT_HIT_BOXES[unit_type]
-	var other_hit_box = Constants.UNIT_HIT_BOXES[other_unit.unit_type]
-	var own_y_factor = 1
-	if is_shortened():
-		own_y_factor = Constants.CROUCH_FACTOR
-	var other_y_factor = 1
-	if other_unit.is_shortened():
-		other_y_factor = Constants.CROUCH_FACTOR
-	return GameUtils.check_hitbox_collision(
-		pos.y + own_hit_box[Constants.HIT_BOX_BOUND.UPPER_BOUND] * own_y_factor,
-		pos.y + own_hit_box[Constants.HIT_BOX_BOUND.LOWER_BOUND],
-		pos.x + own_hit_box[Constants.HIT_BOX_BOUND.LEFT_BOUND],
-		pos.x + own_hit_box[Constants.HIT_BOX_BOUND.RIGHT_BOUND],
-		other_unit.pos.y + other_hit_box[Constants.HIT_BOX_BOUND.UPPER_BOUND] * other_y_factor,
-		other_unit.pos.y + other_hit_box[Constants.HIT_BOX_BOUND.LOWER_BOUND],
-		other_unit.pos.x + other_hit_box[Constants.HIT_BOX_BOUND.LEFT_BOUND],
-		other_unit.pos.x + other_hit_box[Constants.HIT_BOX_BOUND.RIGHT_BOUND])
-
 func reset_actions():
 	for action_num in Constants.UNIT_TYPE_ACTIONS[unit_type]:
 		actions[action_num] = false
@@ -157,11 +135,13 @@ func reset_current_action():
 	if not actions[Constants.ActionType.MOVE] and not (Constants.UNIT_TYPE_ACTIONS[unit_type].find(Constants.ActionType.DASH) != -1 and actions[Constants.ActionType.DASH]):
 		set_unit_condition(Constants.UnitCondition.MOVING_STATUS, Constants.UnitMovingStatus.IDLE)
 
+func reset_unit_conditions():
+	for unit_condition_type in Constants.UNIT_TYPE_CONDITIONS[unit_type].keys():
+		set_unit_condition(unit_condition_type, Constants.UNIT_TYPE_CONDITIONS[unit_type][unit_condition_type])
+
 func process_unit(delta, time_elapsed : float, scene):
 	current_action_time_elapsed += delta
 	melee_attack_check()
-	hit_check()
-	process_current_action_melee()
 	execute_actions(delta, scene)
 	handle_idle()
 	handle_moving_status(delta)
@@ -198,25 +178,6 @@ func execute_actions(delta, scene):
 				jump()
 			Constants.ActionType.MOVE:
 				move()
-				
-func process_current_action_melee():
-	pass
-#	if Constants.CURRENT_ACTION_HAS_MELEE_HITBOX[get_current_action()]:
-#		for i in range (Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()].size()):
-#			var current_action_hit_box = Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()][Constants.UNIT_MELEE_HIT_BOXES[unit_type][get_current_action()].size() - 1 - i]
-#			if current_action_time_elapsed >= current_action_hit_box[0]:
-#				melee_hit_box[0] = true
-#				if facing == Constants.Direction.RIGHT:
-#					melee_hit_box[1] = pos.x + current_action_hit_box[1]
-#				else:
-#					melee_hit_box[1] = pos.x - current_action_hit_box[1] - current_action_hit_box[3]
-#				melee_hit_box[2] = pos.y + current_action_hit_box[2]
-#				melee_hit_box[3] = current_action_hit_box[3]
-#				melee_hit_box[4] = current_action_hit_box[4]
-#				break
-#	else:
-#		melee_hit_box[0] = false
-#	pass
 
 func jump():
 	set_current_action(Constants.UnitCurrentAction.JUMPING)
@@ -356,9 +317,7 @@ func unit_death_hook():
 
 func death_check():
 	if health == 0:
-		reset_actions()
-		reset_current_action()
-		scene.units.erase(self)
+		deactivate_unit()
 		scene.inactive_units.append(self)
 		active = false
 		if (unit_type != Constants.UnitType.PLAYER):
@@ -371,6 +330,11 @@ func death_check():
 				h_speed = DEFEATED_KNOCKBACK
 			defeated_time_elapsed = time_elapsed
 
+func deactivate_unit():
+	reset_actions()
+	reset_unit_conditions()
+	scene.units.erase(self)
+
 func death_cleanup():
 	if time_elapsed - defeated_time_elapsed >= Constants.DEFEATED_LIFETIME:
 		scene.inactive_units.erase(self)
@@ -380,9 +344,11 @@ func death_cleanup():
 		unit_explode.scale.x = Constants.SCALE_FACTOR
 		unit_explode.scale.y = Constants.SCALE_FACTOR
 		unit_explode.frame = 0
-		unit_death_hook()
-		queue_free()
+		generic_queue_free()
 
+func generic_queue_free():
+	unit_death_hook()
+	queue_free()
 
 func invincibility_ended():
 	# implemented in subclass
@@ -393,6 +359,12 @@ func hit(damage : int, dir : int):
 	hit_queued = true
 	hit_dir = dir
 	health = max(0, health - damage)
+	cancel_attack_hitboxes()
+
+func cancel_attack_hitboxes():
+	for attack_hitbox in attack_hitbox_scenes:
+		attack_hitbox.get_parent().remove_child(attack_hitbox)
+	attack_hitbox_scenes.clear()
 
 func start_flash():
 	is_flash = true
